@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Update 2.2 All Vehicles & Effects</title>
+    <title>Geometry Dash - Update 2.2 Vehicles & Effects</title>
     <style>
         body {
             margin: 0;
@@ -104,21 +104,21 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN 9 DẠNG PHƯƠNG TIỆN & HIỆU ỨNG -->
+    <!-- MÀN HÌNH CHỌN PHƯƠNG TIỆN & HIỆU ỨNG -->
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK - 2.2 GARAGE</h1>
         
-        <h3>Chọn Phương Tiện & Mẫu (Icons):</h3>
+        <h3>Chọn Phương Tiện:</h3>
         <div class="grid-container" id="shapeOptions">
-            <div class="btn-option selected" data-shape="cube">🟦 Cube (485 mẫu)</div>
-            <div class="btn-option" data-shape="ship">🚀 Ship (169 mẫu)</div>
-            <div class="btn-option" data-shape="ball">🔮 Ball (118 mẫu)</div>
-            <div class="btn-option" data-shape="ufo">🛸 UFO (149 mẫu)</div>
-            <div class="btn-option" data-shape="wave">⚡ Wave (96 mẫu)</div>
-            <div class="btn-option" data-shape="robot">🤖 Robot (68 mẫu)</div>
-            <div class="btn-option" data-shape="spider">🕷️ Spider (69 mẫu)</div>
-            <div class="btn-option" data-shape="swing">🪂 Swing (43 mẫu)</div>
-            <div class="btn-option" data-shape="jetpack">🎒 Jetpack (8 mẫu)</div>
+            <div class="btn-option selected" data-shape="cube">🟦 Cube</div>
+            <div class="btn-option" data-shape="ship">🚀 Ship</div>
+            <div class="btn-option" data-shape="ball">🔮 Ball</div>
+            <div class="btn-option" data-shape="ufo">🛸 UFO</div>
+            <div class="btn-option" data-shape="wave">⚡ Wave</div>
+            <div class="btn-option" data-shape="robot">🤖 Robot</div>
+            <div class="btn-option" data-shape="spider">🕷️ Spider</div>
+            <div class="btn-option" data-shape="swing">🪂 Swing</div>
+            <div class="btn-option" data-shape="jetpack">🎒 Jetpack</div>
         </div>
 
         <h3>Chọn Màu Sắc Chủ Đạo:</h3>
@@ -146,7 +146,7 @@
 
         let selectedVehicle = "cube";
         let selectedColor = "#00ffcc";
-        let particleEffects = []; // Mảng lưu hiệu ứng hạt/vệt sáng
+        let particleEffects = [];
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -266,7 +266,6 @@
                 onGround = true;
             }
 
-            // Tạo hiệu ứng hạt vệt đuôi (Particles / Trail Effects) theo thời gian thực
             if (Math.random() < 0.6) {
                 particleEffects.push({
                     x: player.x,
@@ -279,7 +278,6 @@
                 });
             }
 
-            // Cập nhật vị trí hiệu ứng hạt
             for (let p of particleEffects) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -391,14 +389,12 @@
             ctx.stroke();
         }
 
-        // Vẽ 9 dạng phương tiện chuẩn Update 2.2 kèm hiệu ứng đặc trưng
         function drawVehicle() {
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
             if (selectedVehicle === "cube") {
-                // 1. CUBE
                 ctx.fillStyle = selectedColor;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 ctx.strokeStyle = "#ffffff";
@@ -410,7 +406,6 @@
                 ctx.fillRect(-4, -4, 8, 8);
             } 
             else if (selectedVehicle === "ship") {
-                // 2. SHIP (Tàu bay + hiệu ứng lửa đuôi)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.moveTo(player.size / 2, 0);
@@ -422,12 +417,10 @@
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                // Lửa phản lực phía sau
                 ctx.fillStyle = "#ffaa00";
                 ctx.fillRect(-player.size / 2 - 8, -4, 8, 8);
             } 
             else if (selectedVehicle === "ball") {
-                // 3. BALL (Quả bóng năng lượng)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
@@ -441,7 +434,6 @@
                 ctx.fill();
             } 
             else if (selectedVehicle === "ufo") {
-                // 4. UFO (Đĩa bay)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.ellipse(0, 0, player.size / 2, player.size / 4, 0, 0, Math.PI * 2);
@@ -449,14 +441,12 @@
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                // Buồng lái sáng
                 ctx.fillStyle = "#90e0ef";
                 ctx.beginPath();
                 ctx.arc(0, -4, 6, 0, Math.PI * 2);
                 ctx.fill();
             } 
             else if (selectedVehicle === "wave") {
-                // 5. WAVE (Sóng tam giác điện tử)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.moveTo(player.size / 2, 0);
@@ -469,24 +459,20 @@
                 ctx.stroke();
             } 
             else if (selectedVehicle === "robot") {
-                // 6. ROBOT (Người máy cơ khí)
                 ctx.fillStyle = selectedColor;
                 ctx.fillRect(-10, -16, 20, 24);
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.strokeRect(-10, -16, 20, 24);
-                // Mắt robot sáng
                 ctx.fillStyle = "#ff3333";
                 ctx.fillRect(-6, -10, 12, 4);
             } 
             else if (selectedVehicle === "spider") {
-                // 7. SPIDER (Nhện không gian)
                 ctx.fillStyle = selectedColor;
                 ctx.fillRect(-12, -10, 24, 20);
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.strokeRect(-12, -10, 24, 20);
-                // Chân nhện
                 ctx.strokeStyle = selectedColor;
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -495,7 +481,6 @@
                 ctx.stroke();
             } 
             else if (selectedVehicle === "swing") {
-                // 8. SWING COPTER (Đu dây 2.2)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.arc(0, 0, 14, 0, Math.PI * 2);
@@ -503,19 +488,16 @@
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                // Cánh quạt quay hai đầu
                 ctx.fillStyle = "#ffb703";
                 ctx.fillRect(-18, -18, 36, 4);
                 ctx.fillRect(-18, 14, 36, 4);
             } 
             else if (selectedVehicle === "jetpack") {
-                // 9. JETPACK (Balo tên lửa 2.2)
                 ctx.fillStyle = selectedColor;
                 ctx.fillRect(-12, -14, 24, 28);
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.strokeRect(-12, -14, 24, 28);
-                // Bình khí tên lửa và lửa đẩy
                 ctx.fillStyle = "#ff4500";
                 ctx.fillRect(-16, 6, 8, 12);
                 ctx.fillRect(8, 6, 8, 12);
@@ -527,7 +509,6 @@
         function draw() {
             drawBackground();
 
-            // Vẽ hiệu ứng hạt vệt sáng bay phía sau (Particle Trail)
             for (let p of particleEffects) {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -535,9 +516,8 @@
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
             }
-            ctx.globalAlpha = 1.0; // Reset độ trong suốt
+            ctx.globalAlpha = 1.0;
 
-            // Mặt đất
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -547,10 +527,8 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ phương tiện đã chọn
             drawVehicle();
 
-            // Chướng ngại vật
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
@@ -571,12 +549,10 @@
                 }
             }
 
-            // Thanh tiến độ điểm số
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px Arial";
             ctx.fillText("Progress: " + score + " / " + winningScore, 20, 30);
 
-            // Màn hình Game Over
             if (isGameOver) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -592,7 +568,6 @@
                 ctx.textAlign = "left";
             }
 
-            // Màn hình Thắng cuộc
             if (isGameWon) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
