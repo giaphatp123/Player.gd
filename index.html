@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Custom Shapes & Backgrounds</title>
+    <title>Geometry Dash - Back on Track Final</title>
     <style>
         body {
             margin: 0;
@@ -36,10 +36,10 @@
             border-radius: 12px;
             border: 2px solid #457b9d;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-width: 500px;
+            max-width: 480px;
         }
         h1 { margin-bottom: 15px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); font-size: 26px; }
-        h3 { margin: 12px 0 8px 0; color: #a8dadc; font-size: 16px; }
+        h3 { margin: 12px 0 8px 0; color: #a8dadc; font-size: 15px; }
         .options-container {
             display: flex;
             gap: 12px;
@@ -56,9 +56,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
+            font-size: 18px;
         }
         .btn-option:hover {
             transform: scale(1.1);
@@ -92,10 +90,10 @@
         
         <h3>Chọn Hình Thù Nhân Vật:</h3>
         <div class="options-container" id="shapeOptions">
-            <div class="btn-option selected" style="background-color: #2b2b3d;" data-shape="cube" title="Khối Vuông Cổ Điển">🟦</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="angel" title="Khối Thiên Thần (Có cánh)">👼</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="ball" title="Quả Cầu Năng Lượng">🔮</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="superhero" title="Siêu Nhân Phi Thuyền">🦸</div>
+            <div class="btn-option selected" style="background-color: #2b2b3d;" data-shape="cube" title="Khối Vuông">🟦</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="angel" title="Khối Thiên Thần">👼</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="ball" title="Quả Cầu">🔮</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="superhero" title="Siêu Nhân">🦸</div>
         </div>
 
         <h3>Chọn Màu Chủ Đạo:</h3>
@@ -108,15 +106,15 @@
 
         <h3>Chọn Màu Không Gian (Background):</h3>
         <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Đại dương xanh">🌊</div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #4a0e4e, #000000);" data-bg="darkspace" title="Vũ trụ huyền bí">🌌</div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #833ab4, #fd1d1d);" data-bg="sunset" title="Hoàng hôn lửa">🌅</div>
+            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh Đại Dương">🌊</div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #4a0e4e, #000000);" data-bg="darkspace" title="Vũ Trụ Đen">🌌</div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #833ab4, #fd1d1d);" data-bg="sunset" title="Hoàng Hôn">🌅</div>
         </div>
 
         <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
     </div>
 
-    <!-- MÀN HÌNH CHƠI -->
+    <!-- MÀN HÌNH CHƠI GAME -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
     </div>
@@ -160,8 +158,8 @@
             y: 250,
             size: 32,
             dy: 0,
-            jumpPower: -13.5,
-            gravity: 0.85,
+            jumpPower: -13.5, // Tốc độ nhảy nhanh chuẩn bản gốc
+            gravity: 0.85,    // Trọng lực rơi nhanh dứt khoát
             grounded: false,
             rotation: 0
         };
@@ -374,7 +372,6 @@
             ctx.rotate((player.rotation * Math.PI) / 180);
 
             if (selectedPlayerShape === "cube") {
-                // Khối vuông cổ điển
                 ctx.fillStyle = selectedPlayerColor;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 ctx.strokeStyle = "#ffffff";
@@ -386,10 +383,9 @@
                 ctx.fillRect(-4, -4, 8, 8);
             } 
             else if (selectedPlayerShape === "angel") {
-                // Khối thiên thần (Có đôi cánh trắng hai bên)
                 ctx.fillStyle = "#ffffff";
-                ctx.fillRect(-player.size / 2 - 10, -8, 10, 16); // Cánh trái
-                ctx.fillRect(player.size / 2, -8, 10, 16);    // Cánh phải
+                ctx.fillRect(-player.size / 2 - 10, -8, 10, 16);
+                ctx.fillRect(player.size / 2, -8, 10, 16);
 
                 ctx.fillStyle = selectedPlayerColor;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
@@ -397,7 +393,6 @@
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 
-                // Vòng hào quang thiên thần phía trên
                 ctx.strokeStyle = "#ffeb3b";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -405,7 +400,6 @@
                 ctx.stroke();
             } 
             else if (selectedPlayerShape === "ball") {
-                // Quả cầu năng lượng tròn
                 ctx.fillStyle = selectedPlayerColor;
                 ctx.beginPath();
                 ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
@@ -414,14 +408,12 @@
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // Tâm quả cầu
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(0, 0, 6, 0, Math.PI * 2);
                 ctx.fill();
             } 
             else if (selectedPlayerShape === "superhero") {
-                // Siêu nhân phi thuyền (Hình tam giác/mũi tên nhọn)
                 ctx.fillStyle = selectedPlayerColor;
                 ctx.beginPath();
                 ctx.moveTo(player.size / 2, 0);
@@ -451,10 +443,8 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật tùy chỉnh hình thù
             drawPlayer();
 
-            // Chướng ngại vật & bệ platform
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
