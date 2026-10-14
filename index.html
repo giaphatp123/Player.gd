@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Balanced Difficulty</title>
+    <title>Geometry Dash - Random Spawns</title>
     <style>
         * {
             box-sizing: border-box;
@@ -196,8 +196,8 @@
         let isHolding = false;
         let gravityDir = 1;
         let score = 0;
-        let patternTimer = 0;
-        let patternInterval = 130; // Khoảng cách giãn cách vừa phải giữa các cụm bẫy
+        let objectTimer = 0;
+        let objectInterval = 100; // Khoảng cách sinh vật cản ngẫu nhiên thoải mái
         let gameState = "MENU";
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
@@ -268,7 +268,7 @@
             particles = [];
             score = 0;
             config.speed = 5.5;
-            patternInterval = 130;
+            objectInterval = 100;
             gravityDir = 1;
             player.y = 250;
             player.dy = 0;
@@ -276,35 +276,30 @@
             player.grounded = false;
         }
 
-        // TỔ HỢP BẪY LIÊN HOÀN ĐỘ KHÓ VỪA PHẢI (BALANCED PATTERNS)
-        function spawnTrapPattern() {
-            let startX = canvas.width;
+        // SINH NGẪU NHÂN ĐỘC LẬP TỪNG VẬT CẢN (KHÔNG LIÊN KẾT)
+        function spawnObject() {
             const rand = Math.random();
+            let x = canvas.width;
 
-            if (config.vehicle === "ship" || config.vehicle === "jetpack") {
-                // Tổ hợp dành cho máy bay: không quá sát nhau, có khoảng thở để điều chỉnh
-                if (rand < 0.35) {
-                    objects.push({ type: "portal", x: startX, width: 30, height: 90, y: 250, target: "ship" });
-                    objects.push({ type: "sawblade", x: startX + 150, y: 120, radius: 20, rotation: 0 });
-                } else if (rand < 0.70) {
-                    objects.push({ type: "pit", x: startX, width: 90, height: 60, y: 340 });
-                    objects.push({ type: "orb", x: startX + 45, y: 220, radius: 14, collected: false });
-                } else {
-                    objects.push({ type: "block", x: startX, width: 45, height: 120, y: 0 });
-                    objects.push({ type: "sawblade", x: startX + 50, y: 240, radius: 20, rotation: 0 });
-                }
+            if (rand < 0.18) {
+                // Hố sâu
+                objects.push({ type: "pit", x: x, width: 70, height: 60, y: 340 });
+            } else if (rand < 0.35) {
+                // Đệm nhảy
+                objects.push({ type: "pad", x: x, width: 35, height: 15, y: 325 });
+            } else if (rand < 0.52) {
+                // Quả cầu nhảy lơ lửng
+                objects.push({ type: "orb", x: x, y: Math.random() * 150 + 100, radius: 14, collected: false });
+            } else if (rand < 0.70) {
+                // Khối đá / Tường
+                objects.push({ type: "block", x: x, width: 45, height: 60, y: 280 });
+            } else if (rand < 0.88) {
+                // Bánh răng cưa quay độc lập
+                objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 100, radius: 20, rotation: 0 });
             } else {
-                // Tổ hợp cho các dạng mặt đất: kết hợp hố và đệm nhảy hoặc quả cầu một cách logic
-                if (rand < 0.35) {
-                    objects.push({ type: "pit", x: startX, width: 70, height: 60, y: 340 });
-                    objects.push({ type: "pad", x: startX + 50, width: 25, height: 15, y: 325 });
-                } else if (rand < 0.70) {
-                    objects.push({ type: "orb", x: startX, y: 230, radius: 14, collected: false });
-                    objects.push({ type: "block", x: startX + 80, width: 40, height: 60, y: 280 });
-                } else {
-                    objects.push({ type: "portal", x: startX, width: 30, height: 90, y: 250, target: "ship" });
-                    objects.push({ type: "sawblade", x: startX + 120, y: 280, radius: 20, rotation: 0 });
-                }
+                // Cổng đổi phương tiện ngẫu nhiên
+                let targetVeh = Math.random() > 0.5 ? "ship" : "cube";
+                objects.push({ type: "portal", x: x, width: 30, height: 90, y: 250, target: targetVeh });
             }
         }
 
@@ -374,11 +369,11 @@
                 player.grounded = false;
             }
 
-            patternTimer++;
-            if (patternTimer >= patternInterval) {
-                spawnTrapPattern();
-                patternTimer = 0;
-                if (patternInterval > 85) patternInterval -= 2;
+            objectTimer++;
+            if (objectTimer >= objectInterval) {
+                spawnObject();
+                objectTimer = 0;
+                if (objectInterval > 70) objectInterval -= 2;
             }
 
             for (let i = objects.length - 1; i >= 0; i--) {
@@ -562,4 +557,3 @@
     </script>
 </body>
 </html>
-
