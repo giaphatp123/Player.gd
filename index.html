@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Update 2.2 Vehicles & Effects</title>
+    <title>Geometry Dash - Update 2.2 Authentic Physics</title>
     <style>
         body {
             margin: 0;
@@ -104,7 +104,7 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN PHƯƠNG TIỆN & HIỆU ỨNG -->
+    <!-- MÀN HÌNH CHỌN PHƯƠNG TIỆN -->
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK - 2.2 GARAGE</h1>
         
@@ -147,6 +147,7 @@
         let selectedVehicle = "cube";
         let selectedColor = "#00ffcc";
         let particleEffects = [];
+        let isHoldingAction = false;
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -169,8 +170,6 @@
             y: 250,
             size: 32,
             dy: 0,
-            jumpPower: -13.5,
-            gravity: 0.85,
             grounded: false,
             rotation: 0
         };
@@ -193,25 +192,52 @@
             loop();
         }
 
+        // Xử lý phím bấm xuống (Giữ phím để bay đối với Ship/Jetpack)
         window.addEventListener("keydown", function(e) {
-            if (e.code === "Space" && gameRunning) {
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (gameRunning) {
+                    isHoldingAction = true;
+                    triggerAction();
+                }
+            }
+        });
+
+        window.addEventListener("keyup", function(e) {
+            if (e.code === "Space") {
+                isHoldingAction = false;
+            }
+        });
+
+        canvas.addEventListener("mousedown", function() {
+            if (gameRunning) {
+                isHoldingAction = true;
                 triggerAction();
             }
         });
 
-        canvas.addEventListener("click", function() {
-            if (gameRunning) {
-                triggerAction();
-            }
+        window.addEventListener("mouseup", function() {
+            isHoldingAction = false;
         });
 
         function triggerAction() {
-            if (player.grounded) {
-                player.dy = player.jumpPower;
-                player.grounded = false;
-            }
             if (isGameOver || isGameWon) {
                 resetGame();
+                return;
+            }
+
+            // Phân loại cơ chế điều khiển tùy theo phương tiện
+            if (selectedVehicle === "cube") {
+                if (player.grounded) {
+                    player.dy = -13.5;
+                    player.grounded = false;
+                }
+            } else if (selectedVehicle === "ufo") {
+                // UFO nhảy đúp giữa không trung
+                player.dy = -9.5;
+            } else if (selectedVehicle === "spider") {
+                // Nhện dịch chuyển ngược chiều
+                player.y = player.y > 200 ? 100 : 300;
             }
         }
 
@@ -254,8 +280,44 @@
         function update() {
             if (isGameOver || isGameWon) return;
 
-            player.dy += player.gravity;
-            player.y += player.dy;
+            // Xử lý vật lý riêng biệt cho từng loại phương tiện bay (Ship, Jetpack, Wave, v.v.)
+            if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
+                // Giữ phím Space/Click thì bay lên, thả ra thì chìm xuống
+                if (isHoldingAction) {
+                    player.dy -= 0.65; // Lực đẩy lên
+                } else {
+                    player.dy += 0.65; // Trọng lực kéo xuống
+                }
+                // Giới hạn tốc độ bay tối đa
+                if (player.dy < -8) player.dy = -8;
+                if (player.dy > 8) player.dy = 8;
+                player.y += player.dy;
+                player.rotation = player.dy * 4;
+            } 
+            else if (selectedVehicle === "wave") {
+                // Wave bay zíc-zắc cực nhanh
+                if (isHoldingAction) {
+                    player.dy = -7;
+                } else {
+                    player.dy = 7;
+                }
+                player.y += player.dy;
+                player.rotation = isHoldingAction ? -45 : 45;
+            } 
+            else if (selectedVehicle === "swing") {
+                // Swing Copter đảo trọng lực khi bấm
+                if (isHoldingAction && player.grounded) {
+                    player.dy = -player.dy;
+                }
+                player.dy += 0.85;
+                player.y += player.dy;
+            }
+            else {
+                // Các dạng Cube, Ball, UFO, Robot, Spider dùng trọng lực tiêu chuẩn
+                player.dy += 0.85;
+                player.y += player.dy;
+                player.rotation += 12;
+            }
 
             const groundLevel = 340 - player.size;
             let onGround = false;
@@ -266,6 +328,12 @@
                 onGround = true;
             }
 
+            if (player.y <= 0) {
+                player.y = 0;
+                player.dy = 0;
+            }
+
+            // Hiệu ứng hạt
             if (Math.random() < 0.6) {
                 particleEffects.push({
                     x: player.x,
@@ -286,7 +354,7 @@
             particleEffects = particleEffects.filter(p => p.alpha > 0);
 
             for (let obs of obstacles) {
-                if (obs.type === "stairsPlatform") {
+                if (obs.type === "stairsPlatform" && selectedVehicle === "cube") {
                     if (
                         player.x + player.size > obs.x &&
                         player.x < obs.x + obs.width &&
@@ -298,27 +366,16 @@
                         player.dy = 0;
                         onGround = true;
                     }
-
-                    let padding = 4;
-                    if (
-                        player.x + player.size - padding > obs.x &&
-                        player.x + padding < obs.x + obs.width &&
-                        player.y + player.size > obs.y + 5 &&
-                        player.y < obs.y + obs.height
-                    ) {
-                        if (player.x + player.size - player.dx <= obs.x + 5) {
-                            isGameOver = true;
-                        }
-                    }
                 }
             }
 
             if (onGround) {
                 player.grounded = true;
-                player.rotation = Math.round(player.rotation / 90) * 90;
+                if (selectedVehicle === "cube") {
+                    player.rotation = Math.round(player.rotation / 90) * 90;
+                }
             } else {
                 player.grounded = false;
-                player.rotation += 12;
             }
 
             obstacleTimer++;
@@ -332,15 +389,13 @@
                 obstacles[i].x -= gameSpeed;
 
                 let padding = 4;
-                if (obstacles[i].type === "singleSpike" || obstacles[i].type === "doubleSpike") {
-                    if (
-                        player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
-                        player.x + player.size - padding > obstacles[i].x + padding &&
-                        player.y + padding < obstacles[i].y + obstacles[i].height &&
-                        player.y + player.size > obstacles[i].y
-                    ) {
-                        isGameOver = true;
-                    }
+                if (
+                    player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
+                    player.x + player.size - padding > obstacles[i].x + padding &&
+                    player.y + padding < obstacles[i].y + obstacles[i].height &&
+                    player.y + player.size > obstacles[i].y
+                ) {
+                    isGameOver = true;
                 }
 
                 if (obstacles[i].x + obstacles[i].width < 0) {
@@ -545,52 +600,4 @@
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
 
                     ctx.fillStyle = "#90e0ef";
-                    ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
-                }
-            }
-
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 20px Arial";
-            ctx.fillText("Progress: " + score + " / " + winningScore, 20, 30);
-
-            if (isGameOver) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#ff3333";
-                ctx.font = "bold 40px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "18px Arial";
-                ctx.fillText("Nhấn Space hoặc Click để thử lại", canvas.width / 2, canvas.height / 2 + 30);
-                ctx.textAlign = "left";
-            }
-
-            if (isGameWon) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#48cae4";
-                ctx.font = "bold 40px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText("LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 20);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "18px Arial";
-                ctx.fillText("Chúc mừng bạn đã hoàn thành màn chơi!", canvas.width / 2, canvas.height / 2 + 20);
-                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
-                ctx.textAlign = "left";
-            }
-        }
-
-        function loop() {
-            if (!gameRunning) return;
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-    </script>
-</body>
-</html>
+                    ctx.fillRect(obs.x + 6, obs
