@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Geometry Dash - Platforms & Stairs</title>
+    <title>Geometry Dash - Back on Track Style</title>
     <style>
         body {
             margin: 0;
-            background-color: #1a1a1a;
+            background-color: #0b132b;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -27,19 +27,19 @@
             display: none !important;
         }
         canvas {
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            background: #1e1e3f;
+            border: 4px solid #48cae4;
+            box-shadow: 0 0 25px rgba(72, 202, 228, 0.4);
+            background: linear-gradient(to bottom, #03045e, #0077b6);
         }
         .menu-box {
-            background: #2b2b3d;
+            background: #1d3557;
             padding: 30px;
             border-radius: 12px;
-            border: 2px solid #444;
+            border: 2px solid #457b9d;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        h1 { margin-bottom: 20px; color: #00ffcc; }
-        h3 { margin: 15px 0 10px 0; }
+        h1 { margin-bottom: 20px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); }
+        h3 { margin: 15px 0 10px 0; color: #a8dadc; }
         .options-container {
             display: flex;
             gap: 15px;
@@ -58,12 +58,12 @@
             transform: scale(1.1);
         }
         .btn-option.selected {
-            border-color: #ffcc00;
-            box-shadow: 0 0 10px #ffcc00;
+            border-color: #ffb703;
+            box-shadow: 0 0 12px #ffb703;
         }
         .start-btn {
-            background-color: #00ffcc;
-            color: #111;
+            background-color: #48cae4;
+            color: #03045e;
             font-weight: bold;
             font-size: 18px;
             padding: 12px 30px;
@@ -74,7 +74,7 @@
             transition: background 0.2s;
         }
         .start-btn:hover {
-            background-color: #00cca3;
+            background-color: #00b4d8;
         }
     </style>
 </head>
@@ -82,7 +82,7 @@
 
     <!-- MÀN HÌNH CHỌN SKIN & BACKGROUND -->
     <div id="menuScreen" class="screen menu-box">
-        <h1>GEOMETRY DASH MINI</h1>
+        <h1>BACK ON TRACK</h1>
         
         <h3>Chọn Skin Nhân Vật:</h3>
         <div class="options-container" id="skinOptions">
@@ -92,12 +92,11 @@
             <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
         </div>
 
-        <h3>Chọn Hình Nền (Background):</h3>
+        <h3>Chọn Màu Không Gian (Background):</h3>
         <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #005c99, #0099cc);" data-bg="ocean" title="Đại dương xanh"></div>
+            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh Back on Track"></div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
             <div class="btn-option" style="background: linear-gradient(to bottom, #990000, #ff6600);" data-bg="sunset" title="Hoàng hôn lửa"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #006600, #33cc33);" data-bg="forest" title="Rừng xanh"></div>
         </div>
 
         <button class="start-btn" onclick="startGame()">BẮT ĐẦU CHƠI</button>
@@ -115,7 +114,7 @@
         const ctx = canvas.getContext("2d");
 
         let selectedPlayerColor = "#00ffcc";
-        let selectedBgType = "space";
+        let selectedBgType = "ocean";
 
         document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -146,10 +145,10 @@
 
         let obstacles = [];
         let obstacleTimer = 0;
-        let obstacleInterval = 110;
-        let gameSpeed = 5.5;
+        let obstacleInterval = 100;
+        let gameSpeed = 5.8;
         let score = 0;
-        let winningScore = 25;
+        let winningScore = 40; // Màn chơi dài và đậm chất Back on Track hơn
         let isGameOver = false;
         let isGameWon = false;
         let gameRunning = false;
@@ -187,8 +186,8 @@
         function resetGame() {
             obstacles = [];
             score = 0;
-            gameSpeed = 5.5;
-            obstacleInterval = 110;
+            gameSpeed = 5.8;
+            obstacleInterval = 100;
             player.y = 250;
             player.dy = 0;
             isGameOver = false;
@@ -199,36 +198,29 @@
             const rand = Math.random();
             let obs = { x: canvas.width };
 
+            // Phong cách Back on Track tập trung vào các bệ nhảy cao (platforms) và gai đơn/gai đôi đan xen
             if (rand < 0.25) {
-                // 1. Gai đơn
                 obs.type = "singleSpike";
                 obs.width = 30;
                 obs.height = 35;
                 obs.y = 310;
             } else if (rand < 0.45) {
-                // 2. Gai đôi
                 obs.type = "doubleSpike";
                 obs.width = 60;
                 obs.height = 35;
                 obs.y = 310;
-            } else if (rand < 0.60) {
-                // 3. Cụm ba gai thử thách
-                obs.type = "tripleSpike";
-                obs.width = 90;
-                obs.height = 35;
-                obs.y = 310;
-            } else if (rand < 0.80) {
-                // 4. Bậc thang đơn (Platform bậc thấp)
-                obs.type = "stepLow";
-                obs.width = 80;
-                obs.height = 20;
-                obs.y = 290;
+            } else if (rand < 0.70) {
+                // Bệ bậc thang đặc trưng của Back on Track (giúp nhân vật leo lên cao)
+                obs.type = "stairsPlatform";
+                obs.width = 110;
+                obs.height = 25;
+                obs.y = 275;
             } else {
-                // 5. Bậc thang kép cao (Stairs / Bệ cao hai bậc)
-                obs.type = "stairsHigh";
-                obs.width = 120;
-                obs.height = 50;
-                obs.y = 260;
+                // Bệ cao vượt cấp kết hợp gai bên dưới
+                obs.type = "highPlatform";
+                obs.width = 90;
+                obs.height = 55;
+                obs.y = 255;
             }
 
             obstacles.push(obs);
@@ -243,29 +235,28 @@
             const groundLevel = 340 - player.size;
             let onGround = false;
 
-            // Kiểm tra tiếp đất trên mặt đất mặc định
             if (player.y >= groundLevel) {
                 player.y = groundLevel;
                 player.dy = 0;
                 onGround = true;
             }
 
-            // Kiểm tra va chạm và tiếp đất trên các bậc thang (Platforms / Stairs)
+            // Kiểm tra va chạm và tiếp đất trên các bệ platform
             for (let obs of obstacles) {
-                if (obs.type === "stepLow" || obs.type === "stairsHigh") {
-                    // Nếu nhân vật đang rơi xuống và ở trên bề mặt của bậc thang
+                if (obs.type === "stairsPlatform" || obs.type === "highPlatform") {
                     if (
                         player.x + player.size > obs.x &&
                         player.x < obs.x + obs.width &&
                         player.y + player.size >= obs.y &&
-                        player.y + player.size <= obs.y + 15 &&
+                        player.y + player.size <= obs.y + 16 &&
                         player.dy >= 0
                     ) {
                         player.y = obs.y - player.size;
                         player.dy = 0;
                         onGround = true;
                     }
-                    // Va chạm ngang với bậc thang (Đâm vào sườn bậc thang -> Thua)
+
+                    // Va chạm sườn bệ
                     let padding = 4;
                     if (
                         player.x + player.size - padding > obs.x &&
@@ -273,7 +264,6 @@
                         player.y + player.size > obs.y + 5 &&
                         player.y < obs.y + obs.height
                     ) {
-                        // Nếu đâm ngang vào sườn
                         if (player.x + player.size - player.dx <= obs.x + 5) {
                             isGameOver = true;
                         }
@@ -293,17 +283,14 @@
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                if (obstacleInterval > 65) obstacleInterval -= 3;
+                if (obstacleInterval > 60) obstacleInterval -= 2;
             }
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 obstacles[i].x -= gameSpeed;
 
-                // Kiểm tra va chạm với gai
                 let padding = 4;
-                if (
-                    obstacles[i].type !== "stepLow" && obstacles[i].type !== "stairsHigh"
-                ) {
+                if (obstacles[i].type === "singleSpike" || obstacles[i].type === "doubleSpike") {
                     if (
                         player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
                         player.x + player.size - padding > obstacles[i].x + padding &&
@@ -320,32 +307,29 @@
                     if (score >= winningScore) {
                         isGameWon = true;
                     }
-                    if (score % 5 === 0) gameSpeed += 0.5;
+                    if (score % 5 === 0) gameSpeed += 0.4;
                 }
             }
         }
 
         function drawBackground() {
             let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (selectedBgType === "space") {
+            if (selectedBgType === "ocean") {
+                gradient.addColorStop(0, "#03045e");
+                gradient.addColorStop(1, "#0077b6");
+            } else if (selectedBgType === "space") {
                 gradient.addColorStop(0, "#1e1e3f");
                 gradient.addColorStop(1, "#3b2d54");
-            } else if (selectedBgType === "ocean") {
-                gradient.addColorStop(0, "#005c99");
-                gradient.addColorStop(1, "#0099cc");
             } else if (selectedBgType === "sunset") {
                 gradient.addColorStop(0, "#990000");
                 gradient.addColorStop(1, "#ff6600");
-            } else if (selectedBgType === "forest") {
-                gradient.addColorStop(0, "#006600");
-                gradient.addColorStop(1, "#33cc33");
             }
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
         function drawSpike(x, y, w, h) {
-            ctx.fillStyle = "#111111";
+            ctx.fillStyle = "#023e8a";
             ctx.beginPath();
             ctx.moveTo(x, y + h);
             ctx.lineTo(x + w / 2, y);
@@ -353,7 +337,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#ff2244";
+            ctx.fillStyle = "#ffb703"; // Viền sáng vàng đặc trưng của Back on Track
             ctx.beginPath();
             ctx.moveTo(x + 3, y + h);
             ctx.lineTo(x + w / 2, y + 5);
@@ -374,8 +358,8 @@
         function draw() {
             drawBackground();
 
-            // Vẽ đường nền đất
-            ctx.fillStyle = "#cc0044";
+            // Vẽ đường nền đất màu xanh đậm phong cách Back on Track
+            ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 3;
@@ -400,7 +384,7 @@
             ctx.fillRect(-6, -6, 12, 12);
             ctx.restore();
 
-            // Vẽ chướng ngại vật & bậc thang
+            // Vẽ chướng ngại vật & bệ platform
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
@@ -409,22 +393,16 @@
                     drawSpike(obs.x, obs.y, 30, obs.height);
                     drawSpike(obs.x + 30, obs.y, 30, obs.height);
                 } 
-                else if (obs.type === "tripleSpike") {
-                    drawSpike(obs.x, obs.y, 30, obs.height);
-                    drawSpike(obs.x + 30, obs.y, 30, obs.height);
-                    drawSpike(obs.x + 60, obs.y, 30, obs.height);
-                } 
-                else if (obs.type === "stepLow" || obs.type === "stairsHigh") {
-                    // Vẽ bậc thang / bệ đỡ phong cách Geometry Dash
-                    ctx.fillStyle = "#222244";
+                else if (obs.type === "stairsPlatform" || obs.type === "highPlatform") {
+                    ctx.fillStyle = "#023e8a";
                     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-                    ctx.strokeStyle = "#00ffcc";
+                    ctx.strokeStyle = "#90e0ef";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
 
-                    // Đường nét trang trí trên mặt bậc thang
-                    ctx.fillStyle = "#00ffcc";
-                    ctx.fillRect(obs.x + 5, obs.y + 5, obs.width - 10, 6);
+                    // Đường viền sáng trang trí trên bệ
+                    ctx.fillStyle = "#90e0ef";
+                    ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
                 }
             }
 
@@ -454,513 +432,14 @@
                 ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = "#00ffcc";
+                ctx.fillStyle = "#48cae4";
                 ctx.font = "bold 40px Arial";
                 ctx.textAlign = "center";
-                ctx.fillText("VICTORY!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText("LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 20);
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px Arial";
-                ctx.fillText("Bạn đã hoàn thành màn chơi có bậc thang xuất sắc!", canvas.width / 2, canvas.height / 2 + 20);
-                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
-                ctx.textAlign = "left";
-            }
-        }
-
-        function loop() {
-            if (!gameRunning) return;
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Geometry Dash - Ultimate Obstacles</title>
-    <style>
-        body {
-            margin: 0;
-            background-color: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: white;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-        .screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .hidden {
-            display: none !important;
-        }
-        canvas {
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            background: #1e1e3f;
-        }
-        .menu-box {
-            background: #2b2b3d;
-            padding: 30px;
-            border-radius: 12px;
-            border: 2px solid #444;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        h1 { margin-bottom: 20px; color: #00ffcc; }
-        h3 { margin: 15px 0 10px 0; }
-        .options-container {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .btn-option {
-            width: 45px;
-            height: 45px;
-            border: 3px solid #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .btn-option:hover {
-            transform: scale(1.1);
-        }
-        .btn-option.selected {
-            border-color: #ffcc00;
-            box-shadow: 0 0 10px #ffcc00;
-        }
-        .start-btn {
-            background-color: #00ffcc;
-            color: #111;
-            font-weight: bold;
-            font-size: 18px;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
-        .start-btn:hover {
-            background-color: #00cca3;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- MÀN HÌNH CHỌN SKIN & BACKGROUND -->
-    <div id="menuScreen" class="screen menu-box">
-        <h1>GEOMETRY DASH MINI</h1>
-        
-        <h3>Chọn Skin Nhân Vật:</h3>
-        <div class="options-container" id="skinOptions">
-            <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc" title="Xanh ngọc"></div>
-            <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366" title="Đỏ hồng"></div>
-            <div class="btn-option" style="background-color: #ffcc00;" data-color="#ffcc00" title="Vàng chanh"></div>
-            <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
-        </div>
-
-        <h3>Chọn Hình Nền (Background):</h3>
-        <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #005c99, #0099cc);" data-bg="ocean" title="Đại dương xanh"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #990000, #ff6600);" data-bg="sunset" title="Hoàng hôn lửa"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #006600, #33cc33);" data-bg="forest" title="Rừng xanh"></div>
-        </div>
-
-        <button class="start-btn" onclick="startGame()">BẮT ĐẦU CHƠI</button>
-    </div>
-
-    <!-- MÀN HÌNH CHƠI GAME -->
-    <div id="gameScreen" class="screen hidden">
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-    </div>
-
-    <script>
-        const menuScreen = document.getElementById("menuScreen");
-        const gameScreen = document.getElementById("gameScreen");
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        let selectedPlayerColor = "#00ffcc";
-        let selectedBgType = "space";
-
-        document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
-            btn.addEventListener("click", function() {
-                document.querySelectorAll("#skinOptions .btn-option").forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                selectedPlayerColor = this.getAttribute("data-color");
-            });
-        });
-
-        document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
-            btn.addEventListener("click", function() {
-                document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                selectedBgType = this.getAttribute("data-bg");
-            });
-        });
-
-        let player = {
-            x: 100,
-            y: 250,
-            size: 30,
-            dy: 0,
-            jumpPower: -11.5,
-            gravity: 0.65,
-            grounded: false,
-            rotation: 0
-        };
-
-        let obstacles = [];
-        let obstacleTimer = 0;
-        let obstacleInterval = 95;
-        let gameSpeed = 5.5;
-        let score = 0;
-        let winningScore = 35; // Mở rộng thêm độ dài màn chơi để trải nghiệm nhiều chướng ngại vật hơn
-        let isGameOver = false;
-        let isGameWon = false;
-        let gameRunning = false;
-
-        function startGame() {
-            menuScreen.classList.add("hidden");
-            gameScreen.classList.remove("hidden");
-            resetGame();
-            gameRunning = true;
-            loop();
-        }
-
-        window.addEventListener("keydown", function(e) {
-            if (e.code === "Space" && gameRunning) {
-                triggerAction();
-            }
-        });
-
-        canvas.addEventListener("click", function() {
-            if (gameRunning) {
-                triggerAction();
-            }
-        });
-
-        function triggerAction() {
-            if (player.grounded) {
-                player.dy = player.jumpPower;
-                player.grounded = false;
-            }
-            if (isGameOver || isGameWon) {
-                resetGame();
-            }
-        }
-
-        function resetGame() {
-            obstacles = [];
-            score = 0;
-            gameSpeed = 5.5;
-            obstacleInterval = 95;
-            player.y = 250;
-            player.dy = 0;
-            isGameOver = false;
-            isGameWon = false;
-        }
-
-        function spawnObstacle() {
-            const rand = Math.random();
-            let obs = { x: canvas.width };
-
-            if (rand < 0.20) {
-                // 1. Gai đơn
-                obs.type = "singleSpike";
-                obs.width = 30;
-                obs.height = 35;
-                obs.y = 310;
-            } else if (rand < 0.38) {
-                // 2. Gai đôi
-                obs.type = "doubleSpike";
-                obs.width = 60;
-                obs.height = 35;
-                obs.y = 310;
-            } else if (rand < 0.52) {
-                // 3. Cụm ba gai thử thách huyền thoại
-                obs.type = "tripleSpike";
-                obs.width = 90;
-                obs.height = 35;
-                obs.y = 310;
-            } else if (rand < 0.67) {
-                // 4. Bậc thang thấp
-                obs.type = "stepLow";
-                obs.width = 80;
-                obs.height = 20;
-                obs.y = 290;
-            } else if (rand < 0.82) {
-                // 5. Bậc thang cao kép
-                obs.type = "stairsHigh";
-                obs.width = 110;
-                obs.height = 50;
-                obs.y = 260;
-            } else {
-                // 6. Gai lơ lửng trên không (Floating Spike) - Yêu cầu nhảy qua hoặc né
-                obs.type = "floatingSpike";
-                obs.width = 30;
-                obs.height = 30;
-                obs.y = 230;
-            }
-
-            obstacles.push(obs);
-        }
-
-        function update() {
-            if (isGameOver || isGameWon) return;
-
-            player.dy += player.gravity;
-            player.y += player.dy;
-
-            const groundLevel = 340 - player.size;
-            let onGround = false;
-
-            if (player.y >= groundLevel) {
-                player.y = groundLevel;
-                player.dy = 0;
-                onGround = true;
-            }
-
-            // Kiểm tra va chạm và tiếp đất trên bậc thang
-            for (let obs of obstacles) {
-                if (obs.type === "stepLow" || obs.type === "stairsHigh") {
-                    if (
-                        player.x + player.size > obs.x &&
-                        player.x < obs.x + obs.width &&
-                        player.y + player.size >= obs.y &&
-                        player.y + player.size <= obs.y + 15 &&
-                        player.dy >= 0
-                    ) {
-                        player.y = obs.y - player.size;
-                        player.dy = 0;
-                        onGround = true;
-                    }
-
-                    let padding = 4;
-                    if (
-                        player.x + player.size - padding > obs.x &&
-                        player.x + padding < obs.x + obs.width &&
-                        player.y + player.size > obs.y + 5 &&
-                        player.y < obs.y + obs.height
-                    ) {
-                        if (player.x + player.size - player.dx <= obs.x + 5) {
-                            isGameOver = true;
-                        }
-                    }
-                }
-            }
-
-            if (onGround) {
-                player.grounded = true;
-                player.rotation = Math.round(player.rotation / 90) * 90;
-            } else {
-                player.grounded = false;
-                player.rotation += 9;
-            }
-
-            obstacleTimer++;
-            if (obstacleTimer >= obstacleInterval) {
-                spawnObstacle();
-                obstacleTimer = 0;
-                if (obstacleInterval > 55) obstacleInterval -= 2;
-            }
-
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                obstacles[i].x -= gameSpeed;
-
-                // Kiểm tra va chạm với các loại gai (kể cả gai lơ lửng)
-                let padding = 4;
-                if (obs => obstacles[i].type !== "stepLow" && obstacles[i].type !== "stairsHigh") {
-                    if (
-                        player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
-                        player.x + player.size - padding > obstacles[i].x + padding &&
-                        player.y + padding < obstacles[i].y + obstacles[i].height &&
-                        player.y + player.size > obstacles[i].y
-                    ) {
-                        isGameOver = true;
-                    }
-                }
-
-                if (obstacles[i].x + obstacles[i].width < 0) {
-                    obstacles.splice(i, 1);
-                    score++;
-                    if (score >= winningScore) {
-                        isGameWon = true;
-                    }
-                    if (score % 4 === 0) gameSpeed += 0.4;
-                }
-            }
-        }
-
-        function drawBackground() {
-            let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (selectedBgType === "space") {
-                gradient.addColorStop(0, "#1e1e3f");
-                gradient.addColorStop(1, "#3b2d54");
-            } else if (selectedBgType === "ocean") {
-                gradient.addColorStop(0, "#005c99");
-                gradient.addColorStop(1, "#0099cc");
-            } else if (selectedBgType === "sunset") {
-                gradient.addColorStop(0, "#990000");
-                gradient.addColorStop(1, "#ff6600");
-            } else if (selectedBgType === "forest") {
-                gradient.addColorStop(0, "#006600");
-                gradient.addColorStop(1, "#33cc33");
-            }
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function drawSpike(x, y, w, h, isFloating = false) {
-            ctx.fillStyle = "#111111";
-            ctx.beginPath();
-            if (isFloating) {
-                // Gai lơ lửng quay ngược đầu xuống dưới
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + w / 2, y + h);
-                ctx.lineTo(x + w, y);
-            } else {
-                ctx.moveTo(x, y + h);
-                ctx.lineTo(x + w / 2, y);
-                ctx.lineTo(x + w, y + h);
-            }
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = isFloating ? "#ffaa00" : "#ff2244";
-            ctx.beginPath();
-            if (isFloating) {
-                ctx.moveTo(x + 3, y);
-                ctx.lineTo(x + w / 2, y + h - 5);
-                ctx.lineTo(x + w - 3, y);
-            } else {
-                ctx.moveTo(x + 3, y + h);
-                ctx.lineTo(x + w / 2, y + 5);
-                ctx.lineTo(x + w - 3, y + h);
-            }
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            if (isFloating) {
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + w / 2, y + h);
-                ctx.lineTo(x + w, y);
-            } else {
-                ctx.moveTo(x, y + h);
-                ctx.lineTo(x + w / 2, y);
-                ctx.lineTo(x + w, y + h);
-            }
-            ctx.closePath();
-            ctx.stroke();
-        }
-
-        function draw() {
-            drawBackground();
-
-            // Vẽ đường nền đất
-            ctx.fillStyle = "#cc0044";
-            ctx.fillRect(0, 340, canvas.width, 60);
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, 340);
-            ctx.lineTo(canvas.width, 340);
-            ctx.stroke();
-
-            // Vẽ nhân vật
-            ctx.save();
-            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
-            ctx.rotate((player.rotation * Math.PI) / 180);
-            
-            ctx.fillStyle = selectedPlayerColor;
-            ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(-6, -6, 12, 12);
-            ctx.restore();
-
-            // Vẽ hệ thống chướng ngại vật phong phú
-            for (let obs of obstacles) {
-                if (obs.type === "singleSpike") {
-                    drawSpike(obs.x, obs.y, obs.width, obs.height, false);
-                } 
-                else if (obs.type === "doubleSpike") {
-                    drawSpike(obs.x, obs.y, 30, obs.height, false);
-                    drawSpike(obs.x + 30, obs.y, 30, obs.height, false);
-                } 
-                else if (obs.type === "tripleSpike") {
-                    drawSpike(obs.x, obs.y, 30, obs.height, false);
-                    drawSpike(obs.x + 30, obs.y, 30, obs.height, false);
-                    drawSpike(obs.x + 60, obs.y, 30, obs.height, false);
-                } 
-                else if (obs.type === "floatingSpike") {
-                    drawSpike(obs.x, obs.y, obs.width, obs.height, true);
-                }
-                else if (obs.type === "stepLow" || obs.type === "stairsHigh") {
-                    ctx.fillStyle = "#222244";
-                    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-                    ctx.strokeStyle = "#00ffcc";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
-
-                    ctx.fillStyle = "#00ffcc";
-                    ctx.fillRect(obs.x + 5, obs.y + 5, obs.width - 10, 6);
-                }
-            }
-
-            // Điểm số và tiến độ màn chơi
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 20px Arial";
-            ctx.fillText("Score: " + score + " / " + winningScore, 20, 30);
-
-            // Màn hình Game Over
-            if (isGameOver) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#ff3333";
-                ctx.font = "bold 40px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "18px Arial";
-                ctx.fillText("Nhấn Space hoặc Click để thử lại", canvas.width / 2, canvas.height / 2 + 30);
-                ctx.textAlign = "left";
-            }
-
-            // Màn hình Chiến thắng
-            if (isGameWon) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "#00ffcc";
-                ctx.font = "bold 40px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText("VICTORY!", canvas.width / 2, canvas.height / 2 - 20);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "18px Arial";
-                ctx.fillText("Bạn đã chinh phục thành công màn chơi đầy thử thách!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Bạn đã hoàn thành màn Back on Track thành công!", canvas.width / 2, canvas.height / 2 + 20);
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
