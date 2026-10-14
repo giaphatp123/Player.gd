@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Fixed Version</title>
+    <title>Geometry Dash - Full Features</title>
     <style>
         body {
             margin: 0;
@@ -102,7 +102,7 @@
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK - GARAGE</h1>
         
-        <h3>Chọn Phương Tiện:</h3>
+        <h3>Chọn Phương Tiện Ban Đầu:</h3>
         <div class="grid-container" id="shapeOptions">
             <div class="btn-option selected" data-shape="cube">🟦 Cube</div>
             <div class="btn-option" data-shape="ship">🚀 Ship</div>
@@ -141,6 +141,26 @@
         let selectedColor = "#00ffcc";
         let particleEffects = [];
         let isHolding = false;
+        let gravityDir = 1; // 1: bình thường, -1: đảo trọng lực
+
+        let player = {
+            x: 100,
+            y: 250,
+            size: 32,
+            dy: 0,
+            grounded: false,
+            rotation: 0
+        };
+
+        let objects = []; // Mảng chứa toàn bộ vật cản, hố, đệm, orb, cổng
+        let objectTimer = 0;
+        let objectInterval = 100;
+        let gameSpeed = 6.0;
+        let score = 0;
+        let winningScore = 40;
+        let isGameOver = false;
+        let isGameWon = false;
+        let gameRunning = false;
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -157,25 +177,6 @@
                 selectedColor = this.getAttribute("data-color");
             });
         });
-
-        let player = {
-            x: 100,
-            y: 250,
-            size: 32,
-            dy: 0,
-            grounded: false,
-            rotation: 0
-        };
-
-        let obstacles = [];
-        let obstacleTimer = 0;
-        let obstacleInterval = 90;
-        let gameSpeed = 6.0;
-        let score = 0;
-        let winningScore = 30;
-        let isGameOver = false;
-        let isGameWon = false;
-        let gameRunning = false;
 
         function startGame() {
             menuScreen.classList.add("hidden");
@@ -217,150 +218,118 @@
             }
 
             if (selectedVehicle === "cube" && player.grounded) {
-                player.dy = -13.0;
+                player.dy = -13.0 * gravityDir;
                 player.grounded = false;
             } else if (selectedVehicle === "ufo") {
-                player.dy = -9.0;
-            } else if (selectedVehicle === "spider") {
-                player.y = player.y > 200 ? 100 : 280;
+                player.dy = -9.0 * gravityDir;
+            } else if (selectedVehicle === "ball") {
+                gravityDir *= -1; // Đổi trọng lực khi click dạng Ball
+                player.dy = -5.0 * gravityDir;
             }
         }
 
         function resetGame() {
-            obstacles = [];
+            objects = [];
             particleEffects = [];
             score = 0;
             gameSpeed = 6.0;
-            obstacleInterval = 90;
+            objectInterval = 100;
+            gravityDir = 1;
             player.y = 250;
             player.dy = 0;
             isGameOver = false;
             isGameWon = false;
         }
 
-        function spawnObstacle() {
+        // Tạo các đối tượng sinh ra dọc đường chơi
+        function spawnObjects() {
             const rand = Math.random();
-            let obs = { x: canvas.width };
+            let objX = canvas.width;
 
-            // Nếu chọn máy bay hoặc jetpack, thêm chướng ngại vật treo trên không (ceiling obstacle) hoặc khe hẹp
-            if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
-                if (rand < 0.3) {
-                    // Gai đơn dưới đất
-                    obs.type = "singleSpike";
-                    obs.width = 30;
-                    obs.height = 35;
-                    obs.y = 310;
-                } else if (rand < 0.6) {
-                    // Chướng ngại vật treo trên trần nhà
-                    obs.type = "topSpike";
-                    obs.width = 40;
-                    obs.height = 70;
-                    obs.y = 0;
-                } else {
-                    // Khe hẹp ở giữa màn hình (thanh chắn trên và dưới)
-                    obs.type = "middleGap";
-                    obs.width = 50;
-                    obs.height = 130; // độ cao khe hở
-                    obs.y = 100;    // vị trí khe hở cách top 100px
-                }
+            if (rand < 0.15) {
+                // Hố sâu (Pit) trên mặt đất
+                objects.push({ type: "pit", x: objX, width: 70, height: 60, y: 340 });
+            } else if (rand < 0.3) {
+                // Đệm nhảy (Jump Pad) màu vàng/hồng trên mặt đất
+                objects.push({ type: "pad", x: objX, width: 35, height: 15, y: 325 });
+            } else if (rand < 0.45) {
+                // Quả cầu nhảy (Jump Orb) lơ lửng
+                objects.push({ type: "orb", x: objX + 20, y: 240, radius: 14, collected: false });
+            } else if (rand < 0.6) {
+                // Tường và khối đá
+                objects.push({ type: "block", x: objX, width: 50, height: 60, y: 280 });
+            } else if (rand < 0.75) {
+                // Vật cản giả (màu mờ hơn, không gây chết khi va chạm)
+                objects.push({ type: "fakeSpike", x: objX, width: 30, height: 35, y: 310 });
+            } else if (rand < 0.88) {
+                // Bánh răng cưa quay (Sawblade) lơ lửng hoặc trên mặt đất
+                objects.push({ type: "sawblade", x: objX + 20, y: Math.random() > 0.5 ? 260 : 180, radius: 22, rotation: 0 });
             } else {
-                // Chướng ngại vật mặc định cho Cube
-                if (rand < 0.35) {
-                    obs.type = "singleSpike";
-                    obs.width = 30;
-                    obs.height = 35;
-                    obs.y = 310;
-                } else if (rand < 0.6) {
-                    obs.type = "doubleSpike";
-                    obs.width = 60;
-                    obs.height = 35;
-                    obs.y = 310;
-                } else {
-                    obs.type = "stairsPlatform";
-                    obs.width = 110;
-                    obs.height = 25;
-                    obs.y = 270;
-                }
+                // Cổng dịch chuyển (Portal đổi phương tiện sang Ship hoặc đổi lại Cube)
+                let targetVeh = Math.random() > 0.5 ? "ship" : "cube";
+                objects.push({ type: "portal", x: objX, width: 30, height: 90, y: 250, target: targetVeh });
             }
-            obstacles.push(obs);
         }
 
         function update() {
             if (isGameOver || isGameWon) return;
 
-            // Vật lý theo phương tiện
+            // Vật lý chuyển động của xe
             if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
                 if (isHolding) {
-                    player.dy -= 0.55;
+                    player.dy -= 0.55 * gravityDir;
                 } else {
-                    player.dy += 0.55;
+                    player.dy += 0.55 * gravityDir;
                 }
                 player.dy = Math.max(-7.5, Math.min(7.5, player.dy));
                 player.y += player.dy;
                 player.rotation = player.dy * 4;
             } else if (selectedVehicle === "wave") {
                 if (isHolding) {
-                    player.dy = -6.5;
+                    player.dy = -6.5 * gravityDir;
                 } else {
-                    player.dy = 6.5;
+                    player.dy = 6.5 * gravityDir;
                 }
                 player.y += player.dy;
                 player.rotation = isHolding ? -45 : 45;
             } else {
-                player.dy += 0.85;
+                player.dy += 0.85 * gravityDir;
                 player.y += player.dy;
-                player.rotation += 12;
+                player.rotation += 12 * gravityDir;
             }
 
             const groundLevel = 340 - player.size;
             let onGround = false;
 
-            if (player.y >= groundLevel) {
+            // Xử lý mặt đất cơ bản
+            if (gravityDir === 1 && player.y >= groundLevel) {
                 player.y = groundLevel;
+                player.dy = 0;
+                onGround = true;
+            } else if (gravityDir === -1 && player.y <= 0) {
+                player.y = 0;
                 player.dy = 0;
                 onGround = true;
             }
 
-            if (player.y <= 0) {
-                player.y = 0;
-                player.dy = 0;
-            }
-
-            // Tạo hiệu ứng hạt vệt sáng
-            if (Math.random() < 0.5) {
+            // Hiệu ứng hạt
+            if (Math.random() < 0.4) {
                 particleEffects.push({
                     x: player.x,
                     y: player.y + player.size / 2,
-                    size: Math.random() * 5 + 3,
+                    size: Math.random() * 4 + 2,
                     color: selectedColor,
                     alpha: 1.0,
                     vx: -2 - Math.random() * 2,
                     vy: (Math.random() - 0.5) * 2
                 });
             }
-
             for (let p of particleEffects) {
                 p.x += p.vx;
                 p.y += p.vy;
                 p.alpha -= 0.05;
             }
             particleEffects = particleEffects.filter(p => p.alpha > 0);
-
-            for (let obs of obstacles) {
-                if (obs.type === "stairsPlatform" && selectedVehicle === "cube") {
-                    if (
-                        player.x + player.size > obs.x &&
-                        player.x < obs.x + obs.width &&
-                        player.y + player.size >= obs.y &&
-                        player.y + player.size <= obs.y + 18 &&
-                        player.dy >= 0
-                    ) {
-                        player.y = obs.y - player.size;
-                        player.dy = 0;
-                        onGround = true;
-                    }
-                }
-            }
 
             if (onGround) {
                 player.grounded = true;
@@ -371,41 +340,80 @@
                 player.grounded = false;
             }
 
-            obstacleTimer++;
-            if (obstacleTimer >= obstacleInterval) {
-                spawnObstacle();
-                obstacleTimer = 0;
-                if (obstacleInterval > 55) obstacleInterval -= 3;
+            objectTimer++;
+            if (objectTimer >= objectInterval) {
+                spawnObjects();
+                objectTimer = 0;
+                if (objectInterval > 65) objectInterval -= 2;
             }
 
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                obstacles[i].x -= gameSpeed;
+            // Kiểm tra tương tác với các vật thể
+            for (let i = objects.length - 1; i >= 0; i--) {
+                let obj = objects[i];
+                obj.x -= gameSpeed;
 
                 let pad = 6;
-                let obs = obstacles[i];
-
-                // Kiểm tra va chạm tùy theo loại chướng ngại vật
-                if (obs.type === "middleGap") {
-                    // Va chạm với khối chặn trên (từ y=0 tới obs.y) hoặc khối chặn dưới (từ obs.y + obs.height tới mặt đất)
-                    let hitTopBlock = (player.x + player.size - pad > obs.x && player.x + pad < obs.x + obs.width && player.y + pad < obs.y);
-                    let hitBottomBlock = (player.x + player.size - pad > obs.x && player.x + pad < obs.x + obs.width && player.y + player.size - pad > obs.y + obs.height);
-                    if (hitTopBlock || hitBottomBlock) {
-                        isGameOver = true;
+                // Kiểm tra va chạm theo từng loại
+                if (obj.type === "pit") {
+                    // Nếu nhân vật đang đứng trên mặt đất mà lọt vào khoảng hố sâu
+                    if (player.x + player.size / 2 > obj.x && player.x + player.size / 2 < obj.x + obj.width) {
+                        if (gravityDir === 1 && player.y >= groundLevel) {
+                            isGameOver = true;
+                        }
                     }
-                } else {
-                    // Va chạm thông thường (gai, khối trụ)
+                } else if (obj.type === "pad") {
+                    // Đấm bật nhảy cao khi dẫm phải đệm
                     if (
-                        player.x + pad < obs.x + obs.width - pad &&
-                        player.x + player.size - pad > obs.x + pad &&
-                        player.y + pad < obs.y + obs.height &&
-                        player.y + player.size > obs.y
+                        player.x + player.size - pad > obj.x &&
+                        player.x + pad < obj.x + obj.width &&
+                        player.y + player.size >= obj.y &&
+                        player.y <= obj.y + obj.height
+                    ) {
+                        player.dy = -16.0 * gravityDir;
+                        player.grounded = false;
+                    }
+                } else if (obj.type === "orb") {
+                    // Quả cầu nhảy: nếu nhấn Space/Click lúc chạm gần orb sẽ được đẩy vọt lên
+                    let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
+                    if (dist < 30 && isHolding && !obj.collected) {
+                        obj.collected = true;
+                        player.dy = -14.0 * gravityDir;
+                    }
+                } else if (obj.type === "block") {
+                    // Va chạm khối đá / tường
+                    if (
+                        player.x + player.size - pad > obj.x &&
+                        player.x + pad < obj.x + obj.width &&
+                        player.y + player.size - pad > obj.y &&
+                        player.y + pad < obj.y + obj.height
                     ) {
                         isGameOver = true;
                     }
+                } else if (obj.type === "sawblade") {
+                    obj.rotation += 0.1;
+                    let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
+                    if (dist < player.size/2 + obj.radius - 6) {
+                        isGameOver = true;
+                    }
+                } else if (obj.type === "portal") {
+                    // Cổng dịch chuyển đổi phương tiện
+                    if (
+                        player.x + player.size > obj.x &&
+                        player.x < obj.x + obj.width &&
+                        player.y + player.size > obj.y &&
+                        player.y < obj.y + obj.height
+                    ) {
+                        selectedVehicle = obj.target;
+                        objects.splice(i, 1); // Xóa cổng sau khi đi qua
+                        continue;
+                    }
+                } else if (obj.type === "fakeSpike") {
+                    // Vật cản giả - không gây chết, đi xuyên qua
                 }
 
-                if (obs.x + obs.width < 0) {
-                    obstacles.splice(i, 1);
+                // Xóa vật thể khi trôi ra khỏi màn hình
+                if (obj.x + (obj.width || 40) < 0) {
+                    objects.splice(i, 1);
                     score++;
                     if (score >= winningScore) {
                         isGameWon = true;
@@ -422,6 +430,7 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Vẽ vệt sáng hạt
             for (let p of particleEffects) {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -431,6 +440,7 @@
             }
             ctx.globalAlpha = 1.0;
 
+            // Vẽ mặt đất (có cắt khoảng trống nếu gặp hố)
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -440,7 +450,66 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật
+            // Vẽ các đối tượng/vật cản trong màn chơi
+            for (let obj of objects) {
+                if (obj.type === "pit") {
+                    // Che phần hố sâu bằng màu nền tối
+                    ctx.fillStyle = "#0b132b";
+                    ctx.fillRect(obj.x, 338, obj.width, 65);
+                } else if (obj.type === "pad") {
+                    ctx.fillStyle = "#ff007f";
+                    ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                } else if (obj.type === "orb" && !obj.collected) {
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.beginPath();
+                    ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (obj.type === "block") {
+                    ctx.fillStyle = "#1d3557";
+                    ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+                    ctx.strokeStyle = "#457b9d";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                } else if (obj.type === "sawblade") {
+                    ctx.save();
+                    ctx.translate(obj.x, obj.y);
+                    ctx.rotate(obj.rotation);
+                    ctx.fillStyle = "#888888";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    // Răng cưa
+                    for(let c=0; c<8; c++) {
+                        ctx.rotate(Math.PI / 4);
+                        ctx.fillRect(-3, -obj.radius - 6, 6, 8);
+                    }
+                    ctx.restore();
+                } else if (obj.type === "portal") {
+                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 100, 0.4)" : "rgba(0, 200, 255, 0.4)";
+                    ctx.fillRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
+                } else if (obj.type === "fakeSpike") {
+                    ctx.fillStyle = "rgba(2, 62, 138, 0.4)"; // Mờ hơn để phân biệt vật cản giả
+                    ctx.beginPath();
+                    ctx.moveTo(obj.x, obj.y + obj.height);
+                    ctx.lineTo(obj.x + obj.width / 2, obj.y);
+                    ctx.lineTo(obj.x + obj.width, obj.y + obj.height);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // Vẽ nhân vật (Cube / Ship tùy chọn)
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -456,7 +525,6 @@
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(0, 0, 6, 0, Math.PI * 2);
@@ -473,77 +541,6 @@
                 ctx.fillRect(-4, -4, 8, 8);
             }
             ctx.restore();
-
-            // Vẽ chướng ngại vật
-            for (let obs of obstacles) {
-                if (obs.type === "topSpike") {
-                    // Gai thạch nhũ treo ngược từ trần nhà xuống
-                    ctx.fillStyle = "#023e8a";
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x, 0);
-                    ctx.lineTo(obs.x + obs.width / 2, obs.height);
-                    ctx.lineTo(obs.x + obs.width, 0);
-                    ctx.closePath();
-                    ctx.fill();
-
-                    ctx.fillStyle = "#ffb703";
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x + 4, 0);
-                    ctx.lineTo(obs.x + obs.width / 2, obs.height - 6);
-                    ctx.lineTo(obs.x + obs.width - 4, 0);
-                    ctx.closePath();
-                    ctx.fill();
-
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                } else if (obs.type === "middleGap") {
-                    // Khối chướng ngại vật chia đôi màn hình (chừa khoảng trống ở giữa)
-                    ctx.fillStyle = "#023e8a";
-                    // Phần trên
-                    ctx.fillRect(obs.x, 0, obs.width, obs.y);
-                    // Phần dưới
-                    ctx.fillRect(obs.x, obs.y + obs.height, obs.width, 340 - (obs.y + obs.height));
-
-                    ctx.strokeStyle = "#90e0ef";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(obs.x, 0, obs.width, obs.y);
-                    ctx.strokeRect(obs.x, obs.y + obs.height, obs.width, 340 - (obs.y + obs.height));
-                } else if (obs.type === "singleSpike" || obs.type === "doubleSpike") {
-                    let count = obs.type === "doubleSpike" ? 2 : 1;
-                    let w = 30;
-                    for(let k=0; k<count; k++) {
-                        let curX = obs.x + (k * 30);
-                        ctx.fillStyle = "#023e8a";
-                        ctx.beginPath();
-                        ctx.moveTo(curX, obs.y + obs.height);
-                        ctx.lineTo(curX + w / 2, obs.y);
-                        ctx.lineTo(curX + w, obs.y + obs.height);
-                        ctx.closePath();
-                        ctx.fill();
-
-                        ctx.fillStyle = "#ffb703";
-                        ctx.beginPath();
-                        ctx.moveTo(curX + 4, obs.y + obs.height);
-                        ctx.lineTo(curX + w / 2, obs.y + 6);
-                        ctx.lineTo(curX + w - 4, obs.y + obs.height);
-                        ctx.closePath();
-                        ctx.fill();
-
-                        ctx.strokeStyle = "#ffffff";
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    }
-                } else {
-                    ctx.fillStyle = "#023e8a";
-                    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-                    ctx.strokeStyle = "#90e0ef";
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
-                    ctx.fillStyle = "#90e0ef";
-                    ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
-                }
-            }
 
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px Arial";
