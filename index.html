@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Full UI Edition</title>
+    <title>Geometry Dash - Click to Restart Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -159,10 +159,10 @@
 </head>
 <body>
 
-    <!-- 1. GIAO DIỆN TRANG CHỦ (MAIN MENU) -->
+    <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #a8dadc; margin-bottom: 25px;">Phiên bản cải tiến độc lập & Chướng ngại trên không</p>
+        <p style="color: #a8dadc; margin-bottom: 25px;">Bản hoàn chỉnh: Click vào màn hình để chơi lại khi chết</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
@@ -170,15 +170,15 @@
         </div>
     </div>
 
-    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI / BẮT ĐẦU -->
+    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Độ khó: Thử thách cân bằng với mật độ dày trên không</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Thử thách độc lập & Gai trần dày đặc cho Ball/Ship</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
-    <!-- 3. GIAO DIỆN GARAGE (CHỌN XE & MÀU SẮC) -->
+    <!-- 3. GIAO DIỆN GARAGE -->
     <div id="garageScreen" class="screen menu-box hidden">
         <h2>CỬA HÀNG XE & MÀU SẮC</h2>
         
@@ -211,17 +211,16 @@
     <div id="helpScreen" class="screen menu-box hidden">
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
-            • <b>Phím Space / Click chuột:</b> Nhảy, bay lên hoặc tương tác với quả cầu.<br>
-            • <b>Chế độ Máy bay/Jetpack:</b> Giữ chuột/phím để bay lên, nhả ra để hạ xuống.<br>
-            • <b>Chướng ngại vật:</b> Bao gồm hố sâu, đệm nhảy, tường đá, bánh răng cưa và đặc biệt là <b>gai treo ngược trên trần nhà</b>.<br>
-            • <b>Mục tiêu:</b> Vượt qua đủ 40 điểm để chiến thắng màn chơi!
+            • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
+            • <b>Khi thua/thắng:</b> Chỉ cần click trực tiếp vào màn hình game hoặc bấm Space để chơi lại ngay lập tức.<br>
+            • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
     </div>
 
     <!-- 5. MÀN HÌNH CHƠI GAME CANVAS -->
     <div id="gameScreen" class="screen hidden">
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <canvas id="gameCanvas" width="800" height="400"></canvas><br>
         <button class="ui-btn btn-back" style="margin-top: 10px; width: 150px; font-size: 14px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
     </div>
 
@@ -298,26 +297,14 @@
         }
 
         window.addEventListener("keydown", e => {
-            if (e.code === "Space" && gameState === "PLAYING") {
+            if (e.code === "Space") {
                 e.preventDefault();
-                isHolding = true;
                 handleAction();
             }
-        });
-
-        window.addEventListener("keyup", e => {
-            if (e.code === "Space") isHolding = false;
         });
 
         canvas.addEventListener("mousedown", () => {
-            if (gameState === "PLAYING") {
-                isHolding = true;
-                handleAction();
-            }
-        });
-
-        canvas.addEventListener("mouseup", () => {
-            isHolding = false;
+            handleAction();
         });
 
         function handleAction() {
@@ -327,16 +314,24 @@
                 return;
             }
 
-            if (config.vehicle === "cube" && player.grounded) {
-                player.dy = -13.0 * gravityDir;
-                player.grounded = false;
-            } else if (config.vehicle === "ufo") {
-                player.dy = -9.0 * gravityDir;
-            } else if (config.vehicle === "ball") {
-                gravityDir *= -1;
-                player.dy = -5.0 * gravityDir;
+            if (gameState === "PLAYING") {
+                isHolding = true;
+                if (config.vehicle === "cube" && player.grounded) {
+                    player.dy = -13.0 * gravityDir;
+                    player.grounded = false;
+                } else if (config.vehicle === "ufo") {
+                    player.dy = -9.0 * gravityDir;
+                } else if (config.vehicle === "ball" && player.grounded) {
+                    gravityDir *= -1;
+                    player.dy = -5.0 * gravityDir;
+                    player.grounded = false;
+                }
             }
         }
+
+        window.addEventListener("mouseup", () => {
+            isHolding = false;
+        });
 
         function resetGame() {
             objects = [];
@@ -349,6 +344,7 @@
             player.dy = 0;
             player.rotation = 0;
             player.grounded = false;
+            isHolding = false;
         }
 
         function spawnSingleObject() {
@@ -364,6 +360,17 @@
                     objects.push({ type: "orb", x: x, y: Math.random() * 200 + 70, radius: 14, collected: false });
                 } else {
                     let targetVeh = Math.random() > 0.5 ? "cube" : "ship";
+                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
+                }
+            } else if (config.vehicle === "ball") {
+                if (rand < 0.50) {
+                    objects.push({ type: "topSpike", x: x, width: 32, height: Math.random() * 60 + 35, y: 0 });
+                } else if (rand < 0.75) {
+                    objects.push({ type: "pit", x: x, width: 65, height: 60, y: 340 });
+                } else if (rand < 0.90) {
+                    objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 80, radius: 18, rotation: 0 });
+                } else {
+                    let targetVeh = Math.random() > 0.5 ? "cube" : "ball";
                     objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
                 }
             } else {
@@ -443,7 +450,7 @@
 
             if (onGround) {
                 player.grounded = true;
-                if (config.vehicle === "cube") {
+                if (config.vehicle === "cube" || config.vehicle === "ball") {
                     player.rotation = Math.round(player.rotation / 90) * 90;
                 }
             } else {
@@ -623,6 +630,18 @@
                 ctx.beginPath();
                 ctx.arc(0, 0, 5, 0, Math.PI * 2);
                 ctx.fill();
+            } else if (config.vehicle === "ball") {
+                ctx.fillStyle = config.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.fillStyle = "#fff";
+                ctx.beginPath();
+                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.fill();
             } else {
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
@@ -651,7 +670,7 @@
                 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px 'Segoe UI'";
-                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.fillText("Click vào màn hình hoặc bấm Space để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
                 ctx.textAlign = "left";
             }
         }
