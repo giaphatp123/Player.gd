@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Dense Air Traps</title>
+    <title>Geometry Dash - Complete Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -197,9 +197,10 @@
         let gravityDir = 1;
         let score = 0;
         let objectTimer = 0;
-        let objectInterval = 75; // Rút ngắn khoảng cách xuất hiện để bẫy trên không dày đặc hơn
+        let objectInterval = 75;
         let gameState = "MENU";
 
+        // Xử lý chọn loại xe
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#shapeOptions .btn-option").forEach(b => b.classList.remove("selected"));
@@ -208,6 +209,7 @@
             });
         });
 
+        // Xử lý chọn màu
         document.querySelectorAll("#colorOptions .color-circle").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#colorOptions .color-circle").forEach(b => b.classList.remove("selected"));
@@ -224,6 +226,7 @@
             requestAnimationFrame(loop);
         }
 
+        // Lắng nghe sự kiện bàn phím & chuột
         window.addEventListener("keydown", e => {
             if (e.code === "Space") {
                 e.preventDefault();
@@ -276,13 +279,12 @@
             player.grounded = false;
         }
 
-        // TĂNG TẬN SUẤT BẪY ĐƠN LẺ TRÊN KHÔNG
+        // Sinh chướng ngại vật độc lập, riêng lẻ (mật độ trên không dày đặc khi chọn Ship/Jetpack)
         function spawnSingleObject() {
             const rand = Math.random();
             let x = canvas.width;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
-                // Tăng cao tỷ lệ xuất hiện bẫy trên không (cưa lơ lửng, khối đá trên không, quả cầu)
                 if (rand < 0.45) {
                     objects.push({ type: "sawblade", x: x, y: Math.random() * 240 + 40, radius: 18, rotation: 0 });
                 } else if (rand < 0.70) {
@@ -294,7 +296,6 @@
                     objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
                 }
             } else {
-                // Phân bổ tiêu chuẩn cho các dạng khác
                 if (rand < 0.20) {
                     objects.push({ type: "pit", x: x, width: 70, height: 60, y: 340 });
                 } else if (rand < 0.38) {
@@ -315,6 +316,7 @@
         function update() {
             if (gameState !== "PLAYING") return;
 
+            // Vật lý phương tiện
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 if (isHolding) {
                     player.dy -= 0.55 * gravityDir;
@@ -347,10 +349,12 @@
                 onGround = true;
             }
 
+            // Giới hạn trần: bay quá cao (-100) mới tính thua
             if (player.y < -100) {
                 gameState = "GAMEOVER";
             }
 
+            // Tạo hiệu ứng hạt vệt sáng
             if (Math.random() < 0.4) {
                 particles.push({
                     x: player.x,
@@ -385,6 +389,7 @@
                 if (objectInterval > 50) objectInterval -= 2;
             }
 
+            // Kiểm tra va chạm vật thể
             for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
                 obj.x -= config.speed;
@@ -438,6 +443,7 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Vẽ hiệu ứng hạt
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -447,6 +453,7 @@
             });
             ctx.globalAlpha = 1.0;
 
+            // Vẽ mặt đất
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -456,6 +463,7 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
+            // Vẽ các đối tượng
             objects.forEach(obj => {
                 if (obj.type === "pit") {
                     ctx.fillStyle = "#03045e";
@@ -504,6 +512,7 @@
                 }
             });
 
+            // Vẽ nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -536,10 +545,12 @@
             }
             ctx.restore();
 
+            // Hiển thị thanh tiến trình
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 18px 'Segoe UI'";
             ctx.fillText(`Progress: ${score} / ${config.winningScore}`, 20, 30);
 
+            // Màn hình kết quả (Game Over / Thắng)
             if (gameState === "GAMEOVER" || gameState === "WON") {
                 ctx.fillStyle = "rgba(5, 8, 20, 0.85)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
