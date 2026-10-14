@@ -175,7 +175,6 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Cấu hình trạng thái trò chơi
         let config = {
             vehicle: "cube",
             color: "#00ffcc",
@@ -195,13 +194,12 @@
         let objects = [];
         let particles = [];
         let isHolding = false;
-        let gravityDir = 1; // 1: Bình thường, -1: Đảo trọng lực
+        let gravityDir = 1;
         let score = 0;
         let objectTimer = 0;
         let objectInterval = 90;
-        let gameState = "MENU"; // MENU, PLAYING, GAMEOVER, WON
+        let gameState = "MENU";
 
-        // Sự kiện chọn xe
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#shapeOptions .btn-option").forEach(b => b.classList.remove("selected"));
@@ -210,7 +208,6 @@
             });
         });
 
-        // Sự kiện chọn màu
         document.querySelectorAll("#colorOptions .color-circle").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#colorOptions .color-circle").forEach(b => b.classList.remove("selected"));
@@ -227,7 +224,6 @@
             requestAnimationFrame(loop);
         }
 
-        // Lắng nghe điều khiển (Phím Space / Chuột)
         window.addEventListener("keydown", e => {
             if (e.code === "Space") {
                 e.preventDefault();
@@ -280,7 +276,6 @@
             player.grounded = false;
         }
 
-        // Sinh vật cản và công cụ phong phú
         function spawnObject() {
             const rand = Math.random();
             let x = canvas.width;
@@ -303,11 +298,9 @@
             }
         }
 
-        // Cập nhật logic trò chơi
         function update() {
             if (gameState !== "PLAYING") return;
 
-            // Vật lý phương tiện
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 if (isHolding) {
                     player.dy -= 0.55 * gravityDir;
@@ -340,7 +333,11 @@
                 onGround = true;
             }
 
-            // Hiệu ứng hạt mượt mà
+            // Kiểm tra nếu người chơi bay quá cao (vượt qua trần canvas)
+            if (player.y < 0) {
+                gameState = "GAMEOVER";
+            }
+
             if (Math.random() < 0.4) {
                 particles.push({
                     x: player.x,
@@ -368,7 +365,6 @@
                 player.grounded = false;
             }
 
-            // Quản lý sinh vật cản
             objectTimer++;
             if (objectTimer >= objectInterval) {
                 spawnObject();
@@ -376,7 +372,6 @@
                 if (objectInterval > 55) objectInterval -= 2;
             }
 
-            // Kiểm tra va chạm & xử lý objects
             for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
                 obj.x -= config.speed;
@@ -427,11 +422,9 @@
             }
         }
 
-        // Vẽ đồ họa lên Canvas
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Vẽ hiệu ứng hạt
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -441,7 +434,6 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Vẽ mặt đất
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -451,7 +443,6 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ đối tượng / chướng ngại vật
             objects.forEach(obj => {
                 if (obj.type === "pit") {
                     ctx.fillStyle = "#03045e";
@@ -508,7 +499,6 @@
                 }
             });
 
-            // Vẽ nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -541,12 +531,10 @@
             }
             ctx.restore();
 
-            // Hiển thị Tiến trình (Progress Bar)
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 18px 'Segoe UI'";
             ctx.fillText(`Progress: ${score} / ${config.winningScore}`, 20, 30);
 
-            // Màn hình Game Over / Thắng cuộc
             if (gameState === "GAMEOVER" || gameState === "WON") {
                 ctx.fillStyle = "rgba(5, 8, 20, 0.85)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
