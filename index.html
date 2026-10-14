@@ -242,21 +242,45 @@
             const rand = Math.random();
             let obs = { x: canvas.width };
 
-            if (rand < 0.35) {
-                obs.type = "singleSpike";
-                obs.width = 30;
-                obs.height = 35;
-                obs.y = 310;
-            } else if (rand < 0.6) {
-                obs.type = "doubleSpike";
-                obs.width = 60;
-                obs.height = 35;
-                obs.y = 310;
+            // Nếu chọn máy bay hoặc jetpack, thêm chướng ngại vật treo trên không (ceiling obstacle) hoặc khe hẹp
+            if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
+                if (rand < 0.3) {
+                    // Gai đơn dưới đất
+                    obs.type = "singleSpike";
+                    obs.width = 30;
+                    obs.height = 35;
+                    obs.y = 310;
+                } else if (rand < 0.6) {
+                    // Chướng ngại vật treo trên trần nhà
+                    obs.type = "topSpike";
+                    obs.width = 40;
+                    obs.height = 70;
+                    obs.y = 0;
+                } else {
+                    // Khe hẹp ở giữa màn hình (thanh chắn trên và dưới)
+                    obs.type = "middleGap";
+                    obs.width = 50;
+                    obs.height = 130; // độ cao khe hở
+                    obs.y = 100;    // vị trí khe hở cách top 100px
+                }
             } else {
-                obs.type = "stairsPlatform";
-                obs.width = 110;
-                obs.height = 25;
-                obs.y = 270;
+                // Chướng ngại vật mặc định cho Cube
+                if (rand < 0.35) {
+                    obs.type = "singleSpike";
+                    obs.width = 30;
+                    obs.height = 35;
+                    obs.y = 310;
+                } else if (rand < 0.6) {
+                    obs.type = "doubleSpike";
+                    obs.width = 60;
+                    obs.height = 35;
+                    obs.y = 310;
+                } else {
+                    obs.type = "stairsPlatform";
+                    obs.width = 110;
+                    obs.height = 25;
+                    obs.y = 270;
+                }
             }
             obstacles.push(obs);
         }
@@ -264,16 +288,16 @@
         function update() {
             if (isGameOver || isGameWon) return;
 
-            // Vật lý theo phương tiện (Đã chỉnh sửa cho Ship và Jetpack)
+            // Vật lý theo phương tiện
             if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
                 if (isHolding) {
-                    player.dy -= 0.55; // Lực đẩy lên khi giữ chuột/Space
+                    player.dy -= 0.55;
                 } else {
-                    player.dy += 0.55; // Lực trọng trường kéo xuống khi thả
+                    player.dy += 0.55;
                 }
                 player.dy = Math.max(-7.5, Math.min(7.5, player.dy));
                 player.y += player.dy;
-                player.rotation = player.dy * 4; // Quay đầu máy bay theo hướng di chuyển
+                player.rotation = player.dy * 4;
             } else if (selectedVehicle === "wave") {
                 if (isHolding) {
                     player.dy = -6.5;
@@ -358,16 +382,29 @@
                 obstacles[i].x -= gameSpeed;
 
                 let pad = 6;
-                if (
-                    player.x + pad < obstacles[i].x + obstacles[i].width - pad &&
-                    player.x + player.size - pad > obstacles[i].x + pad &&
-                    player.y + pad < obstacles[i].y + obstacles[i].height &&
-                    player.y + player.size > obstacles[i].y
-                ) {
-                    isGameOver = true;
+                let obs = obstacles[i];
+
+                // Kiểm tra va chạm tùy theo loại chướng ngại vật
+                if (obs.type === "middleGap") {
+                    // Va chạm với khối chặn trên (từ y=0 tới obs.y) hoặc khối chặn dưới (từ obs.y + obs.height tới mặt đất)
+                    let hitTopBlock = (player.x + player.size - pad > obs.x && player.x + pad < obs.x + obs.width && player.y + pad < obs.y);
+                    let hitBottomBlock = (player.x + player.size - pad > obs.x && player.x + pad < obs.x + obs.width && player.y + player.size - pad > obs.y + obs.height);
+                    if (hitTopBlock || hitBottomBlock) {
+                        isGameOver = true;
+                    }
+                } else {
+                    // Va chạm thông thường (gai, khối trụ)
+                    if (
+                        player.x + pad < obs.x + obs.width - pad &&
+                        player.x + player.size - pad > obs.x + pad &&
+                        player.y + pad < obs.y + obs.height &&
+                        player.y + player.size > obs.y
+                    ) {
+                        isGameOver = true;
+                    }
                 }
 
-                if (obstacles[i].x + obstacles[i].width < 0) {
+                if (obs.x + obs.width < 0) {
                     obstacles.splice(i, 1);
                     score++;
                     if (score >= winningScore) {
@@ -403,13 +440,12 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật (Tùy chỉnh hiển thị riêng cho Ship / Máy bay)
+            // Vẽ nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
             if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
-                // Vẽ hình máy bay (Ship)
                 ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.moveTo(-16, -10);
@@ -421,13 +457,11 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Lõi buồng lái
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(0, 0, 6, 0, Math.PI * 2);
                 ctx.fill();
             } else {
-                // Mặc định dạng khối (Cube)
                 ctx.fillStyle = selectedColor;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 ctx.strokeStyle = "#ffffff";
@@ -442,7 +476,40 @@
 
             // Vẽ chướng ngại vật
             for (let obs of obstacles) {
-                if (obs.type === "singleSpike" || obs.type === "doubleSpike") {
+                if (obs.type === "topSpike") {
+                    // Gai thạch nhũ treo ngược từ trần nhà xuống
+                    ctx.fillStyle = "#023e8a";
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x, 0);
+                    ctx.lineTo(obs.x + obs.width / 2, obs.height);
+                    ctx.lineTo(obs.x + obs.width, 0);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = "#ffb703";
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 4, 0);
+                    ctx.lineTo(obs.x + obs.width / 2, obs.height - 6);
+                    ctx.lineTo(obs.x + obs.width - 4, 0);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (obs.type === "middleGap") {
+                    // Khối chướng ngại vật chia đôi màn hình (chừa khoảng trống ở giữa)
+                    ctx.fillStyle = "#023e8a";
+                    // Phần trên
+                    ctx.fillRect(obs.x, 0, obs.width, obs.y);
+                    // Phần dưới
+                    ctx.fillRect(obs.x, obs.y + obs.height, obs.width, 340 - (obs.y + obs.height));
+
+                    ctx.strokeStyle = "#90e0ef";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(obs.x, 0, obs.width, obs.y);
+                    ctx.strokeRect(obs.x, obs.y + obs.height, obs.width, 340 - (obs.y + obs.height));
+                } else if (obs.type === "singleSpike" || obs.type === "doubleSpike") {
                     let count = obs.type === "doubleSpike" ? 2 : 1;
                     let w = 30;
                     for(let k=0; k<count; k++) {
