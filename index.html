@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Back on Track (Original Jump Physics)</title>
+    <title>Geometry Dash - Custom Shapes & Backgrounds</title>
     <style>
         body {
             margin: 0;
@@ -29,22 +29,22 @@
         canvas {
             border: 4px solid #48cae4;
             box-shadow: 0 0 25px rgba(72, 202, 228, 0.4);
-            background: linear-gradient(to bottom, #03045e, #0077b6);
         }
         .menu-box {
             background: #1d3557;
-            padding: 30px;
+            padding: 25px 35px;
             border-radius: 12px;
             border: 2px solid #457b9d;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 500px;
         }
-        h1 { margin-bottom: 20px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); }
-        h3 { margin: 15px 0 10px 0; color: #a8dadc; }
+        h1 { margin-bottom: 15px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); font-size: 26px; }
+        h3 { margin: 12px 0 8px 0; color: #a8dadc; font-size: 16px; }
         .options-container {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .btn-option {
             width: 45px;
@@ -53,6 +53,12 @@
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
         }
         .btn-option:hover {
             transform: scale(1.1);
@@ -80,16 +86,31 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN SKIN -->
+    <!-- MÀN HÌNH CHỌN TÙY CHỈNH -->
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK</h1>
         
-        <h3>Chọn Màu Nhân Vật:</h3>
-        <div class="options-container" id="skinOptions">
-            <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc" title="Xanh ngọc"></div>
-            <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366" title="Đỏ hồng"></div>
-            <div class="btn-option" style="background-color: #ffcc00;" data-color="#ffcc00" title="Vàng chanh"></div>
-            <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
+        <h3>Chọn Hình Thù Nhân Vật:</h3>
+        <div class="options-container" id="shapeOptions">
+            <div class="btn-option selected" style="background-color: #2b2b3d;" data-shape="cube" title="Khối Vuông Cổ Điển">🟦</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="angel" title="Khối Thiên Thần (Có cánh)">👼</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="ball" title="Quả Cầu Năng Lượng">🔮</div>
+            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="superhero" title="Siêu Nhân Phi Thuyền">🦸</div>
+        </div>
+
+        <h3>Chọn Màu Chủ Đạo:</h3>
+        <div class="options-container" id="colorOptions">
+            <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
+            <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366"></div>
+            <div class="btn-option" style="background-color: #ffcc00;" data-color="#ffcc00"></div>
+            <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff"></div>
+        </div>
+
+        <h3>Chọn Màu Không Gian (Background):</h3>
+        <div class="options-container" id="bgOptions">
+            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Đại dương xanh">🌊</div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #4a0e4e, #000000);" data-bg="darkspace" title="Vũ trụ huyền bí">🌌</div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #833ab4, #fd1d1d);" data-bg="sunset" title="Hoàng hôn lửa">🌅</div>
         </div>
 
         <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
@@ -106,13 +127,31 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
+        let selectedPlayerShape = "cube";
         let selectedPlayerColor = "#00ffcc";
+        let selectedBgType = "ocean";
 
-        document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
+        document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
-                document.querySelectorAll("#skinOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                document.querySelectorAll("#shapeOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+                selectedPlayerShape = this.getAttribute("data-shape");
+            });
+        });
+
+        document.querySelectorAll("#colorOptions .btn-option").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll("#colorOptions .btn-option").forEach(b => b.classList.remove("selected"));
                 this.classList.add("selected");
                 selectedPlayerColor = this.getAttribute("data-color");
+            });
+        });
+
+        document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+                selectedBgType = this.getAttribute("data-bg");
             });
         });
 
@@ -121,8 +160,8 @@
             y: 250,
             size: 32,
             dy: 0,
-            jumpPower: -13.5, // Tăng tốc độ bật nhảy mạnh và dứt khoát hơn giống bản gốc
-            gravity: 0.85,    // Tăng trọng lực để nhân vật rơi xuống nhanh, không bị lơ lửng
+            jumpPower: -13.5,
+            gravity: 0.85,
             grounded: false,
             rotation: 0
         };
@@ -130,7 +169,7 @@
         let obstacles = [];
         let obstacleTimer = 0;
         let obstacleInterval = 90;
-        let gameSpeed = 6.2; // Tốc độ di chuyển tổng thể mượt và nhanh hơn
+        let gameSpeed = 6.2;
         let score = 0;
         let winningScore = 30;
         let isGameOver = false;
@@ -250,7 +289,7 @@
                 player.rotation = Math.round(player.rotation / 90) * 90;
             } else {
                 player.grounded = false;
-                player.rotation += 12; // Tốc độ xoay trên không nhanh hơn tương ứng với tốc độ game
+                player.rotation += 12;
             }
 
             obstacleTimer++;
@@ -288,8 +327,16 @@
 
         function drawBackground() {
             let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, "#03045e");
-            gradient.addColorStop(1, "#0077b6");
+            if (selectedBgType === "ocean") {
+                gradient.addColorStop(0, "#03045e");
+                gradient.addColorStop(1, "#0077b6");
+            } else if (selectedBgType === "darkspace") {
+                gradient.addColorStop(0, "#4a0e4e");
+                gradient.addColorStop(1, "#000000");
+            } else if (selectedBgType === "sunset") {
+                gradient.addColorStop(0, "#833ab4");
+                gradient.addColorStop(1, "#fd1d1d");
+            }
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
@@ -321,6 +368,76 @@
             ctx.stroke();
         }
 
+        function drawPlayer() {
+            ctx.save();
+            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
+            ctx.rotate((player.rotation * Math.PI) / 180);
+
+            if (selectedPlayerShape === "cube") {
+                // Khối vuông cổ điển
+                ctx.fillStyle = selectedPlayerColor;
+                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(-8, -8, 16, 16);
+                ctx.fillStyle = selectedPlayerColor;
+                ctx.fillRect(-4, -4, 8, 8);
+            } 
+            else if (selectedPlayerShape === "angel") {
+                // Khối thiên thần (Có đôi cánh trắng hai bên)
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(-player.size / 2 - 10, -8, 10, 16); // Cánh trái
+                ctx.fillRect(player.size / 2, -8, 10, 16);    // Cánh phải
+
+                ctx.fillStyle = selectedPlayerColor;
+                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                
+                // Vòng hào quang thiên thần phía trên
+                ctx.strokeStyle = "#ffeb3b";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, -player.size / 2 - 6, 8, 0, Math.PI * 2);
+                ctx.stroke();
+            } 
+            else if (selectedPlayerShape === "ball") {
+                // Quả cầu năng lượng tròn
+                ctx.fillStyle = selectedPlayerColor;
+                ctx.beginPath();
+                ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Tâm quả cầu
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (selectedPlayerShape === "superhero") {
+                // Siêu nhân phi thuyền (Hình tam giác/mũi tên nhọn)
+                ctx.fillStyle = selectedPlayerColor;
+                ctx.beginPath();
+                ctx.moveTo(player.size / 2, 0);
+                ctx.lineTo(-player.size / 2, -player.size / 2);
+                ctx.lineTo(-player.size / 4, 0);
+                ctx.lineTo(-player.size / 2, player.size / 2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
         function draw() {
             drawBackground();
 
@@ -334,23 +451,8 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Nhân vật
-            ctx.save();
-            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
-            ctx.rotate((player.rotation * Math.PI) / 180);
-            
-            ctx.fillStyle = selectedPlayerColor;
-            ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(-8, -8, 16, 16);
-            ctx.fillStyle = selectedPlayerColor;
-            ctx.fillRect(-4, -4, 8, 8);
-            ctx.restore();
+            // Vẽ nhân vật tùy chỉnh hình thù
+            drawPlayer();
 
             // Chướng ngại vật & bệ platform
             for (let obs of obstacles) {
@@ -406,7 +508,7 @@
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px Arial";
-                ctx.fillText("Chúc mừng bạn đã hoàn thành Back on Track!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Chúc mừng bạn đã hoàn thành màn chơi!", canvas.width / 2, canvas.height / 2 + 20);
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
