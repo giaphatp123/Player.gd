@@ -187,7 +187,6 @@
             }
         }
 
-        // Lắng nghe sự kiện bàn phím và chuột trực quan an toàn
         window.addEventListener("keydown", function(e) {
             if (e.code === "Space") {
                 e.preventDefault();
@@ -265,16 +264,16 @@
         function update() {
             if (isGameOver || isGameWon) return;
 
-            // Vật lý theo phương tiện
+            // Vật lý theo phương tiện (Đã chỉnh sửa cho Ship và Jetpack)
             if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
                 if (isHolding) {
-                    player.dy -= 0.6;
+                    player.dy -= 0.55; // Lực đẩy lên khi giữ chuột/Space
                 } else {
-                    player.dy += 0.6;
+                    player.dy += 0.55; // Lực trọng trường kéo xuống khi thả
                 }
-                player.dy = Math.max(-8, Math.min(8, player.dy));
+                player.dy = Math.max(-7.5, Math.min(7.5, player.dy));
                 player.y += player.dy;
-                player.rotation = player.dy * 4;
+                player.rotation = player.dy * 4; // Quay đầu máy bay theo hướng di chuyển
             } else if (selectedVehicle === "wave") {
                 if (isHolding) {
                     player.dy = -6.5;
@@ -404,26 +403,48 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật
+            // Vẽ nhân vật (Tùy chỉnh hiển thị riêng cho Ship / Máy bay)
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
-            ctx.fillStyle = selectedColor;
-            ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(-8, -8, 16, 16);
-            ctx.fillStyle = selectedColor;
-            ctx.fillRect(-4, -4, 8, 8);
+
+            if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
+                // Vẽ hình máy bay (Ship)
+                ctx.fillStyle = selectedColor;
+                ctx.beginPath();
+                ctx.moveTo(-16, -10);
+                ctx.lineTo(16, 0);
+                ctx.lineTo(-16, 10);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Lõi buồng lái
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Mặc định dạng khối (Cube)
+                ctx.fillStyle = selectedColor;
+                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(-8, -8, 16, 16);
+                ctx.fillStyle = selectedColor;
+                ctx.fillRect(-4, -4, 8, 8);
+            }
             ctx.restore();
 
             // Vẽ chướng ngại vật
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike" || obs.type === "doubleSpike") {
                     let count = obs.type === "doubleSpike" ? 2 : 1;
-                    let w = obs.type === "doubleSpike" ? 30 : 30;
+                    let w = 30;
                     for(let k=0; k<count; k++) {
                         let curX = obs.x + (k * 30);
                         ctx.fillStyle = "#023e8a";
