@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Back on Track Style</title>
+    <title>Geometry Dash - Single Level</title>
     <style>
         body {
             margin: 0;
@@ -80,7 +80,7 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN SKIN & BACKGROUND -->
+    <!-- MÀN HÌNH CHỌN SKIN & MÀU SẮC TRƯỚC KHI VÀO MÀN CHƠI -->
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK</h1>
         
@@ -92,17 +92,16 @@
             <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
         </div>
 
-        <h3>Chọn Màu Không Gian (Background):</h3>
+        <h3>Chọn Màu Không Gian:</h3>
         <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh Back on Track"></div>
+            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh biển"></div>
             <div class="btn-option" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #990000, #ff6600);" data-bg="sunset" title="Hoàng hôn lửa"></div>
         </div>
 
-        <button class="start-btn" onclick="startGame()">BẮT ĐẦU CHƠI</button>
+        <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
     </div>
 
-    <!-- MÀN HÌNH CHƠI GAME -->
+    <!-- MÀN HÌNH CHƠI MỘT MÀN DUY NHẤT -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
     </div>
@@ -148,7 +147,7 @@
         let obstacleInterval = 100;
         let gameSpeed = 5.8;
         let score = 0;
-        let winningScore = 40; // Màn chơi dài và đậm chất Back on Track hơn
+        let winningScore = 30; // Mốc điểm hoàn thành màn chơi duy nhất này
         let isGameOver = false;
         let isGameWon = false;
         let gameRunning = false;
@@ -198,29 +197,21 @@
             const rand = Math.random();
             let obs = { x: canvas.width };
 
-            // Phong cách Back on Track tập trung vào các bệ nhảy cao (platforms) và gai đơn/gai đôi đan xen
-            if (rand < 0.25) {
+            if (rand < 0.3) {
                 obs.type = "singleSpike";
                 obs.width = 30;
                 obs.height = 35;
                 obs.y = 310;
-            } else if (rand < 0.45) {
+            } else if (rand < 0.55) {
                 obs.type = "doubleSpike";
                 obs.width = 60;
                 obs.height = 35;
                 obs.y = 310;
-            } else if (rand < 0.70) {
-                // Bệ bậc thang đặc trưng của Back on Track (giúp nhân vật leo lên cao)
+            } else {
                 obs.type = "stairsPlatform";
                 obs.width = 110;
                 obs.height = 25;
                 obs.y = 275;
-            } else {
-                // Bệ cao vượt cấp kết hợp gai bên dưới
-                obs.type = "highPlatform";
-                obs.width = 90;
-                obs.height = 55;
-                obs.y = 255;
             }
 
             obstacles.push(obs);
@@ -241,9 +232,8 @@
                 onGround = true;
             }
 
-            // Kiểm tra va chạm và tiếp đất trên các bệ platform
             for (let obs of obstacles) {
-                if (obs.type === "stairsPlatform" || obs.type === "highPlatform") {
+                if (obs.type === "stairsPlatform") {
                     if (
                         player.x + player.size > obs.x &&
                         player.x < obs.x + obs.width &&
@@ -256,7 +246,6 @@
                         onGround = true;
                     }
 
-                    // Va chạm sườn bệ
                     let padding = 4;
                     if (
                         player.x + player.size - padding > obs.x &&
@@ -317,12 +306,9 @@
             if (selectedBgType === "ocean") {
                 gradient.addColorStop(0, "#03045e");
                 gradient.addColorStop(1, "#0077b6");
-            } else if (selectedBgType === "space") {
+            } else {
                 gradient.addColorStop(0, "#1e1e3f");
                 gradient.addColorStop(1, "#3b2d54");
-            } else if (selectedBgType === "sunset") {
-                gradient.addColorStop(0, "#990000");
-                gradient.addColorStop(1, "#ff6600");
             }
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -337,7 +323,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#ffb703"; // Viền sáng vàng đặc trưng của Back on Track
+            ctx.fillStyle = "#ffb703";
             ctx.beginPath();
             ctx.moveTo(x + 3, y + h);
             ctx.lineTo(x + w / 2, y + 5);
@@ -358,7 +344,7 @@
         function draw() {
             drawBackground();
 
-            // Vẽ đường nền đất màu xanh đậm phong cách Back on Track
+            // Mặt đất
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -368,7 +354,7 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật
+            // Nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -384,7 +370,7 @@
             ctx.fillRect(-6, -6, 12, 12);
             ctx.restore();
 
-            // Vẽ chướng ngại vật & bệ platform
+            // Chướng ngại vật
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
@@ -393,25 +379,24 @@
                     drawSpike(obs.x, obs.y, 30, obs.height);
                     drawSpike(obs.x + 30, obs.y, 30, obs.height);
                 } 
-                else if (obs.type === "stairsPlatform" || obs.type === "highPlatform") {
+                else if (obs.type === "stairsPlatform") {
                     ctx.fillStyle = "#023e8a";
                     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
                     ctx.strokeStyle = "#90e0ef";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
 
-                    // Đường viền sáng trang trí trên bệ
                     ctx.fillStyle = "#90e0ef";
                     ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
                 }
             }
 
-            // Điểm số
+            // Thanh tiến độ điểm số
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px Arial";
-            ctx.fillText("Score: " + score + " / " + winningScore, 20, 30);
+            ctx.fillText("Progress: " + score + " / " + winningScore, 20, 30);
 
-            // Màn hình Game Over
+            // Màn hình Thua
             if (isGameOver) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -427,7 +412,7 @@
                 ctx.textAlign = "left";
             }
 
-            // Màn hình Chiến thắng
+            // Màn hình Thắng cuộc
             if (isGameWon) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -439,7 +424,7 @@
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px Arial";
-                ctx.fillText("Bạn đã hoàn thành màn Back on Track thành công!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Chúc mừng bạn đã vượt qua màn chơi!", canvas.width / 2, canvas.height / 2 + 20);
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
