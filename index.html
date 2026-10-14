@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Single Level</title>
+    <title>Geometry Dash - Back on Track Authentic</title>
     <style>
         body {
             margin: 0;
@@ -80,11 +80,11 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN SKIN & MÀU SẮC TRƯỚC KHI VÀO MÀN CHƠI -->
+    <!-- MÀN HÌNH CHỌN SKIN -->
     <div id="menuScreen" class="screen menu-box">
         <h1>BACK ON TRACK</h1>
         
-        <h3>Chọn Skin Nhân Vật:</h3>
+        <h3>Chọn Màu Nhân Vật:</h3>
         <div class="options-container" id="skinOptions">
             <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc" title="Xanh ngọc"></div>
             <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366" title="Đỏ hồng"></div>
@@ -92,16 +92,10 @@
             <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
         </div>
 
-        <h3>Chọn Màu Không Gian:</h3>
-        <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh biển"></div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
-        </div>
-
         <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
     </div>
 
-    <!-- MÀN HÌNH CHƠI MỘT MÀN DUY NHẤT -->
+    <!-- MÀN HÌNH CHƠI -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
     </div>
@@ -113,7 +107,6 @@
         const ctx = canvas.getContext("2d");
 
         let selectedPlayerColor = "#00ffcc";
-        let selectedBgType = "ocean";
 
         document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -123,18 +116,10 @@
             });
         });
 
-        document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
-            btn.addEventListener("click", function() {
-                document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                selectedBgType = this.getAttribute("data-bg");
-            });
-        });
-
         let player = {
             x: 100,
             y: 250,
-            size: 30,
+            size: 32,
             dy: 0,
             jumpPower: -11.5,
             gravity: 0.65,
@@ -147,7 +132,7 @@
         let obstacleInterval = 100;
         let gameSpeed = 5.8;
         let score = 0;
-        let winningScore = 30; // Mốc điểm hoàn thành màn chơi duy nhất này
+        let winningScore = 30;
         let isGameOver = false;
         let isGameWon = false;
         let gameRunning = false;
@@ -303,17 +288,13 @@
 
         function drawBackground() {
             let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (selectedBgType === "ocean") {
-                gradient.addColorStop(0, "#03045e");
-                gradient.addColorStop(1, "#0077b6");
-            } else {
-                gradient.addColorStop(0, "#1e1e3f");
-                gradient.addColorStop(1, "#3b2d54");
-            }
+            gradient.addColorStop(0, "#03045e");
+            gradient.addColorStop(1, "#0077b6");
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
+        // Vẽ gai phong cách Geometry Dash gốc (Đế tối, viền vàng sáng đặc trưng)
         function drawSpike(x, y, w, h) {
             ctx.fillStyle = "#023e8a";
             ctx.beginPath();
@@ -323,11 +304,11 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#ffb703";
+            ctx.fillStyle = "#ffb703"; // Lõi vàng sáng
             ctx.beginPath();
-            ctx.moveTo(x + 3, y + h);
-            ctx.lineTo(x + w / 2, y + 5);
-            ctx.lineTo(x + w - 3, y + h);
+            ctx.moveTo(x + 4, y + h);
+            ctx.lineTo(x + w / 2, y + 6);
+            ctx.lineTo(x + w - 4, y + h);
             ctx.closePath();
             ctx.fill();
 
@@ -344,7 +325,7 @@
         function draw() {
             drawBackground();
 
-            // Mặt đất
+            // Vẽ mặt đất xanh Back on Track
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -354,23 +335,27 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Nhân vật
+            // Vẽ nhân vật chuẩn cube Geometry Dash (Khối vuông viền sáng + họa tiết mặt trong)
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
             
+            // Viền ngoài khối vuông
             ctx.fillStyle = selectedPlayerColor;
             ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
             
             ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
             
+            // Họa tiết trung tâm khối nhân vật
             ctx.fillStyle = "#ffffff";
-            ctx.fillRect(-6, -6, 12, 12);
+            ctx.fillRect(-8, -8, 16, 16);
+            ctx.fillStyle = selectedPlayerColor;
+            ctx.fillRect(-4, -4, 8, 8);
             ctx.restore();
 
-            // Chướng ngại vật
+            // Vẽ chướng ngại vật & bệ platform
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
@@ -386,6 +371,7 @@
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
 
+                    // Đường nét sáng trang trí trên bệ platform
                     ctx.fillStyle = "#90e0ef";
                     ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
                 }
@@ -396,7 +382,7 @@
             ctx.font = "bold 20px Arial";
             ctx.fillText("Progress: " + score + " / " + winningScore, 20, 30);
 
-            // Màn hình Thua
+            // Màn hình Game Over
             if (isGameOver) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -424,7 +410,7 @@
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px Arial";
-                ctx.fillText("Chúc mừng bạn đã vượt qua màn chơi!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Chúc mừng bạn đã hoàn thành Back on Track!", canvas.width / 2, canvas.height / 2 + 20);
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
