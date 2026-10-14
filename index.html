@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Geometry Dash</title>
+    <title>Mini Geometry Dash - Customizer</title>
     <style>
         body {
             margin: 0;
@@ -16,22 +16,126 @@
             font-family: Arial, sans-serif;
             overflow: hidden;
         }
+        .screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .hidden {
+            display: none !important;
+        }
         canvas {
             border: 4px solid #fff;
-            background: linear-gradient(to bottom, #1e1e3f, #3b2d54);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        .menu-box {
+            background: #2b2b3d;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #444;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 { margin-bottom: 20px; color: #00ffcc; }
+        h3 { margin: 15px 0 10px 0; }
+        .options-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .btn-option {
+            width: 45px;
+            height: 45px;
+            border: 3px solid #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .btn-option:hover {
+            transform: scale(1.1);
+        }
+        .btn-option.selected {
+            border-color: #ffcc00;
+            box-shadow: 0 0 10px #ffcc00;
+        }
+        .start-btn {
+            background-color: #00ffcc;
+            color: #111;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .start-btn:hover {
+            background-color: #00cca3;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <!-- MÀN HÌNH CHỌN SKIN & BACKGROUND -->
+    <div id="menuScreen" class="screen menu-box">
+        <h1>TÙY CHỈNH TRÒ CHƠI</h1>
+        
+        <h3>Chọn Skin Nhân Vật:</h3>
+        <div class="options-container" id="skinOptions">
+            <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc" title="Xanh ngọc"></div>
+            <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366" title="Đỏ hồng"></div>
+            <div class="btn-option" style="background-color: #ffcc00;" data-color="#ffcc00" title="Vàng chanh"></div>
+            <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff" title="Tím mộng mơ"></div>
+        </div>
+
+        <h3>Chọn Hình Nền (Background):</h3>
+        <div class="options-container" id="bgOptions">
+            <div class="btn-option selected" style="background: linear-gradient(to bottom, #1e1e3f, #3b2d54);" data-bg="space" title="Không gian tím"></div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #005c99, #0099cc);" data-bg="ocean" title="Đại dương xanh"></div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #990000, #ff6600);" data-bg="sunset" title="Hoàng hôn lửa"></div>
+            <div class="btn-option" style="background: linear-gradient(to bottom, #006600, #33cc33);" data-bg="forest" title="Rừng xanh"></div>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">BẮT ĐẦU CHƠI</button>
+    </div>
+
+    <!-- MÀN HÌNH CHƠI GAME -->
+    <div id="gameScreen" class="screen hidden">
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    </div>
 
     <script>
+        const menuScreen = document.getElementById("menuScreen");
+        const gameScreen = document.getElementById("gameScreen");
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Cấu hình nhân vật (Player)
+        // Biến lưu tùy chỉnh
+        let selectedPlayerColor = "#00ffcc";
+        let selectedBgType = "space";
+
+        // Xử lý chọn Skin
+        document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll("#skinOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+                selectedPlayerColor = this.getAttribute("data-color");
+            });
+        });
+
+        // Xử lý chọn Background
+        document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+                selectedBgType = this.getAttribute("data-bg");
+            });
+        });
+
+        // Cấu hình nhân vật
         let player = {
             x: 100,
             y: 250,
@@ -43,23 +147,33 @@
             rotation: 0
         };
 
-        // Danh sách chướng ngại vật (Gai)
         let obstacles = [];
         let obstacleTimer = 0;
-        let obstacleInterval = 90; // Khoảng cách sinh chướng ngại vật
+        let obstacleInterval = 90;
         let gameSpeed = 5;
         let score = 0;
         let isGameOver = false;
+        let gameRunning = false;
 
-        // Xử lý phím bấm (Phím Space hoặc Click chuột để nhảy)
+        function startGame() {
+            menuScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+            resetGame();
+            gameRunning = true;
+            loop();
+        }
+
+        // Xử lý phím bấm và click
         window.addEventListener("keydown", function(e) {
-            if (e.code === "Space") {
+            if (e.code === "Space" && gameRunning) {
                 triggerJump();
             }
         });
 
         canvas.addEventListener("click", function() {
-            triggerJump();
+            if (gameRunning) {
+                triggerJump();
+            }
         });
 
         function triggerJump() {
@@ -81,7 +195,6 @@
             isGameOver = false;
         }
 
-        // Tạo chướng ngại vật mới
         function spawnObstacle() {
             obstacles.push({
                 x: canvas.width,
@@ -91,41 +204,33 @@
             });
         }
 
-        // Cập nhật logic game từng khung hình
         function update() {
             if (isGameOver) return;
 
-            // Xử lý trọng lực và nhảy
             player.dy += player.gravity;
             player.y += player.dy;
 
-            // Xử lý mặt đất (Y = 310 là vị trí mặt đất)
             const groundLevel = 340 - player.size;
             if (player.y >= groundLevel) {
                 player.y = groundLevel;
                 player.dy = 0;
                 player.grounded = true;
-                // Căn chỉnh góc xoay vuông 90 độ khi chạm đất
                 player.rotation = Math.round(player.rotation / 90) * 90;
             } else {
                 player.grounded = false;
-                player.rotation += 8; // Xoay vòng khi đang trên không
+                player.rotation += 8;
             }
 
-            // Sinh chướng ngại vật theo thời gian
             obstacleTimer++;
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                // Tăng độ khó dần
                 if (obstacleInterval > 50) obstacleInterval -= 2;
             }
 
-            // Di chuyển chướng ngại vật
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 obstacles[i].x -= gameSpeed;
 
-                // Kiểm tra va chạm (AABB Collision Detection)
                 if (
                     player.x < obstacles[i].x + obstacles[i].width &&
                     player.x + player.size > obstacles[i].x &&
@@ -135,21 +240,37 @@
                     isGameOver = true;
                 }
 
-                // Xóa chướng ngại vật khi ra ngoài màn hình và tính điểm
                 if (obstacles[i].x + obstacles[i].width < 0) {
                     obstacles.splice(i, 1);
                     score++;
-                    if (score % 5 === 0) gameSpeed += 0.5; // Tăng tốc độ game
+                    if (score % 5 === 0) gameSpeed += 0.5;
                 }
             }
         }
 
-        // Vẽ đồ họa lên màn hình Canvas
-        function draw() {
-            // Xóa màn hình cũ
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawBackground() {
+            let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (selectedBgType === "space") {
+                gradient.addColorStop(0, "#1e1e3f");
+                gradient.addColorStop(1, "#3b2d54");
+            } else if (selectedBgType === "ocean") {
+                gradient.addColorStop(0, "#005c99");
+                gradient.addColorStop(1, "#0099cc");
+            } else if (selectedBgType === "sunset") {
+                gradient.addColorStop(0, "#990000");
+                gradient.addColorStop(1, "#ff6600");
+            } else if (selectedBgType === "forest") {
+                gradient.addColorStop(0, "#006600");
+                gradient.addColorStop(1, "#33cc33");
+            }
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
 
-            // Vẽ đường chân trời (Mặt đất)
+        function draw() {
+            drawBackground();
+
+            // Vẽ mặt đất
             ctx.fillStyle = "#ff0055";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -159,18 +280,18 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật (Khối vuông xoay)
+            // Vẽ nhân vật theo màu đã chọn
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
-            ctx.fillStyle = "#00ffcc";
+            ctx.fillStyle = selectedPlayerColor;
             ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 2;
             ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
             ctx.restore();
 
-            // Vẽ các chướng ngại vật (Hình gai nhọn)
+            // Vẽ chướng ngại vật
             ctx.fillStyle = "#ffcc00";
             for (let obs of obstacles) {
                 ctx.beginPath();
@@ -182,12 +303,12 @@
                 ctx.stroke();
             }
 
-            // Hiển thị Điểm số
+            // Điểm số
             ctx.fillStyle = "#ffffff";
             ctx.font = "20px Arial";
             ctx.fillText("Score: " + score, 20, 30);
 
-            // Hiển thị màn hình Game Over
+            // Màn hình Game Over
             if (isGameOver) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -204,15 +325,13 @@
             }
         }
 
-        // Vòng lặp chính của trò chơi (Game Loop)
         function loop() {
+            if (!gameRunning) return;
             update();
             draw();
             requestAnimationFrame(loop);
         }
-
-        // Khởi chạy trò chơi
-        loop();
     </script>
 </body>
 </html>
+    
