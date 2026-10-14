@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Back on Track Authentic</title>
+    <title>Geometry Dash - Back on Track (Original Jump Physics)</title>
     <style>
         body {
             margin: 0;
@@ -121,16 +121,16 @@
             y: 250,
             size: 32,
             dy: 0,
-            jumpPower: -11.5,
-            gravity: 0.65,
+            jumpPower: -13.5, // Tăng tốc độ bật nhảy mạnh và dứt khoát hơn giống bản gốc
+            gravity: 0.85,    // Tăng trọng lực để nhân vật rơi xuống nhanh, không bị lơ lửng
             grounded: false,
             rotation: 0
         };
 
         let obstacles = [];
         let obstacleTimer = 0;
-        let obstacleInterval = 100;
-        let gameSpeed = 5.8;
+        let obstacleInterval = 90;
+        let gameSpeed = 6.2; // Tốc độ di chuyển tổng thể mượt và nhanh hơn
         let score = 0;
         let winningScore = 30;
         let isGameOver = false;
@@ -170,8 +170,8 @@
         function resetGame() {
             obstacles = [];
             score = 0;
-            gameSpeed = 5.8;
-            obstacleInterval = 100;
+            gameSpeed = 6.2;
+            obstacleInterval = 90;
             player.y = 250;
             player.dy = 0;
             isGameOver = false;
@@ -196,7 +196,7 @@
                 obs.type = "stairsPlatform";
                 obs.width = 110;
                 obs.height = 25;
-                obs.y = 275;
+                obs.y = 270;
             }
 
             obstacles.push(obs);
@@ -223,7 +223,7 @@
                         player.x + player.size > obs.x &&
                         player.x < obs.x + obs.width &&
                         player.y + player.size >= obs.y &&
-                        player.y + player.size <= obs.y + 16 &&
+                        player.y + player.size <= obs.y + 18 &&
                         player.dy >= 0
                     ) {
                         player.y = obs.y - player.size;
@@ -250,14 +250,14 @@
                 player.rotation = Math.round(player.rotation / 90) * 90;
             } else {
                 player.grounded = false;
-                player.rotation += 9;
+                player.rotation += 12; // Tốc độ xoay trên không nhanh hơn tương ứng với tốc độ game
             }
 
             obstacleTimer++;
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                if (obstacleInterval > 60) obstacleInterval -= 2;
+                if (obstacleInterval > 55) obstacleInterval -= 2;
             }
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -294,7 +294,6 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Vẽ gai phong cách Geometry Dash gốc (Đế tối, viền vàng sáng đặc trưng)
         function drawSpike(x, y, w, h) {
             ctx.fillStyle = "#023e8a";
             ctx.beginPath();
@@ -304,7 +303,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#ffb703"; // Lõi vàng sáng
+            ctx.fillStyle = "#ffb703";
             ctx.beginPath();
             ctx.moveTo(x + 4, y + h);
             ctx.lineTo(x + w / 2, y + 6);
@@ -325,7 +324,7 @@
         function draw() {
             drawBackground();
 
-            // Vẽ mặt đất xanh Back on Track
+            // Mặt đất
             ctx.fillStyle = "#00b4d8";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
@@ -335,12 +334,11 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật chuẩn cube Geometry Dash (Khối vuông viền sáng + họa tiết mặt trong)
+            // Nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
             
-            // Viền ngoài khối vuông
             ctx.fillStyle = selectedPlayerColor;
             ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
             
@@ -348,14 +346,13 @@
             ctx.lineWidth = 3;
             ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
             
-            // Họa tiết trung tâm khối nhân vật
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(-8, -8, 16, 16);
             ctx.fillStyle = selectedPlayerColor;
             ctx.fillRect(-4, -4, 8, 8);
             ctx.restore();
 
-            // Vẽ chướng ngại vật & bệ platform
+            // Chướng ngại vật & bệ platform
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
@@ -371,7 +368,6 @@
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
 
-                    // Đường nét sáng trang trí trên bệ platform
                     ctx.fillStyle = "#90e0ef";
                     ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
                 }
