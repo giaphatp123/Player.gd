@@ -333,8 +333,8 @@
                 onGround = true;
             }
 
-            // Chỉ chết khi bay quá cao lên trên hẳn khung hình (ví dụ: cao hơn -50px)
-            if (player.y < -50) {
+            // Chỉ tính là thua khi bay quá cao lên trên hẳn (y < -100)
+            if (player.y < -100) {
                 gameState = "GAMEOVER";
             }
 
