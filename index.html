@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Dense Air Traps & Spikes</title>
+    <title>Geometry Dash - Full UI Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -47,11 +47,17 @@
             width: 100%;
         }
         h1 {
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             color: #48cae4;
-            font-size: 28px;
-            text-shadow: 0 0 10px rgba(72,202,228,0.6);
-            letter-spacing: 1px;
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(72,202,228,0.7);
+            letter-spacing: 2px;
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            color: #ffb703;
+            font-size: 22px;
+            text-shadow: 0 0 10px rgba(255,183,3,0.5);
         }
         h3 {
             margin: 15px 0 8px 0;
@@ -110,36 +116,73 @@
             box-shadow: 0 0 15px #ffb703;
             transform: scale(1.15);
         }
-        .start-btn {
+        .ui-btn {
             background: linear-gradient(135deg, #48cae4, #00b4d8);
             color: #03045e;
             font-weight: bold;
             font-size: 18px;
-            padding: 12px 35px;
+            padding: 12px 30px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 15px;
+            margin: 8px;
             box-shadow: 0 4px 15px rgba(72,202,228,0.4);
             transition: transform 0.1s ease, background 0.2s ease;
+            width: 220px;
         }
-        .start-btn:hover {
+        .ui-btn:hover {
             transform: translateY(-2px);
             background: linear-gradient(135deg, #00b4d8, #0077b6);
             color: #ffffff;
         }
-        .start-btn:active {
+        .ui-btn:active {
             transform: translateY(1px);
+        }
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: #ffffff;
+        }
+        .btn-back:hover {
+            background: linear-gradient(135deg, #495057, #343a40);
+        }
+        .desc-text {
+            color: #a8dadc;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Menu Chọn Xe & Màu Sắc -->
-    <div id="menuScreen" class="screen menu-box">
-        <h1>GEOMETRY DASH - GARAGE</h1>
+    <!-- 1. GIAO DIỆN TRANG CHỦ (MAIN MENU) -->
+    <div id="homeScreen" class="screen menu-box">
+        <h1>GEOMETRY DASH</h1>
+        <p style="color: #a8dadc; margin-bottom: 25px;">Phiên bản cải tiến độc lập & Chướng ngại trên không</p>
+        <div>
+            <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
+            <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
+            <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
+        </div>
+    </div>
+
+    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI / BẮT ĐẦU -->
+    <div id="levelScreen" class="screen menu-box hidden">
+        <h2>CHỌN MÀN CHƠI</h2>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Độ khó: Thử thách cân bằng với mật độ dày trên không</p>
+        <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
+        <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
+    </div>
+
+    <!-- 3. GIAO DIỆN GARAGE (CHỌN XE & MÀU SẮC) -->
+    <div id="garageScreen" class="screen menu-box hidden">
+        <h2>CỬA HÀNG XE & MÀU SẮC</h2>
         
-        <h3>Chọn Phương Tiện Ban Đầu:</h3>
+        <h3>Chọn Phương Tiện:</h3>
         <div class="grid-container" id="shapeOptions">
             <div class="btn-option selected" data-shape="cube">🟦 Cube</div>
             <div class="btn-option" data-shape="ship">🚀 Ship</div>
@@ -161,17 +204,43 @@
             <div class="color-circle" style="background-color: #ff6600;" data-color="#ff6600"></div>
         </div>
 
-        <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
+        <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">XÁC NHẬN & QUAY LẠI</button>
     </div>
 
-    <!-- Màn Hình Chơi Game -->
+    <!-- 4. GIAO DIỆN HƯỚNG DẪN -->
+    <div id="helpScreen" class="screen menu-box hidden">
+        <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
+        <div class="desc-text">
+            • <b>Phím Space / Click chuột:</b> Nhảy, bay lên hoặc tương tác với quả cầu.<br>
+            • <b>Chế độ Máy bay/Jetpack:</b> Giữ chuột/phím để bay lên, nhả ra để hạ xuống.<br>
+            • <b>Chướng ngại vật:</b> Bao gồm hố sâu, đệm nhảy, tường đá, bánh răng cưa và đặc biệt là <b>gai treo ngược trên trần nhà</b>.<br>
+            • <b>Mục tiêu:</b> Vượt qua đủ 40 điểm để chiến thắng màn chơi!
+        </div>
+        <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
+    </div>
+
+    <!-- 5. MÀN HÌNH CHƠI GAME CANVAS -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <button class="ui-btn btn-back" style="margin-top: 10px; width: 150px; font-size: 14px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
     </div>
 
     <script>
-        const menuScreen = document.getElementById("menuScreen");
-        const gameScreen = document.getElementById("gameScreen");
+        const screens = {
+            homeScreen: document.getElementById("homeScreen"),
+            levelScreen: document.getElementById("levelScreen"),
+            garageScreen: document.getElementById("garageScreen"),
+            helpScreen: document.getElementById("helpScreen"),
+            gameScreen: document.getElementById("gameScreen")
+        };
+
+        function showScreen(screenId) {
+            for (let key in screens) {
+                screens[key].classList.add("hidden");
+            }
+            screens[screenId].classList.remove("hidden");
+        }
+
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -197,7 +266,7 @@
         let gravityDir = 1;
         let score = 0;
         let objectTimer = 0;
-        let objectInterval = 65; // Tần suất xuất hiện vật cản nhanh và dày hơn
+        let objectInterval = 65;
         let gameState = "MENU";
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
@@ -217,15 +286,19 @@
         });
 
         function startGame() {
-            menuScreen.classList.add("hidden");
-            gameScreen.classList.remove("hidden");
+            showScreen("gameScreen");
             resetGame();
             gameState = "PLAYING";
             requestAnimationFrame(loop);
         }
 
+        function returnToMenu() {
+            gameState = "MENU";
+            showScreen("homeScreen");
+        }
+
         window.addEventListener("keydown", e => {
-            if (e.code === "Space") {
+            if (e.code === "Space" && gameState === "PLAYING") {
                 e.preventDefault();
                 isHolding = true;
                 handleAction();
@@ -237,11 +310,13 @@
         });
 
         canvas.addEventListener("mousedown", () => {
-            isHolding = true;
-            handleAction();
+            if (gameState === "PLAYING") {
+                isHolding = true;
+                handleAction();
+            }
         });
 
-        window.addEventListener("mouseup", () => {
+        canvas.addEventListener("mouseup", () => {
             isHolding = false;
         });
 
@@ -276,20 +351,16 @@
             player.grounded = false;
         }
 
-        // Sinh chướng ngại vật độc lập, bổ sung gai trên không (topSpike) khi chọn máy bay
         function spawnSingleObject() {
             const rand = Math.random();
             let x = canvas.width;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 if (rand < 0.35) {
-                    // Cưa quay lơ lửng trên không
                     objects.push({ type: "sawblade", x: x, y: Math.random() * 220 + 50, radius: 18, rotation: 0 });
                 } else if (rand < 0.65) {
-                    // Gai nhọn treo ngược từ trần nhà xuống (topSpike)
                     objects.push({ type: "topSpike", x: x, width: 35, height: Math.random() * 50 + 30, y: 0 });
                 } else if (rand < 0.85) {
-                    // Quả cầu nhảy lơ lửng
                     objects.push({ type: "orb", x: x, y: Math.random() * 200 + 70, radius: 14, collected: false });
                 } else {
                     let targetVeh = Math.random() > 0.5 ? "cube" : "ship";
@@ -419,7 +490,6 @@
                         gameState = "GAMEOVER";
                     }
                 } else if (obj.type === "topSpike") {
-                    // Kiểm tra va chạm với gai treo trên trần
                     if (
                         player.x + player.size - pad > obj.x &&
                         player.x + pad < obj.x + obj.width &&
@@ -506,7 +576,6 @@
                     }
                     ctx.restore();
                 } else if (obj.type === "topSpike") {
-                    // Vẽ gai treo ngược từ trần nhà xuống
                     ctx.fillStyle = "#023e8a";
                     ctx.beginPath();
                     ctx.moveTo(obj.x, 0);
@@ -588,9 +657,12 @@
         }
 
         function loop() {
-            update();
-            draw();
-            if (gameState === "PLAYING" || gameState === "GAMEOVER" || gameState === "WON") {
+            if (gameState === "PLAYING") {
+                update();
+                draw();
+                requestAnimationFrame(loop);
+            } else if (gameState === "GAMEOVER" || gameState === "WON") {
+                draw();
                 requestAnimationFrame(loop);
             }
         }
