@@ -333,8 +333,8 @@
                 onGround = true;
             }
 
-            // Kiểm tra nếu người chơi bay quá cao (vượt qua trần canvas)
-            if (player.y < 0) {
+            // Chỉ chết khi bay quá cao lên trên hẳn khung hình (ví dụ: cao hơn -50px)
+            if (player.y < -50) {
                 gameState = "GAMEOVER";
             }
 
