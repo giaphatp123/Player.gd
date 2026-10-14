@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Hardcore Combo Traps</title>
+    <title>Geometry Dash - Balanced Difficulty</title>
     <style>
         * {
             box-sizing: border-box;
@@ -178,8 +178,8 @@
         let config = {
             vehicle: "cube",
             color: "#00ffcc",
-            speed: 6.0,
-            winningScore: 50
+            speed: 5.5,
+            winningScore: 40
         };
 
         let player = {
@@ -197,7 +197,7 @@
         let gravityDir = 1;
         let score = 0;
         let patternTimer = 0;
-        let patternInterval = 110;
+        let patternInterval = 130; // Khoảng cách giãn cách vừa phải giữa các cụm bẫy
         let gameState = "MENU";
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
@@ -267,8 +267,8 @@
             objects = [];
             particles = [];
             score = 0;
-            config.speed = 6.0;
-            patternInterval = 110;
+            config.speed = 5.5;
+            patternInterval = 130;
             gravityDir = 1;
             player.y = 250;
             player.dy = 0;
@@ -276,45 +276,33 @@
             player.grounded = false;
         }
 
-        // HỆ THỐNG TỔ HỢP BẪY LIÊN HOÀN (COMBO TRAPS)
+        // TỔ HỢP BẪY LIÊN HOÀN ĐỘ KHÓ VỪA PHẢI (BALANCED PATTERNS)
         function spawnTrapPattern() {
             let startX = canvas.width;
             const rand = Math.random();
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
-                // Các tổ hợp hóc búa dành riêng cho phương tiện bay
-                if (rand < 0.33) {
-                    // Tổ hợp 1: Cổng chuyển đổi ép bay lên, ngay sau đó là kẹp giữa 2 cưa quay
+                // Tổ hợp dành cho máy bay: không quá sát nhau, có khoảng thở để điều chỉnh
+                if (rand < 0.35) {
                     objects.push({ type: "portal", x: startX, width: 30, height: 90, y: 250, target: "ship" });
-                    objects.push({ type: "sawblade", x: startX + 120, y: 80, radius: 20, rotation: 0 });
-                    objects.push({ type: "sawblade", x: startX + 120, y: 300, radius: 20, rotation: 0 });
-                } else if (rand < 0.66) {
-                    // Tổ hợp 2: Hố sâu bắt buộc phải bay, kết hợp quả cầu nhảy lơ lửng ngay miệng hố kèm cưa cản phía trên
-                    objects.push({ type: "pit", x: startX, width: 100, height: 60, y: 340 });
-                    objects.push({ type: "orb", x: startX + 50, y: 200, radius: 14, collected: false });
-                    objects.push({ type: "sawblade", x: startX + 130, y: 150, radius: 22, rotation: 0 });
+                    objects.push({ type: "sawblade", x: startX + 150, y: 120, radius: 20, rotation: 0 });
+                } else if (rand < 0.70) {
+                    objects.push({ type: "pit", x: startX, width: 90, height: 60, y: 340 });
+                    objects.push({ type: "orb", x: startX + 45, y: 220, radius: 14, collected: false });
                 } else {
-                    // Tổ hợp 3: Đường hẹp khối đá trên/dưới liên hoàn (Zic-zac)
-                    objects.push({ type: "block", x: startX, width: 45, height: 160, y: 0 });
-                    objects.push({ type: "block", x: startX + 90, width: 45, height: 160, y: 200 });
-                    objects.push({ type: "sawblade", x: startX + 45, y: 260, radius: 18, rotation: 0 });
+                    objects.push({ type: "block", x: startX, width: 45, height: 120, y: 0 });
+                    objects.push({ type: "sawblade", x: startX + 50, y: 240, radius: 20, rotation: 0 });
                 }
             } else {
-                // Các tổ hợp bẫy mặt đất cho Cube/Ball/UFO
-                if (rand < 0.33) {
-                    // Tổ hợp 1: Hố sâu kèm đệm nhảy cứu hộ sát mép, ngay sau là khối đá cản
-                    objects.push({ type: "pit", x: startX, width: 80, height: 60, y: 340 });
-                    objects.push({ type: "pad", x: startX + 60, width: 25, height: 15, y: 325 });
-                    objects.push({ type: "block", x: startX + 150, width: 45, height: 60, y: 280 });
-                } else if (rand < 0.66) {
-                    // Tổ hợp 2: Cổng đổi phương tiện thành Ship đột ngột ngay trước một bức tường cao
-                    objects.push({ type: "portal", x: startX, width: 30, height: 90, y: 250, target: "ship" });
-                    objects.push({ type: "block", x: startX + 100, width: 50, height: 140, y: 200 });
-                    objects.push({ type: "sawblade", x: startX + 100, y: 120, radius: 20, rotation: 0 });
+                // Tổ hợp cho các dạng mặt đất: kết hợp hố và đệm nhảy hoặc quả cầu một cách logic
+                if (rand < 0.35) {
+                    objects.push({ type: "pit", x: startX, width: 70, height: 60, y: 340 });
+                    objects.push({ type: "pad", x: startX + 50, width: 25, height: 15, y: 325 });
+                } else if (rand < 0.70) {
+                    objects.push({ type: "orb", x: startX, y: 230, radius: 14, collected: false });
+                    objects.push({ type: "block", x: startX + 80, width: 40, height: 60, y: 280 });
                 } else {
-                    // Tổ hợp 3: Chuỗi quả cầu nhảy liên tiếp trên không đòi hỏi click chuẩn nhịp
-                    objects.push({ type: "orb", x: startX, y: 240, radius: 14, collected: false });
-                    objects.push({ type: "orb", x: startX + 70, y: 180, radius: 14, collected: false });
+                    objects.push({ type: "portal", x: startX, width: 30, height: 90, y: 250, target: "ship" });
                     objects.push({ type: "sawblade", x: startX + 120, y: 280, radius: 20, rotation: 0 });
                 }
             }
@@ -390,7 +378,7 @@
             if (patternTimer >= patternInterval) {
                 spawnTrapPattern();
                 patternTimer = 0;
-                if (patternInterval > 75) patternInterval -= 2;
+                if (patternInterval > 85) patternInterval -= 2;
             }
 
             for (let i = objects.length - 1; i >= 0; i--) {
@@ -438,7 +426,7 @@
                     objects.splice(i, 1);
                     score++;
                     if (score >= config.winningScore) gameState = "WON";
-                    if (score % 5 === 0) config.speed += 0.3;
+                    if (score % 5 === 0) config.speed += 0.25;
                 }
             }
         }
