@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Geometry Dash - Customizer</title>
+    <title>Mini Geometry Dash - Multi Obstacles & Win</title>
     <style>
         body {
             margin: 0;
@@ -81,7 +81,7 @@
 
     <!-- MÀN HÌNH CHỌN SKIN & BACKGROUND -->
     <div id="menuScreen" class="screen menu-box">
-        <h1>TÙY CHỈNH TRÒ CHƠI</h1>
+        <h1>GEOMETRY DASH MINI</h1>
         
         <h3>Chọn Skin Nhân Vật:</h3>
         <div class="options-container" id="skinOptions">
@@ -113,11 +113,9 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Biến lưu tùy chỉnh
         let selectedPlayerColor = "#00ffcc";
         let selectedBgType = "space";
 
-        // Xử lý chọn Skin
         document.querySelectorAll("#skinOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#skinOptions .btn-option").forEach(b => b.classList.remove("selected"));
@@ -126,7 +124,6 @@
             });
         });
 
-        // Xử lý chọn Background
         document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
@@ -135,7 +132,6 @@
             });
         });
 
-        // Cấu hình nhân vật
         let player = {
             x: 100,
             y: 250,
@@ -149,10 +145,12 @@
 
         let obstacles = [];
         let obstacleTimer = 0;
-        let obstacleInterval = 90;
+        let obstacleInterval = 100;
         let gameSpeed = 5;
         let score = 0;
+        let winningScore = 20; // Đạt 20 điểm sẽ chiến thắng
         let isGameOver = false;
+        let isGameWon = false;
         let gameRunning = false;
 
         function startGame() {
@@ -163,25 +161,24 @@
             loop();
         }
 
-        // Xử lý phím bấm và click
         window.addEventListener("keydown", function(e) {
             if (e.code === "Space" && gameRunning) {
-                triggerJump();
+                triggerAction();
             }
         });
 
         canvas.addEventListener("click", function() {
             if (gameRunning) {
-                triggerJump();
+                triggerAction();
             }
         });
 
-        function triggerJump() {
+        function triggerAction() {
             if (player.grounded) {
                 player.dy = player.jumpPower;
                 player.grounded = false;
             }
-            if (isGameOver) {
+            if (isGameOver || isGameWon) {
                 resetGame();
             }
         }
@@ -190,22 +187,43 @@
             obstacles = [];
             score = 0;
             gameSpeed = 5;
+            obstacleInterval = 100;
             player.y = 250;
             player.dy = 0;
             isGameOver = false;
+            isGameWon = false;
         }
 
         function spawnObstacle() {
-            obstacles.push({
-                x: canvas.width,
-                y: 310,
-                width: 25,
-                height: 35
-            });
+            // Ngẫu nhiên chọn loại chướng ngại vật: 0 = Gai đơn, 1 = Gai đôi, 2 = Khối cao
+            const typeRand = Math.random();
+            let obs = { x: canvas.width };
+
+            if (typeRand < 0.4) {
+                // Gai đơn
+                obs.type = "spike";
+                obs.width = 25;
+                obs.height = 35;
+                obs.y = 310;
+            } else if (typeRand < 0.7) {
+                // Gai đôi
+                obs.type = "doubleSpike";
+                obs.width = 50;
+                obs.height = 35;
+                obs.y = 310;
+            } else {
+                // Khối tường cao
+                obs.type = "block";
+                obs.width = 30;
+                obs.height = 50;
+                obs.y = 290;
+            }
+
+            obstacles.push(obs);
         }
 
         function update() {
-            if (isGameOver) return;
+            if (isGameOver || isGameWon) return;
 
             player.dy += player.gravity;
             player.y += player.dy;
@@ -225,12 +243,13 @@
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                if (obstacleInterval > 50) obstacleInterval -= 2;
+                if (obstacleInterval > 60) obstacleInterval -= 2;
             }
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 obstacles[i].x -= gameSpeed;
 
+                // Kiểm tra va chạm (AABB Collision)
                 if (
                     player.x < obstacles[i].x + obstacles[i].width &&
                     player.x + player.size > obstacles[i].x &&
@@ -240,9 +259,13 @@
                     isGameOver = true;
                 }
 
+                // Qua mỗi chướng ngại vật tính điểm
                 if (obstacles[i].x + obstacles[i].width < 0) {
                     obstacles.splice(i, 1);
                     score++;
+                    if (score >= winningScore) {
+                        isGameWon = true;
+                    }
                     if (score % 5 === 0) gameSpeed += 0.5;
                 }
             }
@@ -280,7 +303,7 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật theo màu đã chọn
+            // Vẽ nhân vật
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -291,22 +314,44 @@
             ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
             ctx.restore();
 
-            // Vẽ chướng ngại vật
-            ctx.fillStyle = "#ffcc00";
+            // Vẽ các loại chướng ngại vật
             for (let obs of obstacles) {
-                ctx.beginPath();
-                ctx.moveTo(obs.x, obs.y + obs.height);
-                ctx.lineTo(obs.x + obs.width / 2, obs.y);
-                ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
+                if (obs.type === "spike") {
+                    // Gai đơn
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x, obs.y + obs.height);
+                    ctx.lineTo(obs.x + obs.width / 2, obs.y);
+                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (obs.type === "doubleSpike") {
+                    // Gai đôi
+                    ctx.fillStyle = "#ff9900";
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x, obs.y + obs.height);
+                    ctx.lineTo(obs.x + obs.width / 4, obs.y);
+                    ctx.lineTo(obs.x + obs.width / 2, obs.y + obs.height);
+                    ctx.lineTo(obs.x + (3 * obs.width) / 4, obs.y);
+                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (obs.type === "block") {
+                    // Khối tường cản
+                    ctx.fillStyle = "#9900ff";
+                    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+                }
             }
 
-            // Điểm số
+            // Hiển thị điểm số & mục tiêu chiến thắng
             ctx.fillStyle = "#ffffff";
             ctx.font = "20px Arial";
-            ctx.fillText("Score: " + score, 20, 30);
+            ctx.fillText("Score: " + score + " / " + winningScore, 20, 30);
 
             // Màn hình Game Over
             if (isGameOver) {
@@ -321,6 +366,23 @@
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "20px Arial";
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.textAlign = "left";
+            }
+
+            // Màn hình Chiến thắng (Victory)
+            if (isGameWon) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#00ffcc";
+                ctx.font = "bold 40px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("VICTORY! CHIẾN THẮNG", canvas.width / 2, canvas.height / 2 - 20);
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "20px Arial";
+                ctx.fillText("Bạn đã vượt qua màn chơi thành công!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
         }
