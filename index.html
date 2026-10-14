@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Update 2.2 Authentic Physics</title>
+    <title>Geometry Dash - Fixed Version</title>
     <style>
         body {
             margin: 0;
@@ -15,6 +15,7 @@
             color: white;
             font-family: Arial, sans-serif;
             overflow: hidden;
+            user-select: none;
         }
         .screen {
             display: flex;
@@ -29,6 +30,7 @@
         canvas {
             border: 4px solid #48cae4;
             box-shadow: 0 0 25px rgba(72, 202, 228, 0.4);
+            cursor: pointer;
         }
         .menu-box {
             background: #1d3557;
@@ -37,10 +39,8 @@
             border: 2px solid #457b9d;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             max-width: 550px;
-            max-height: 90vh;
-            overflow-y: auto;
         }
-        h1 { margin-bottom: 10px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); font-size: 24px; }
+        h1 { margin-bottom: 10px; color: #48cae4; font-size: 24px; }
         h3 { margin: 8px 0 5px 0; color: #a8dadc; font-size: 14px; }
         .grid-container {
             display: grid;
@@ -61,13 +61,9 @@
             border: 2px solid #fff;
             border-radius: 6px;
             cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
             font-size: 12px;
             font-weight: bold;
             color: #fff;
-        }
-        .btn-option:hover {
-            transform: scale(1.05);
         }
         .btn-option.selected {
             border-color: #ffb703;
@@ -95,7 +91,6 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 10px;
-            transition: background 0.2s;
         }
         .start-btn:hover {
             background-color: #00b4d8;
@@ -104,9 +99,8 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN PHƯƠNG TIỆN -->
     <div id="menuScreen" class="screen menu-box">
-        <h1>BACK ON TRACK - 2.2 GARAGE</h1>
+        <h1>BACK ON TRACK - GARAGE</h1>
         
         <h3>Chọn Phương Tiện:</h3>
         <div class="grid-container" id="shapeOptions">
@@ -121,7 +115,7 @@
             <div class="btn-option" data-shape="jetpack">🎒 Jetpack</div>
         </div>
 
-        <h3>Chọn Màu Sắc Chủ Đạo:</h3>
+        <h3>Chọn Màu Sắc:</h3>
         <div class="options-container" id="colorOptions">
             <div class="color-circle selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
             <div class="color-circle" style="background-color: #ff3366;" data-color="#ff3366"></div>
@@ -133,7 +127,6 @@
         <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
     </div>
 
-    <!-- MÀN HÌNH CHƠI GAME -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
     </div>
@@ -147,7 +140,7 @@
         let selectedVehicle = "cube";
         let selectedColor = "#00ffcc";
         let particleEffects = [];
-        let isHoldingAction = false;
+        let isHolding = false;
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -177,7 +170,7 @@
         let obstacles = [];
         let obstacleTimer = 0;
         let obstacleInterval = 90;
-        let gameSpeed = 6.2;
+        let gameSpeed = 6.0;
         let score = 0;
         let winningScore = 30;
         let isGameOver = false;
@@ -188,56 +181,49 @@
             menuScreen.classList.add("hidden");
             gameScreen.classList.remove("hidden");
             resetGame();
-            gameRunning = true;
-            loop();
+            if (!gameRunning) {
+                gameRunning = true;
+                requestAnimationFrame(loop);
+            }
         }
 
-        // Xử lý phím bấm xuống (Giữ phím để bay đối với Ship/Jetpack)
+        // Lắng nghe sự kiện bàn phím và chuột trực quan an toàn
         window.addEventListener("keydown", function(e) {
             if (e.code === "Space") {
                 e.preventDefault();
-                if (gameRunning) {
-                    isHoldingAction = true;
-                    triggerAction();
-                }
+                isHolding = true;
+                handleAction();
             }
         });
 
         window.addEventListener("keyup", function(e) {
             if (e.code === "Space") {
-                isHoldingAction = false;
+                isHolding = false;
             }
         });
 
         canvas.addEventListener("mousedown", function() {
-            if (gameRunning) {
-                isHoldingAction = true;
-                triggerAction();
-            }
+            isHolding = true;
+            handleAction();
         });
 
         window.addEventListener("mouseup", function() {
-            isHoldingAction = false;
+            isHolding = false;
         });
 
-        function triggerAction() {
+        function handleAction() {
             if (isGameOver || isGameWon) {
                 resetGame();
                 return;
             }
 
-            // Phân loại cơ chế điều khiển tùy theo phương tiện
-            if (selectedVehicle === "cube") {
-                if (player.grounded) {
-                    player.dy = -13.5;
-                    player.grounded = false;
-                }
+            if (selectedVehicle === "cube" && player.grounded) {
+                player.dy = -13.0;
+                player.grounded = false;
             } else if (selectedVehicle === "ufo") {
-                // UFO nhảy đúp giữa không trung
-                player.dy = -9.5;
+                player.dy = -9.0;
             } else if (selectedVehicle === "spider") {
-                // Nhện dịch chuyển ngược chiều
-                player.y = player.y > 200 ? 100 : 300;
+                player.y = player.y > 200 ? 100 : 280;
             }
         }
 
@@ -245,7 +231,7 @@
             obstacles = [];
             particleEffects = [];
             score = 0;
-            gameSpeed = 6.2;
+            gameSpeed = 6.0;
             obstacleInterval = 90;
             player.y = 250;
             player.dy = 0;
@@ -257,12 +243,12 @@
             const rand = Math.random();
             let obs = { x: canvas.width };
 
-            if (rand < 0.3) {
+            if (rand < 0.35) {
                 obs.type = "singleSpike";
                 obs.width = 30;
                 obs.height = 35;
                 obs.y = 310;
-            } else if (rand < 0.55) {
+            } else if (rand < 0.6) {
                 obs.type = "doubleSpike";
                 obs.width = 60;
                 obs.height = 35;
@@ -273,47 +259,31 @@
                 obs.height = 25;
                 obs.y = 270;
             }
-
             obstacles.push(obs);
         }
 
         function update() {
             if (isGameOver || isGameWon) return;
 
-            // Xử lý vật lý riêng biệt cho từng loại phương tiện bay (Ship, Jetpack, Wave, v.v.)
+            // Vật lý theo phương tiện
             if (selectedVehicle === "ship" || selectedVehicle === "jetpack") {
-                // Giữ phím Space/Click thì bay lên, thả ra thì chìm xuống
-                if (isHoldingAction) {
-                    player.dy -= 0.65; // Lực đẩy lên
+                if (isHolding) {
+                    player.dy -= 0.6;
                 } else {
-                    player.dy += 0.65; // Trọng lực kéo xuống
+                    player.dy += 0.6;
                 }
-                // Giới hạn tốc độ bay tối đa
-                if (player.dy < -8) player.dy = -8;
-                if (player.dy > 8) player.dy = 8;
+                player.dy = Math.max(-8, Math.min(8, player.dy));
                 player.y += player.dy;
                 player.rotation = player.dy * 4;
-            } 
-            else if (selectedVehicle === "wave") {
-                // Wave bay zíc-zắc cực nhanh
-                if (isHoldingAction) {
-                    player.dy = -7;
+            } else if (selectedVehicle === "wave") {
+                if (isHolding) {
+                    player.dy = -6.5;
                 } else {
-                    player.dy = 7;
+                    player.dy = 6.5;
                 }
                 player.y += player.dy;
-                player.rotation = isHoldingAction ? -45 : 45;
-            } 
-            else if (selectedVehicle === "swing") {
-                // Swing Copter đảo trọng lực khi bấm
-                if (isHoldingAction && player.grounded) {
-                    player.dy = -player.dy;
-                }
-                player.dy += 0.85;
-                player.y += player.dy;
-            }
-            else {
-                // Các dạng Cube, Ball, UFO, Robot, Spider dùng trọng lực tiêu chuẩn
+                player.rotation = isHolding ? -45 : 45;
+            } else {
                 player.dy += 0.85;
                 player.y += player.dy;
                 player.rotation += 12;
@@ -333,12 +303,12 @@
                 player.dy = 0;
             }
 
-            // Hiệu ứng hạt
-            if (Math.random() < 0.6) {
+            // Tạo hiệu ứng hạt vệt sáng
+            if (Math.random() < 0.5) {
                 particleEffects.push({
                     x: player.x,
                     y: player.y + player.size / 2,
-                    size: Math.random() * 6 + 4,
+                    size: Math.random() * 5 + 3,
                     color: selectedColor,
                     alpha: 1.0,
                     vx: -2 - Math.random() * 2,
@@ -349,7 +319,7 @@
             for (let p of particleEffects) {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.alpha -= 0.04;
+                p.alpha -= 0.05;
             }
             particleEffects = particleEffects.filter(p => p.alpha > 0);
 
@@ -382,17 +352,17 @@
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                if (obstacleInterval > 55) obstacleInterval -= 2;
+                if (obstacleInterval > 55) obstacleInterval -= 3;
             }
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 obstacles[i].x -= gameSpeed;
 
-                let padding = 4;
+                let pad = 6;
                 if (
-                    player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
-                    player.x + player.size - padding > obstacles[i].x + padding &&
-                    player.y + padding < obstacles[i].y + obstacles[i].height &&
+                    player.x + pad < obstacles[i].x + obstacles[i].width - pad &&
+                    player.x + player.size - pad > obstacles[i].x + pad &&
+                    player.y + pad < obstacles[i].y + obstacles[i].height &&
                     player.y + player.size > obstacles[i].y
                 ) {
                     isGameOver = true;
@@ -404,165 +374,17 @@
                     if (score >= winningScore) {
                         isGameWon = true;
                     }
-                    if (score % 5 === 0) gameSpeed += 0.4;
+                    if (score % 5 === 0) gameSpeed += 0.3;
                 }
             }
         }
 
-        function drawBackground() {
+        function draw() {
             let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, "#03045e");
             gradient.addColorStop(1, "#0077b6");
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function drawSpike(x, y, w, h) {
-            ctx.fillStyle = "#023e8a";
-            ctx.beginPath();
-            ctx.moveTo(x, y + h);
-            ctx.lineTo(x + w / 2, y);
-            ctx.lineTo(x + w, y + h);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = "#ffb703";
-            ctx.beginPath();
-            ctx.moveTo(x + 4, y + h);
-            ctx.lineTo(x + w / 2, y + 6);
-            ctx.lineTo(x + w - 4, y + h);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(x, y + h);
-            ctx.lineTo(x + w / 2, y);
-            ctx.lineTo(x + w, y + h);
-            ctx.closePath();
-            ctx.stroke();
-        }
-
-        function drawVehicle() {
-            ctx.save();
-            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
-            ctx.rotate((player.rotation * Math.PI) / 180);
-
-            if (selectedVehicle === "cube") {
-                ctx.fillStyle = selectedColor;
-                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
-                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(-8, -8, 16, 16);
-                ctx.fillStyle = selectedColor;
-                ctx.fillRect(-4, -4, 8, 8);
-            } 
-            else if (selectedVehicle === "ship") {
-                ctx.fillStyle = selectedColor;
-                ctx.beginPath();
-                ctx.moveTo(player.size / 2, 0);
-                ctx.lineTo(-player.size / 2, -player.size / 2);
-                ctx.lineTo(-player.size / 3, 0);
-                ctx.lineTo(-player.size / 2, player.size / 2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = "#ffaa00";
-                ctx.fillRect(-player.size / 2 - 8, -4, 8, 8);
-            } 
-            else if (selectedVehicle === "ball") {
-                ctx.fillStyle = selectedColor;
-                ctx.beginPath();
-                ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
-                ctx.stroke();
-                ctx.fillStyle = "#ffffff";
-                ctx.beginPath();
-                ctx.arc(0, 0, 6, 0, Math.PI * 2);
-                ctx.fill();
-            } 
-            else if (selectedVehicle === "ufo") {
-                ctx.fillStyle = selectedColor;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, player.size / 2, player.size / 4, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = "#90e0ef";
-                ctx.beginPath();
-                ctx.arc(0, -4, 6, 0, Math.PI * 2);
-                ctx.fill();
-            } 
-            else if (selectedVehicle === "wave") {
-                ctx.fillStyle = selectedColor;
-                ctx.beginPath();
-                ctx.moveTo(player.size / 2, 0);
-                ctx.lineTo(-player.size / 2, -player.size / 2);
-                ctx.lineTo(-player.size / 2, player.size / 2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            } 
-            else if (selectedVehicle === "robot") {
-                ctx.fillStyle = selectedColor;
-                ctx.fillRect(-10, -16, 20, 24);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-10, -16, 20, 24);
-                ctx.fillStyle = "#ff3333";
-                ctx.fillRect(-6, -10, 12, 4);
-            } 
-            else if (selectedVehicle === "spider") {
-                ctx.fillStyle = selectedColor;
-                ctx.fillRect(-12, -10, 24, 20);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-12, -10, 24, 20);
-                ctx.strokeStyle = selectedColor;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(-12, 10); ctx.lineTo(-18, 16);
-                ctx.moveTo(12, 10); ctx.lineTo(18, 16);
-                ctx.stroke();
-            } 
-            else if (selectedVehicle === "swing") {
-                ctx.fillStyle = selectedColor;
-                ctx.beginPath();
-                ctx.arc(0, 0, 14, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = "#ffb703";
-                ctx.fillRect(-18, -18, 36, 4);
-                ctx.fillRect(-18, 14, 36, 4);
-            } 
-            else if (selectedVehicle === "jetpack") {
-                ctx.fillStyle = selectedColor;
-                ctx.fillRect(-12, -14, 24, 28);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-12, -14, 24, 28);
-                ctx.fillStyle = "#ff4500";
-                ctx.fillRect(-16, 6, 8, 12);
-                ctx.fillRect(8, 6, 8, 12);
-            }
-
-            ctx.restore();
-        }
-
-        function draw() {
-            drawBackground();
 
             for (let p of particleEffects) {
                 ctx.fillStyle = p.color;
@@ -582,22 +404,98 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            drawVehicle();
+            // Vẽ nhân vật
+            ctx.save();
+            ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
+            ctx.rotate((player.rotation * Math.PI) / 180);
+            ctx.fillStyle = selectedColor;
+            ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(-8, -8, 16, 16);
+            ctx.fillStyle = selectedColor;
+            ctx.fillRect(-4, -4, 8, 8);
+            ctx.restore();
 
+            // Vẽ chướng ngại vật
             for (let obs of obstacles) {
-                if (obs.type === "singleSpike") {
-                    drawSpike(obs.x, obs.y, obs.width, obs.height);
-                } 
-                else if (obs.type === "doubleSpike") {
-                    drawSpike(obs.x, obs.y, 30, obs.height);
-                    drawSpike(obs.x + 30, obs.y, 30, obs.height);
-                } 
-                else if (obs.type === "stairsPlatform") {
+                if (obs.type === "singleSpike" || obs.type === "doubleSpike") {
+                    let count = obs.type === "doubleSpike" ? 2 : 1;
+                    let w = obs.type === "doubleSpike" ? 30 : 30;
+                    for(let k=0; k<count; k++) {
+                        let curX = obs.x + (k * 30);
+                        ctx.fillStyle = "#023e8a";
+                        ctx.beginPath();
+                        ctx.moveTo(curX, obs.y + obs.height);
+                        ctx.lineTo(curX + w / 2, obs.y);
+                        ctx.lineTo(curX + w, obs.y + obs.height);
+                        ctx.closePath();
+                        ctx.fill();
+
+                        ctx.fillStyle = "#ffb703";
+                        ctx.beginPath();
+                        ctx.moveTo(curX + 4, obs.y + obs.height);
+                        ctx.lineTo(curX + w / 2, obs.y + 6);
+                        ctx.lineTo(curX + w - 4, obs.y + obs.height);
+                        ctx.closePath();
+                        ctx.fill();
+
+                        ctx.strokeStyle = "#ffffff";
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                } else {
                     ctx.fillStyle = "#023e8a";
                     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
                     ctx.strokeStyle = "#90e0ef";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
-
                     ctx.fillStyle = "#90e0ef";
-                    ctx.fillRect(obs.x + 6, obs
+                    ctx.fillRect(obs.x + 6, obs.y + 6, obs.width - 12, 6);
+                }
+            }
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 20px Arial";
+            ctx.fillText("Progress: " + score + " / " + winningScore, 20, 30);
+
+            if (isGameOver) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ff3333";
+                ctx.font = "bold 40px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "18px Arial";
+                ctx.fillText("Nhấn Space hoặc Click để thử lại", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.textAlign = "left";
+            }
+
+            if (isGameWon) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#48cae4";
+                ctx.font = "bold 40px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "18px Arial";
+                ctx.fillText("Chúc mừng bạn đã hoàn thành màn chơi!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
+                ctx.textAlign = "left";
+            }
+        }
+
+        function loop() {
+            if (gameRunning) {
+                update();
+                draw();
+                requestAnimationFrame(loop);
+            }
+        }
+    </script>
+</body>
+</html>
