@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - More Air Obstacles</title>
+    <title>Geometry Dash - Extreme Air Obstacles</title>
     <style>
         * {
             box-sizing: border-box;
@@ -197,7 +197,7 @@
         let gravityDir = 1;
         let score = 0;
         let objectTimer = 0;
-        let objectInterval = 80; // Giảm thời gian để vật cản ra dày hơn
+        let objectInterval = 65; // Rút ngắn thời gian sinh vật cản để xuất hiện liên tục
         let gameState = "MENU";
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
@@ -268,7 +268,7 @@
             particles = [];
             score = 0;
             config.speed = 6.0;
-            objectInterval = 80;
+            objectInterval = 65;
             gravityDir = 1;
             player.y = 250;
             player.dy = 0;
@@ -276,39 +276,38 @@
             player.grounded = false;
         }
 
-        // Tăng tỷ lệ xuất hiện chướng ngại vật trên không
+        // Tăng cực đại mật độ chướng ngại vật trên không khi chọn máy bay hoặc jetpack
         function spawnObject() {
             const rand = Math.random();
             let x = canvas.width;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
-                // Ưu tiên sinh nhiều vật cản trên không khi chơi máy bay
-                if (rand < 0.25) {
-                    objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 50, radius: 20, rotation: 0 });
-                } else if (rand < 0.50) {
-                    objects.push({ type: "block", x: x, width: 45, height: Math.random() * 100 + 60, y: Math.random() > 0.5 ? 0 : 200 });
+                if (rand < 0.40) {
+                    // Cưa lơ lửng ngẫu nhiên khắp bầu trời
+                    objects.push({ type: "sawblade", x: x, y: Math.random() * 260 + 30, radius: 19, rotation: 0 });
                 } else if (rand < 0.70) {
-                    objects.push({ type: "orb", x: x, y: Math.random() * 220 + 80, radius: 14, collected: false });
+                    // Khối đá chắn trên không
+                    objects.push({ type: "block", x: x, width: 40, height: Math.random() * 120 + 50, y: Math.random() > 0.5 ? 0 : 180 });
                 } else if (rand < 0.85) {
-                    objects.push({ type: "pit", x: x, width: 70, height: 60, y: 340 });
+                    // Quả cầu nhảy thử thách giữa không trung
+                    objects.push({ type: "orb", x: x, y: Math.random() * 200 + 70, radius: 14, collected: false });
                 } else {
-                    let targetVeh = Math.random() > 0.5 ? "cube" : "ship";
-                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
+                    // Cổng đổi phương tiện thỉnh thoảng xuất hiện
+                    let targetVeh = Math.random() > 0.6 ? "cube" : "ship";
+                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 180, target: targetVeh });
                 }
             } else {
-                // Phân bổ chuẩn khi ở dạng khác
+                // Tần suất chuẩn cho các dạng khác
                 if (rand < 0.15) {
                     objects.push({ type: "pit", x: x, width: 75, height: 60, y: 340 });
-                } else if (rand < 0.28) {
-                    objects.push({ type: "pad", x: x, width: 35, height: 15, y: 325 });
-                } else if (rand < 0.40) {
-                    objects.push({ type: "orb", x: x + 20, y: 230, radius: 14, collected: false });
-                } else if (rand < 0.52) {
+                } else if (rand < 0.30) {
+                    objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 80, radius: 20, rotation: 0 });
+                } else if (rand < 0.45) {
                     objects.push({ type: "block", x: x, width: 50, height: 60, y: 280 });
-                } else if (rand < 0.68) {
-                    objects.push({ type: "sawblade", x: x + 20, y: Math.random() > 0.5 ? 260 : 150, radius: 22, rotation: 0 });
-                } else if (rand < 0.82) {
-                    objects.push({ type: "fakeSpike", x: x, width: 30, height: 35, y: 310 });
+                } else if (rand < 0.60) {
+                    objects.push({ type: "pad", x: x, width: 35, height: 15, y: 325 });
+                } else if (rand < 0.75) {
+                    objects.push({ type: "orb", x: x + 20, y: 220, radius: 14, collected: false });
                 } else {
                     let targetVeh = Math.random() > 0.5 ? "ship" : "cube";
                     objects.push({ type: "portal", x: x, width: 30, height: 90, y: 250, target: targetVeh });
@@ -386,7 +385,7 @@
             if (objectTimer >= objectInterval) {
                 spawnObject();
                 objectTimer = 0;
-                if (objectInterval > 50) objectInterval -= 2;
+                if (objectInterval > 40) objectInterval -= 2;
             }
 
             for (let i = objects.length - 1; i >= 0; i--) {
@@ -505,14 +504,6 @@
                     ctx.strokeStyle = "#fff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
-                } else if (obj.type === "fakeSpike") {
-                    ctx.fillStyle = "rgba(2, 62, 138, 0.3)";
-                    ctx.beginPath();
-                    ctx.moveTo(obj.x, obj.y + obj.height);
-                    ctx.lineTo(obj.x + obj.width / 2, obj.y);
-                    ctx.lineTo(obj.x + obj.width, obj.y + obj.height);
-                    ctx.closePath();
-                    ctx.fill();
                 }
             });
 
