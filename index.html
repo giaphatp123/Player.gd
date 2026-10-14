@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Geometry Dash - Multi Obstacles & Win</title>
+    <title>Mini Geometry Dash - Authentic Style</title>
     <style>
         body {
             margin: 0;
@@ -29,6 +29,7 @@
         canvas {
             border: 4px solid #fff;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            background: #1e1e3f;
         }
         .menu-box {
             background: #2b2b3d;
@@ -137,18 +138,18 @@
             y: 250,
             size: 30,
             dy: 0,
-            jumpPower: -11,
-            gravity: 0.6,
+            jumpPower: -11.5,
+            gravity: 0.65,
             grounded: false,
             rotation: 0
         };
 
         let obstacles = [];
         let obstacleTimer = 0;
-        let obstacleInterval = 100;
-        let gameSpeed = 5;
+        let obstacleInterval = 110;
+        let gameSpeed = 5.5;
         let score = 0;
-        let winningScore = 20; // Đạt 20 điểm sẽ chiến thắng
+        let winningScore = 20;
         let isGameOver = false;
         let isGameWon = false;
         let gameRunning = false;
@@ -186,8 +187,8 @@
         function resetGame() {
             obstacles = [];
             score = 0;
-            gameSpeed = 5;
-            obstacleInterval = 100;
+            gameSpeed = 5.5;
+            obstacleInterval = 110;
             player.y = 250;
             player.dy = 0;
             isGameOver = false;
@@ -195,28 +196,33 @@
         }
 
         function spawnObstacle() {
-            // Ngẫu nhiên chọn loại chướng ngại vật: 0 = Gai đơn, 1 = Gai đôi, 2 = Khối cao
-            const typeRand = Math.random();
+            const rand = Math.random();
             let obs = { x: canvas.width };
 
-            if (typeRand < 0.4) {
-                // Gai đơn
-                obs.type = "spike";
-                obs.width = 25;
+            if (rand < 0.35) {
+                // 1. Gai đơn (Single Spike)
+                obs.type = "singleSpike";
+                obs.width = 30;
                 obs.height = 35;
                 obs.y = 310;
-            } else if (typeRand < 0.7) {
-                // Gai đôi
+            } else if (rand < 0.65) {
+                // 2. Gai đôi (Double Spike)
                 obs.type = "doubleSpike";
-                obs.width = 50;
+                obs.width = 60;
+                obs.height = 35;
+                obs.y = 310;
+            } else if (rand < 0.85) {
+                // 3. Cụm ba gai (Triple Spike - Thử thách cao)
+                obs.type = "tripleSpike";
+                obs.width = 90;
                 obs.height = 35;
                 obs.y = 310;
             } else {
-                // Khối tường cao
+                // 4. Khối hộp nền tảng (Square Block)
                 obs.type = "block";
-                obs.width = 30;
-                obs.height = 50;
-                obs.y = 290;
+                obs.width = 40;
+                obs.height = 40;
+                obs.y = 300;
             }
 
             obstacles.push(obs);
@@ -236,30 +242,30 @@
                 player.rotation = Math.round(player.rotation / 90) * 90;
             } else {
                 player.grounded = false;
-                player.rotation += 8;
+                player.rotation += 9;
             }
 
             obstacleTimer++;
             if (obstacleTimer >= obstacleInterval) {
                 spawnObstacle();
                 obstacleTimer = 0;
-                if (obstacleInterval > 60) obstacleInterval -= 2;
+                if (obstacleInterval > 65) obstacleInterval -= 3;
             }
 
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 obstacles[i].x -= gameSpeed;
 
-                // Kiểm tra va chạm (AABB Collision)
+                // Thu nhỏ biên độ va chạm một chút để trò chơi mượt mà, công bằng hơn (Hitbox tuning)
+                let padding = 4;
                 if (
-                    player.x < obstacles[i].x + obstacles[i].width &&
-                    player.x + player.size > obstacles[i].x &&
-                    player.y < obstacles[i].y + obstacles[i].height &&
+                    player.x + padding < obstacles[i].x + obstacles[i].width - padding &&
+                    player.x + player.size - padding > obstacles[i].x + padding &&
+                    player.y + padding < obstacles[i].y + obstacles[i].height &&
                     player.y + player.size > obstacles[i].y
                 ) {
                     isGameOver = true;
                 }
 
-                // Qua mỗi chướng ngại vật tính điểm
                 if (obstacles[i].x + obstacles[i].width < 0) {
                     obstacles.splice(i, 1);
                     score++;
@@ -290,11 +296,41 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
+        // Hàm vẽ một chiếc gai đơn chuẩn phong cách Geometry Dash
+        function drawSpike(x, y, w, h) {
+            ctx.fillStyle = "#111111"; // Viền hoặc đế tối
+            ctx.beginPath();
+            ctx.moveTo(x, y + h);
+            ctx.lineTo(x + w / 2, y);
+            ctx.lineTo(x + w, y + h);
+            ctx.closePath();
+            ctx.fill();
+
+            // Lớp lõi gai sáng màu đặc trưng (Đỏ/Cam/Vàng tuỳ chọn phong cách GD)
+            ctx.fillStyle = "#ff2244";
+            ctx.beginPath();
+            ctx.moveTo(x + 3, y + h);
+            ctx.lineTo(x + w / 2, y + 5);
+            ctx.lineTo(x + w - 3, y + h);
+            ctx.closePath();
+            ctx.fill();
+
+            // Viền ngoài sắc nét
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y + h);
+            ctx.lineTo(x + w / 2, y);
+            ctx.lineTo(x + w, y + h);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
         function draw() {
             drawBackground();
 
-            // Vẽ mặt đất
-            ctx.fillStyle = "#ff0055";
+            // Vẽ đường nền đất phía dưới
+            ctx.fillStyle = "#cc0044";
             ctx.fillRect(0, 340, canvas.width, 60);
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 3;
@@ -303,59 +339,59 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            // Vẽ nhân vật
+            // Vẽ nhân vật hình vuông có viền và hiệu ứng xoay
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
+            
             ctx.fillStyle = selectedPlayerColor;
             ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
+            
+            // Trang trí mặt trong khối vuông nhỏ cho giống bản gốc
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 2;
             ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
+            
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(-6, -6, 12, 12); // Ô vuông nhỏ ở tâm nhân vật
             ctx.restore();
 
             // Vẽ các loại chướng ngại vật
             for (let obs of obstacles) {
-                if (obs.type === "spike") {
-                    // Gai đơn
-                    ctx.fillStyle = "#ffcc00";
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x, obs.y + obs.height);
-                    ctx.lineTo(obs.x + obs.width / 2, obs.y);
-                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                } else if (obs.type === "doubleSpike") {
-                    // Gai đôi
-                    ctx.fillStyle = "#ff9900";
-                    ctx.beginPath();
-                    ctx.moveTo(obs.x, obs.y + obs.height);
-                    ctx.lineTo(obs.x + obs.width / 4, obs.y);
-                    ctx.lineTo(obs.x + obs.width / 2, obs.y + obs.height);
-                    ctx.lineTo(obs.x + (3 * obs.width) / 4, obs.y);
-                    ctx.lineTo(obs.x + obs.width, obs.y + obs.height);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                } else if (obs.type === "block") {
-                    // Khối tường cản
-                    ctx.fillStyle = "#9900ff";
+                if (obs.type === "singleSpike") {
+                    drawSpike(obs.x, obs.y, obs.width, obs.height);
+                } 
+                else if (obs.type === "doubleSpike") {
+                    drawSpike(obs.x, obs.y, 30, obs.height);
+                    drawSpike(obs.x + 30, obs.y, 30, obs.height);
+                } 
+                else if (obs.type === "tripleSpike") {
+                    drawSpike(obs.x, obs.y, 30, obs.height);
+                    drawSpike(obs.x + 30, obs.y, 30, obs.height);
+                    drawSpike(obs.x + 60, obs.y, 30, obs.height);
+                } 
+                else if (obs.type === "block") {
+                    // Khối vuông chướng ngại vật / bệ nhảy
+                    ctx.fillStyle = "#222244";
                     ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#00ffcc";
+                    ctx.lineWidth = 3;
                     ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+                    
+                    // Chi tiết bên trong khối hộp
+                    ctx.fillStyle = "#00ffcc";
+                    ctx.fillRect(obs.x + 8, obs.y + 8, obs.width - 16, obs.height - 16);
                 }
             }
 
-            // Hiển thị điểm số & mục tiêu chiến thắng
+            // Hiển thị điểm số
             ctx.fillStyle = "#ffffff";
-            ctx.font = "20px Arial";
+            ctx.font = "bold 20px Arial";
             ctx.fillText("Score: " + score + " / " + winningScore, 20, 30);
 
             // Màn hình Game Over
             if (isGameOver) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = "#ff3333";
@@ -364,24 +400,24 @@
                 ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
 
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "20px Arial";
-                ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.font = "18px Arial";
+                ctx.fillText("Nhấn Space hoặc Click để thử lại", canvas.width / 2, canvas.height / 2 + 30);
                 ctx.textAlign = "left";
             }
 
             // Màn hình Chiến thắng (Victory)
             if (isGameWon) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = "#00ffcc";
                 ctx.font = "bold 40px Arial";
                 ctx.textAlign = "center";
-                ctx.fillText("VICTORY! CHIẾN THẮNG", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText("VICTORY!", canvas.width / 2, canvas.height / 2 - 20);
 
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "20px Arial";
-                ctx.fillText("Bạn đã vượt qua màn chơi thành công!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.font = "18px Arial";
+                ctx.fillText("Bạn đã hoàn thành màn chơi xuất sắc!", canvas.width / 2, canvas.height / 2 + 20);
                 ctx.fillText("Nhấn Space hoặc Click để chơi lại", canvas.width / 2, canvas.height / 2 + 60);
                 ctx.textAlign = "left";
             }
@@ -396,4 +432,4 @@
     </script>
 </body>
 </html>
-    
+
