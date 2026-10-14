@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Back on Track Final</title>
+    <title>Geometry Dash - Update 2.2 All Vehicles & Effects</title>
     <style>
         body {
             margin: 0;
@@ -32,49 +32,69 @@
         }
         .menu-box {
             background: #1d3557;
-            padding: 25px 35px;
+            padding: 20px 30px;
             border-radius: 12px;
             border: 2px solid #457b9d;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-width: 480px;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        h1 { margin-bottom: 15px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); font-size: 26px; }
-        h3 { margin: 12px 0 8px 0; color: #a8dadc; font-size: 15px; }
-        .options-container {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
+        h1 { margin-bottom: 10px; color: #48cae4; text-shadow: 0 0 10px rgba(72,202,228,0.5); font-size: 24px; }
+        h3 { margin: 8px 0 5px 0; color: #a8dadc; font-size: 14px; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 10px;
         }
+        .options-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
         .btn-option {
-            width: 45px;
-            height: 45px;
-            border: 3px solid #fff;
-            border-radius: 8px;
+            padding: 8px 10px;
+            background-color: #2b2b3d;
+            border: 2px solid #fff;
+            border-radius: 6px;
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
         }
         .btn-option:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         .btn-option.selected {
             border-color: #ffb703;
-            box-shadow: 0 0 12px #ffb703;
+            background-color: #3b3b5c;
+            box-shadow: 0 0 8px #ffb703;
+        }
+        .color-circle {
+            width: 35px;
+            height: 35px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .color-circle.selected {
+            border-color: #ffb703;
+            box-shadow: 0 0 10px #ffb703;
         }
         .start-btn {
             background-color: #48cae4;
             color: #03045e;
             font-weight: bold;
-            font-size: 18px;
-            padding: 12px 30px;
+            font-size: 16px;
+            padding: 10px 25px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 10px;
             transition: background 0.2s;
         }
         .start-btn:hover {
@@ -84,31 +104,30 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH CHỌN TÙY CHỈNH -->
+    <!-- MÀN HÌNH CHỌN 9 DẠNG PHƯƠNG TIỆN & HIỆU ỨNG -->
     <div id="menuScreen" class="screen menu-box">
-        <h1>BACK ON TRACK</h1>
+        <h1>BACK ON TRACK - 2.2 GARAGE</h1>
         
-        <h3>Chọn Hình Thù Nhân Vật:</h3>
-        <div class="options-container" id="shapeOptions">
-            <div class="btn-option selected" style="background-color: #2b2b3d;" data-shape="cube" title="Khối Vuông">🟦</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="angel" title="Khối Thiên Thần">👼</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="ball" title="Quả Cầu">🔮</div>
-            <div class="btn-option" style="background-color: #2b2b3d;" data-shape="superhero" title="Siêu Nhân">🦸</div>
+        <h3>Chọn Phương Tiện & Mẫu (Icons):</h3>
+        <div class="grid-container" id="shapeOptions">
+            <div class="btn-option selected" data-shape="cube">🟦 Cube (485 mẫu)</div>
+            <div class="btn-option" data-shape="ship">🚀 Ship (169 mẫu)</div>
+            <div class="btn-option" data-shape="ball">🔮 Ball (118 mẫu)</div>
+            <div class="btn-option" data-shape="ufo">🛸 UFO (149 mẫu)</div>
+            <div class="btn-option" data-shape="wave">⚡ Wave (96 mẫu)</div>
+            <div class="btn-option" data-shape="robot">🤖 Robot (68 mẫu)</div>
+            <div class="btn-option" data-shape="spider">🕷️ Spider (69 mẫu)</div>
+            <div class="btn-option" data-shape="swing">🪂 Swing (43 mẫu)</div>
+            <div class="btn-option" data-shape="jetpack">🎒 Jetpack (8 mẫu)</div>
         </div>
 
-        <h3>Chọn Màu Chủ Đạo:</h3>
+        <h3>Chọn Màu Sắc Chủ Đạo:</h3>
         <div class="options-container" id="colorOptions">
-            <div class="btn-option selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
-            <div class="btn-option" style="background-color: #ff3366;" data-color="#ff3366"></div>
-            <div class="btn-option" style="background-color: #ffcc00;" data-color="#ffcc00"></div>
-            <div class="btn-option" style="background-color: #9933ff;" data-color="#9933ff"></div>
-        </div>
-
-        <h3>Chọn Màu Không Gian (Background):</h3>
-        <div class="options-container" id="bgOptions">
-            <div class="btn-option selected" style="background: linear-gradient(to bottom, #03045e, #0077b6);" data-bg="ocean" title="Xanh Đại Dương">🌊</div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #4a0e4e, #000000);" data-bg="darkspace" title="Vũ Trụ Đen">🌌</div>
-            <div class="btn-option" style="background: linear-gradient(to bottom, #833ab4, #fd1d1d);" data-bg="sunset" title="Hoàng Hôn">🌅</div>
+            <div class="color-circle selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
+            <div class="color-circle" style="background-color: #ff3366;" data-color="#ff3366"></div>
+            <div class="color-circle" style="background-color: #ffcc00;" data-color="#ffcc00"></div>
+            <div class="color-circle" style="background-color: #9933ff;" data-color="#9933ff"></div>
+            <div class="color-circle" style="background-color: #ff6600;" data-color="#ff6600"></div>
         </div>
 
         <button class="start-btn" onclick="startGame()">VÀO MÀN CHƠI</button>
@@ -125,31 +144,23 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        let selectedPlayerShape = "cube";
-        let selectedPlayerColor = "#00ffcc";
-        let selectedBgType = "ocean";
+        let selectedVehicle = "cube";
+        let selectedColor = "#00ffcc";
+        let particleEffects = []; // Mảng lưu hiệu ứng hạt/vệt sáng
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
                 document.querySelectorAll("#shapeOptions .btn-option").forEach(b => b.classList.remove("selected"));
                 this.classList.add("selected");
-                selectedPlayerShape = this.getAttribute("data-shape");
+                selectedVehicle = this.getAttribute("data-shape");
             });
         });
 
-        document.querySelectorAll("#colorOptions .btn-option").forEach(btn => {
+        document.querySelectorAll("#colorOptions .color-circle").forEach(btn => {
             btn.addEventListener("click", function() {
-                document.querySelectorAll("#colorOptions .btn-option").forEach(b => b.classList.remove("selected"));
+                document.querySelectorAll("#colorOptions .color-circle").forEach(b => b.classList.remove("selected"));
                 this.classList.add("selected");
-                selectedPlayerColor = this.getAttribute("data-color");
-            });
-        });
-
-        document.querySelectorAll("#bgOptions .btn-option").forEach(btn => {
-            btn.addEventListener("click", function() {
-                document.querySelectorAll("#bgOptions .btn-option").forEach(b => b.classList.remove("selected"));
-                this.classList.add("selected");
-                selectedBgType = this.getAttribute("data-bg");
+                selectedColor = this.getAttribute("data-color");
             });
         });
 
@@ -158,8 +169,8 @@
             y: 250,
             size: 32,
             dy: 0,
-            jumpPower: -13.5, // Tốc độ nhảy nhanh chuẩn bản gốc
-            gravity: 0.85,    // Trọng lực rơi nhanh dứt khoát
+            jumpPower: -13.5,
+            gravity: 0.85,
             grounded: false,
             rotation: 0
         };
@@ -206,6 +217,7 @@
 
         function resetGame() {
             obstacles = [];
+            particleEffects = [];
             score = 0;
             gameSpeed = 6.2;
             obstacleInterval = 90;
@@ -253,6 +265,27 @@
                 player.dy = 0;
                 onGround = true;
             }
+
+            // Tạo hiệu ứng hạt vệt đuôi (Particles / Trail Effects) theo thời gian thực
+            if (Math.random() < 0.6) {
+                particleEffects.push({
+                    x: player.x,
+                    y: player.y + player.size / 2,
+                    size: Math.random() * 6 + 4,
+                    color: selectedColor,
+                    alpha: 1.0,
+                    vx: -2 - Math.random() * 2,
+                    vy: (Math.random() - 0.5) * 2
+                });
+            }
+
+            // Cập nhật vị trí hiệu ứng hạt
+            for (let p of particleEffects) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.04;
+            }
+            particleEffects = particleEffects.filter(p => p.alpha > 0);
 
             for (let obs of obstacles) {
                 if (obs.type === "stairsPlatform") {
@@ -325,16 +358,8 @@
 
         function drawBackground() {
             let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            if (selectedBgType === "ocean") {
-                gradient.addColorStop(0, "#03045e");
-                gradient.addColorStop(1, "#0077b6");
-            } else if (selectedBgType === "darkspace") {
-                gradient.addColorStop(0, "#4a0e4e");
-                gradient.addColorStop(1, "#000000");
-            } else if (selectedBgType === "sunset") {
-                gradient.addColorStop(0, "#833ab4");
-                gradient.addColorStop(1, "#fd1d1d");
-            }
+            gradient.addColorStop(0, "#03045e");
+            gradient.addColorStop(1, "#0077b6");
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
@@ -366,65 +391,134 @@
             ctx.stroke();
         }
 
-        function drawPlayer() {
+        // Vẽ 9 dạng phương tiện chuẩn Update 2.2 kèm hiệu ứng đặc trưng
+        function drawVehicle() {
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
-            if (selectedPlayerShape === "cube") {
-                ctx.fillStyle = selectedPlayerColor;
+            if (selectedVehicle === "cube") {
+                // 1. CUBE
+                ctx.fillStyle = selectedColor;
                 ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(-8, -8, 16, 16);
-                ctx.fillStyle = selectedPlayerColor;
+                ctx.fillStyle = selectedColor;
                 ctx.fillRect(-4, -4, 8, 8);
             } 
-            else if (selectedPlayerShape === "angel") {
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(-player.size / 2 - 10, -8, 10, 16);
-                ctx.fillRect(player.size / 2, -8, 10, 16);
-
-                ctx.fillStyle = selectedPlayerColor;
-                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
-                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                
-                ctx.strokeStyle = "#ffeb3b";
-                ctx.lineWidth = 2;
+            else if (selectedVehicle === "ship") {
+                // 2. SHIP (Tàu bay + hiệu ứng lửa đuôi)
+                ctx.fillStyle = selectedColor;
                 ctx.beginPath();
-                ctx.arc(0, -player.size / 2 - 6, 8, 0, Math.PI * 2);
+                ctx.moveTo(player.size / 2, 0);
+                ctx.lineTo(-player.size / 2, -player.size / 2);
+                ctx.lineTo(-player.size / 3, 0);
+                ctx.lineTo(-player.size / 2, player.size / 2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
                 ctx.stroke();
+                // Lửa phản lực phía sau
+                ctx.fillStyle = "#ffaa00";
+                ctx.fillRect(-player.size / 2 - 8, -4, 8, 8);
             } 
-            else if (selectedPlayerShape === "ball") {
-                ctx.fillStyle = selectedPlayerColor;
+            else if (selectedVehicle === "ball") {
+                // 3. BALL (Quả bóng năng lượng)
+                ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 3;
                 ctx.stroke();
-                
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(0, 0, 6, 0, Math.PI * 2);
                 ctx.fill();
             } 
-            else if (selectedPlayerShape === "superhero") {
-                ctx.fillStyle = selectedPlayerColor;
+            else if (selectedVehicle === "ufo") {
+                // 4. UFO (Đĩa bay)
+                ctx.fillStyle = selectedColor;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, player.size / 2, player.size / 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                // Buồng lái sáng
+                ctx.fillStyle = "#90e0ef";
+                ctx.beginPath();
+                ctx.arc(0, -4, 6, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (selectedVehicle === "wave") {
+                // 5. WAVE (Sóng tam giác điện tử)
+                ctx.fillStyle = selectedColor;
                 ctx.beginPath();
                 ctx.moveTo(player.size / 2, 0);
                 ctx.lineTo(-player.size / 2, -player.size / 2);
-                ctx.lineTo(-player.size / 4, 0);
                 ctx.lineTo(-player.size / 2, player.size / 2);
                 ctx.closePath();
                 ctx.fill();
                 ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2;
                 ctx.stroke();
+            } 
+            else if (selectedVehicle === "robot") {
+                // 6. ROBOT (Người máy cơ khí)
+                ctx.fillStyle = selectedColor;
+                ctx.fillRect(-10, -16, 20, 24);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-10, -16, 20, 24);
+                // Mắt robot sáng
+                ctx.fillStyle = "#ff3333";
+                ctx.fillRect(-6, -10, 12, 4);
+            } 
+            else if (selectedVehicle === "spider") {
+                // 7. SPIDER (Nhện không gian)
+                ctx.fillStyle = selectedColor;
+                ctx.fillRect(-12, -10, 24, 20);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-12, -10, 24, 20);
+                // Chân nhện
+                ctx.strokeStyle = selectedColor;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-12, 10); ctx.lineTo(-18, 16);
+                ctx.moveTo(12, 10); ctx.lineTo(18, 16);
+                ctx.stroke();
+            } 
+            else if (selectedVehicle === "swing") {
+                // 8. SWING COPTER (Đu dây 2.2)
+                ctx.fillStyle = selectedColor;
+                ctx.beginPath();
+                ctx.arc(0, 0, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                // Cánh quạt quay hai đầu
+                ctx.fillStyle = "#ffb703";
+                ctx.fillRect(-18, -18, 36, 4);
+                ctx.fillRect(-18, 14, 36, 4);
+            } 
+            else if (selectedVehicle === "jetpack") {
+                // 9. JETPACK (Balo tên lửa 2.2)
+                ctx.fillStyle = selectedColor;
+                ctx.fillRect(-12, -14, 24, 28);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-12, -14, 24, 28);
+                // Bình khí tên lửa và lửa đẩy
+                ctx.fillStyle = "#ff4500";
+                ctx.fillRect(-16, 6, 8, 12);
+                ctx.fillRect(8, 6, 8, 12);
             }
 
             ctx.restore();
@@ -432,6 +526,16 @@
 
         function draw() {
             drawBackground();
+
+            // Vẽ hiệu ứng hạt vệt sáng bay phía sau (Particle Trail)
+            for (let p of particleEffects) {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1.0; // Reset độ trong suốt
 
             // Mặt đất
             ctx.fillStyle = "#00b4d8";
@@ -443,8 +547,10 @@
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
 
-            drawPlayer();
+            // Vẽ phương tiện đã chọn
+            drawVehicle();
 
+            // Chướng ngại vật
             for (let obs of obstacles) {
                 if (obs.type === "singleSpike") {
                     drawSpike(obs.x, obs.y, obs.width, obs.height);
