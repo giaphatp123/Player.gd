@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Tuong Quan Remix Edition</title>
+    <title>Geometry Dash - Ultimate Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -159,28 +159,21 @@
 </head>
 <body>
 
-    <!-- THẺ AUDIO NHẠC NỀN TƯỚNG QUÂN REMIX -->
-    <audio id="bgMusic" loop>
-        <source src="https://dns6.freemp3.cc/download.php?id=Z9QdlOk9vEbg" type="audio/mp3">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
-    </audio>
-
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #a8dadc; margin-bottom: 25px;">Nhạc nền: Tướng Quân Remix sôi động</p>
+        <p style="color: #a8dadc; margin-bottom: 25px;">Bản hoàn chỉnh: Độc lập bẫy, Gai trần dày đặc cho Ball</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
-            <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button><br>
-            <button id="musicToggleBtn" class="ui-btn btn-back" onclick="toggleMusic()" style="font-size: 14px; padding: 8px; width: 160px; margin-top: 15px;">🎵 NHẠC: BẬT</button>
+            <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
     </div>
 
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Vừa chơi game vừa quẩy nhạc Tướng Quân Remix</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Thử thách độc lập & Mật độ gai trên không cực cao</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
@@ -219,7 +212,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Âm thanh:</b> Bạn có thể Bật/Tắt nhạc nền Tướng Quân Remix bất cứ lúc nào ở màn hình chính.<br>
+            • <b>Khi thua/thắng:</b> Chỉ cần click trực tiếp vào màn hình game hoặc bấm Space để chơi lại ngay lập tức.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -232,21 +225,6 @@
     </div>
 
     <script>
-        const bgMusic = document.getElementById("bgMusic");
-        let isMusicOn = true;
-
-        function toggleMusic() {
-            isMusicOn = !isMusicOn;
-            const btn = document.getElementById("musicToggleBtn");
-            if (isMusicOn) {
-                bgMusic.play().catch(e => console.log(e));
-                btn.textContent = "🎵 NHẠC: BẬT";
-            } else {
-                bgMusic.pause();
-                btn.textContent = "🔇 NHẠC: TẮT";
-            }
-        }
-
         const screens = {
             homeScreen: document.getElementById("homeScreen"),
             levelScreen: document.getElementById("levelScreen"),
@@ -308,9 +286,6 @@
 
         function startGame() {
             showScreen("gameScreen");
-            if (isMusicOn) {
-                bgMusic.play().catch(e => console.log("Audio autoplay blocked, user interaction required."));
-            }
             resetGame();
             gameState = "PLAYING";
             requestAnimationFrame(loop);
