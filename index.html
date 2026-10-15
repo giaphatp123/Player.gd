@@ -159,6 +159,12 @@
 </head>
 <body>
 
+    <!-- THẺ AUDIO PHÁT NHẠC TƯỚNG QUÂN -->
+    <audio id="bgMusic" loop>
+        <source src="https://ncsmusic.s3.eu-west-1.amazonaws.com/tracks/000/000/515/tuong-quan-remix.mp3" type="audio/mpeg">
+        <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
+    </audio>
+
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
@@ -233,6 +239,9 @@
             gameScreen: document.getElementById("gameScreen")
         };
 
+        const bgMusic = document.getElementById("bgMusic");
+        bgMusic.volume = 0.5; // Đặt âm lượng vừa phải (50%)
+
         function showScreen(screenId) {
             for (let key in screens) {
                 screens[key].classList.add("hidden");
@@ -288,11 +297,17 @@
             showScreen("gameScreen");
             resetGame();
             gameState = "PLAYING";
+            
+            // Phát nhạc nền khi bắt đầu chơi
+            bgMusic.play().catch(e => console.log("Trình duyệt chặn autoplay audio:", e));
+
             requestAnimationFrame(loop);
         }
 
         function returnToMenu() {
             gameState = "MENU";
+            bgMusic.pause(); // Dừng nhạc khi về menu
+            bgMusic.currentTime = 0;
             showScreen("homeScreen");
         }
 
@@ -311,6 +326,7 @@
             if (gameState === "GAMEOVER" || gameState === "WON") {
                 resetGame();
                 gameState = "PLAYING";
+                bgMusic.play().catch(e => {});
                 return;
             }
 
@@ -428,6 +444,7 @@
 
             if (player.y < -100) {
                 gameState = "GAMEOVER";
+                bgMusic.pause();
             }
 
             if (Math.random() < 0.4) {
@@ -471,7 +488,10 @@
                 let pad = 6;
                 if (obj.type === "pit") {
                     if (player.x + player.size / 2 > obj.x && player.x + player.size / 2 < obj.x + obj.width) {
-                        if (gravityDir === 1 && player.y >= groundLevel) gameState = "GAMEOVER";
+                        if (gravityDir === 1 && player.y >= groundLevel) {
+                            gameState = "GAMEOVER";
+                            bgMusic.pause();
+                        }
                     }
                 } else if (obj.type === "pad") {
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
@@ -489,12 +509,14 @@
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
                         player.y + player.size - pad > obj.y && player.y + pad < obj.y + obj.height) {
                         gameState = "GAMEOVER";
+                        bgMusic.pause();
                     }
                 } else if (obj.type === "sawblade") {
                     obj.rotation += 0.12;
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < player.size/2 + obj.radius - 6) {
                         gameState = "GAMEOVER";
+                        bgMusic.pause();
                     }
                 } else if (obj.type === "topSpike") {
                     if (
@@ -503,6 +525,7 @@
                         player.y + pad < obj.y + obj.height
                     ) {
                         gameState = "GAMEOVER";
+                        bgMusic.pause();
                     }
                 } else if (obj.type === "portal") {
                     if (player.x + player.size > obj.x && player.x < obj.x + obj.width &&
@@ -516,7 +539,10 @@
                 if (obj.x + (obj.width || 40) < 0) {
                     objects.splice(i, 1);
                     score++;
-                    if (score >= config.winningScore) gameState = "WON";
+                    if (score >= config.winningScore) {
+                        gameState = "WON";
+                        bgMusic.pause();
+                    }
                     if (score % 5 === 0) config.speed += 0.25;
                 }
             }
