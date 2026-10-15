@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Ultimate Edition</title>
+    <title>Geometry Dash - Ultra Neon Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +11,7 @@
         }
         body {
             margin: 0;
-            background-color: #050814;
+            background-color: #02040a;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,40 +31,41 @@
             display: none !important;
         }
         canvas {
-            border: 4px solid #48cae4;
-            box-shadow: 0 0 35px rgba(72, 202, 228, 0.5);
-            background: linear-gradient(to bottom, #03045e, #0077b6);
-            border-radius: 6px;
+            border: 4px solid #00f0ff;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.3);
+            background: radial-gradient(circle at center, #0a1128 0%, #02040a 100%);
+            border-radius: 12px;
             cursor: pointer;
         }
         .menu-box {
-            background: linear-gradient(135deg, #1d3557, #0b132b);
-            padding: 30px 40px;
-            border-radius: 16px;
-            border: 2px solid #48cae4;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(5, 10, 25, 0.95));
+            padding: 35px 45px;
+            border-radius: 20px;
+            border: 2px solid #00f0ff;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
             max-width: 600px;
             width: 100%;
+            backdrop-filter: blur(10px);
         }
         h1 {
             margin: 0 0 10px 0;
-            color: #48cae4;
-            font-size: 32px;
-            text-shadow: 0 0 15px rgba(72,202,228,0.7);
-            letter-spacing: 2px;
+            color: #00f0ff;
+            font-size: 36px;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.8), 0 0 40px rgba(0, 240, 255, 0.4);
+            letter-spacing: 3px;
         }
         h2 {
             margin: 0 0 20px 0;
-            color: #ffb703;
-            font-size: 22px;
-            text-shadow: 0 0 10px rgba(255,183,3,0.5);
+            color: #ff007f;
+            font-size: 24px;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.8);
         }
         h3 {
             margin: 15px 0 8px 0;
             color: #a8dadc;
             font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
         .grid-container {
             display: grid;
@@ -76,14 +77,14 @@
             display: flex;
             gap: 12px;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
         .btn-option {
             padding: 10px;
-            background-color: #111827;
+            background-color: rgba(17, 24, 39, 0.8);
             border: 2px solid #374151;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
@@ -91,67 +92,70 @@
             transition: all 0.2s ease;
         }
         .btn-option:hover {
-            border-color: #48cae4;
-            background-color: #1f2937;
+            border-color: #00f0ff;
+            background-color: rgba(31, 41, 55, 0.9);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
         }
         .btn-option.selected {
-            border-color: #ffb703;
-            background-color: #1e293b;
-            box-shadow: 0 0 12px rgba(255, 183, 3, 0.6);
-            color: #ffb703;
+            border-color: #ff007f;
+            background-color: rgba(30, 20, 45, 0.9);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            color: #ff007f;
         }
         .color-circle {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border: 3px solid #374151;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .color-circle:hover {
-            transform: scale(1.1);
-        }
-        .color-circle.selected {
-            border-color: #ffb703;
-            box-shadow: 0 0 15px #ffb703;
             transform: scale(1.15);
         }
+        .color-circle.selected {
+            border-color: #ffffff;
+            box-shadow: 0 0 20px currentColor;
+            transform: scale(1.25);
+        }
         .ui-btn {
-            background: linear-gradient(135deg, #48cae4, #00b4d8);
-            color: #03045e;
-            font-weight: bold;
+            background: linear-gradient(135deg, #00f0ff, #0077b6);
+            color: #02040a;
+            font-weight: 800;
             font-size: 18px;
-            padding: 12px 30px;
+            padding: 14px 30px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             margin: 8px;
-            box-shadow: 0 4px 15px rgba(72,202,228,0.4);
-            transition: transform 0.1s ease, background 0.2s ease;
-            width: 240px;
+            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.4);
+            transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
+            width: 260px;
         }
         .ui-btn:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            color: #ffffff;
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #48cae4, #00b4d8);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.7);
         }
         .ui-btn:active {
             transform: translateY(1px);
         }
         .btn-music {
-            background: linear-gradient(135deg, #ffb703, #fb8500);
-            color: #03045e;
+            background: linear-gradient(135deg, #ff007f, #7209b7);
+            color: #ffffff;
+            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
         }
         .btn-music:hover {
-            background: linear-gradient(135deg, #fb8500, #d90429);
-            color: #ffffff;
+            background: linear-gradient(135deg, #ff4d94, #9b5de5);
+            box-shadow: 0 8px 25px rgba(255, 0, 127, 0.7);
         }
         .btn-back {
-            background: linear-gradient(135deg, #6c757d, #495057);
+            background: linear-gradient(135deg, #495057, #343a40);
             color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .btn-back:hover {
-            background: linear-gradient(135deg, #495057, #343a40);
+            background: linear-gradient(135deg, #6c757d, #495057);
         }
         .desc-text {
             color: #a8dadc;
@@ -159,15 +163,16 @@
             line-height: 1.6;
             margin-bottom: 20px;
             text-align: left;
-            background: rgba(0,0,0,0.2);
-            padding: 12px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <!-- THẺ AUDIO PHÁT NHẠC TƯỚNG QUÂN -->
+    <!-- THẺ AUDIO PHÁT NHẠC -->
     <audio id="bgMusic" loop preload="auto">
         <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
@@ -176,10 +181,10 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Bản hoàn chỉnh: Độc lập bẫy, Gai trần dày đặc cho Ball</p>
+        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">ULTRA NEON EDITION • ĐỒ HỌA ĐỈNH CAO</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
-            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC TƯỚNG QUÂN</button><br>
+            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
@@ -188,9 +193,9 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Thử thách độc lập & Mật độ gai trên không cực cao</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Hiệu ứng toàn màn hình & Thử thách cực độ</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
-        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC TƯỚNG QUÂN</button><br>
+        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -213,11 +218,11 @@
 
         <h3>Chọn Màu Sắc Chủ Đạo:</h3>
         <div class="options-container" id="colorOptions">
-            <div class="color-circle selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
-            <div class="color-circle" style="background-color: #ff3366;" data-color="#ff3366"></div>
-            <div class="color-circle" style="background-color: #ffcc00;" data-color="#ffcc00"></div>
-            <div class="color-circle" style="background-color: #9933ff;" data-color="#9933ff"></div>
-            <div class="color-circle" style="background-color: #ff6600;" data-color="#ff6600"></div>
+            <div class="color-circle selected" style="background-color: #00ffcc; color: #00ffcc;" data-color="#00ffcc"></div>
+            <div class="color-circle" style="background-color: #ff007f; color: #ff007f;" data-color="#ff007f"></div>
+            <div class="color-circle" style="background-color: #ffb703; color: #ffb703;" data-color="#ffb703"></div>
+            <div class="color-circle" style="background-color: #9d4edd; color: #9d4edd;" data-color="#9d4edd"></div>
+            <div class="color-circle" style="background-color: #00f0ff; color: #00f0ff;" data-color="#00f0ff"></div>
         </div>
 
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">XÁC NHẬN & QUAY LẠI</button>
@@ -228,7 +233,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Nút Bật/Tắt Nhạc:</b> Bấm trực tiếp để thưởng thức âm nhạc xuyên suốt quá trình chơi.<br>
+            • <b>Đồ họa Ultra:</b> Tận hưởng hiệu ứng phát sáng neon và chấn động màn hình khi va chạm.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -260,7 +265,7 @@
             if (isMusicPlaying) {
                 bgMusic.pause();
                 isMusicPlaying = false;
-                updateMusicButtons("🎵 BẬT NHẠC TƯỚNG QUÂN");
+                updateMusicButtons("🎵 BẬT NHẠC NỀN");
             } else {
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
@@ -306,12 +311,33 @@
 
         let objects = [];
         let particles = [];
+        let backgroundStars = [];
         let isHolding = false;
         let gravityDir = 1;
         let score = 0;
         let objectTimer = 0;
         let objectInterval = 65;
         let gameState = "MENU";
+        
+        // Screen Shake variables
+        let shakeTimer = 0;
+        let shakeMagnitude = 0;
+
+        function triggerShake(duration, magnitude) {
+            shakeTimer = duration;
+            shakeMagnitude = magnitude;
+        }
+
+        // Initialize background grid stars
+        for(let i=0; i<60; i++) {
+            backgroundStars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1,
+                speed: Math.random() * 2 + 0.5,
+                alpha: Math.random() * 0.7 + 0.3
+            });
+        }
 
         document.querySelectorAll("#shapeOptions .btn-option").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -334,7 +360,6 @@
             resetGame();
             gameState = "PLAYING";
             
-            // Tự động kích hoạt nhạc nếu chưa bật
             if (!isMusicPlaying) {
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
@@ -373,12 +398,15 @@
                 if (config.vehicle === "cube" && player.grounded) {
                     player.dy = -13.0 * gravityDir;
                     player.grounded = false;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 } else if (config.vehicle === "ufo") {
                     player.dy = -9.0 * gravityDir;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
                 } else if (config.vehicle === "ball" && player.grounded) {
                     gravityDir *= -1;
                     player.dy = -5.0 * gravityDir;
                     player.grounded = false;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
                 }
             }
         }
@@ -399,6 +427,22 @@
             player.rotation = 0;
             player.grounded = false;
             isHolding = false;
+            shakeTimer = 0;
+        }
+
+        function createExplosion(x, y, color, count) {
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    size: Math.random() * 5 + 2,
+                    color: color,
+                    alpha: 1.0,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    decay: Math.random() * 0.04 + 0.02
+                });
+            }
         }
 
         function spawnSingleObject() {
@@ -482,23 +526,28 @@
 
             if (player.y < -100) {
                 gameState = "GAMEOVER";
+                triggerShake(15, 8);
+                createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
             }
 
-            if (Math.random() < 0.4) {
+            // Continuous trail particles
+            if (Math.random() < 0.6) {
                 particles.push({
                     x: player.x,
                     y: player.y + player.size / 2,
-                    size: Math.random() * 4 + 2,
+                    size: Math.random() * 5 + 2,
                     color: config.color,
-                    alpha: 1.0,
-                    vx: -2 - Math.random() * 2,
-                    vy: (Math.random() - 0.5) * 2
+                    alpha: 0.8,
+                    vx: -config.speed * 0.5 - Math.random() * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    decay: 0.05
                 });
             }
+
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.alpha -= 0.05;
+                p.alpha -= p.decay;
             });
             particles = particles.filter(p => p.alpha > 0);
 
@@ -525,30 +574,40 @@
                 let pad = 6;
                 if (obj.type === "pit") {
                     if (player.x + player.size / 2 > obj.x && player.x + player.size / 2 < obj.x + obj.width) {
-                        if (gravityDir === 1 && player.y >= groundLevel) gameState = "GAMEOVER";
+                        if (gravityDir === 1 && player.y >= groundLevel) {
+                            gameState = "GAMEOVER";
+                            triggerShake(15, 8);
+                            createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                        }
                     }
                 } else if (obj.type === "pad") {
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
                         player.y + player.size >= obj.y && player.y <= obj.y + obj.height) {
                         player.dy = -16.0 * gravityDir;
                         player.grounded = false;
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 12);
                     }
                 } else if (obj.type === "orb") {
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < 30 && isHolding && !obj.collected) {
                         obj.collected = true;
                         player.dy = -14.0 * gravityDir;
+                        createExplosion(obj.x, obj.y, '#ffb703', 15);
                     }
                 } else if (obj.type === "block") {
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
                         player.y + player.size - pad > obj.y && player.y + pad < obj.y + obj.height) {
                         gameState = "GAMEOVER";
+                        triggerShake(15, 8);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
                     }
                 } else if (obj.type === "sawblade") {
-                    obj.rotation += 0.12;
+                    obj.rotation += 0.15;
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < player.size/2 + obj.radius - 6) {
                         gameState = "GAMEOVER";
+                        triggerShake(15, 8);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
                     }
                 } else if (obj.type === "topSpike") {
                     if (
@@ -557,11 +616,14 @@
                         player.y + pad < obj.y + obj.height
                     ) {
                         gameState = "GAMEOVER";
+                        triggerShake(15, 8);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
                     }
                 } else if (obj.type === "portal") {
                     if (player.x + player.size > obj.x && player.x < obj.x + obj.width &&
                         player.y + player.size > obj.y - obj.height/2 && player.y < obj.y + obj.height/2) {
                         config.vehicle = obj.target;
+                        createExplosion(obj.x, obj.y, '#00f0ff', 20);
                         objects.splice(i, 1);
                         continue;
                     }
@@ -577,67 +639,105 @@
         }
 
         function draw() {
+            ctx.save();
+            
+            // Apply screen shake
+            if (shakeTimer > 0) {
+                shakeTimer--;
+                let offsetX = (Math.random() - 0.5) * shakeMagnitude;
+                let offsetY = (Math.random() - 0.5) * shakeMagnitude;
+                ctx.translate(offsetX, offsetY);
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach(p => {
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
+            // Draw Parallax Background Grid Stars & Lines
+            backgroundStars.forEach(star => {
+                star.x -= star.speed;
+                if(star.x < 0) star.x = canvas.width;
+                ctx.fillStyle = "#00f0ff";
+                ctx.globalAlpha = star.alpha;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.globalAlpha = 1.0;
 
-            ctx.fillStyle = "#00b4d8";
+            // Draw glowing ground
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = "#00f0ff";
+            ctx.fillStyle = "#030b1e";
             ctx.fillRect(0, 340, canvas.width, 60);
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#00f0ff";
+            ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(0, 340);
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
+            ctx.shadowBlur = 0;
 
+            // Draw Objects with Neon Glow
             objects.forEach(obj => {
                 if (obj.type === "pit") {
-                    ctx.fillStyle = "#03045e";
+                    ctx.fillStyle = "#02040a";
                     ctx.fillRect(obj.x, 338, obj.width, 65);
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = "#ff007f";
+                    ctx.strokeStyle = "#ff007f";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obj.x, 338, obj.width, 65);
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "pad") {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff007f";
                     ctx.fillStyle = "#ff007f";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
                     ctx.strokeStyle = "#fff";
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "orb" && !obj.collected) {
-                    ctx.fillStyle = "#ffcc00";
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = "#ffb703";
+                    ctx.fillStyle = "#ffb703";
                     ctx.beginPath();
                     ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.strokeStyle = "#fff";
                     ctx.lineWidth = 2;
                     ctx.stroke();
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "block") {
-                    ctx.fillStyle = "#1d3557";
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#00f0ff";
+                    ctx.fillStyle = "#101e3f";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.strokeStyle = "#457b9d";
+                    ctx.strokeStyle = "#00f0ff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "sawblade") {
                     ctx.save();
                     ctx.translate(obj.x, obj.y);
                     ctx.rotate(obj.rotation);
-                    ctx.fillStyle = "#6b7280";
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#ff007f";
+                    ctx.fillStyle = "#495057";
                     ctx.beginPath();
                     ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = "#fff";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#ff007f";
+                    ctx.lineWidth = 3;
                     ctx.stroke();
                     for(let c = 0; c < 8; c++) {
                         ctx.rotate(Math.PI / 4);
-                        ctx.fillRect(-3, -obj.radius - 6, 6, 8);
+                        ctx.fillRect(-4, -obj.radius - 8, 8, 10);
                     }
                     ctx.restore();
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "topSpike") {
-                    ctx.fillStyle = "#023e8a";
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "#00f0ff";
+                    ctx.fillStyle = "#03045e";
                     ctx.beginPath();
                     ctx.moveTo(obj.x, 0);
                     ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height);
@@ -645,7 +745,7 @@
                     ctx.closePath();
                     ctx.fill();
 
-                    ctx.fillStyle = "#ffb703";
+                    ctx.fillStyle = "#ff007f";
                     ctx.beginPath();
                     ctx.moveTo(obj.x + 4, 0);
                     ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height - 6);
@@ -656,18 +756,39 @@
                     ctx.strokeStyle = "#ffffff";
                     ctx.lineWidth = 2;
                     ctx.stroke();
+                    ctx.shadowBlur = 0;
                 } else if (obj.type === "portal") {
-                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 100, 0.4)" : "rgba(0, 200, 255, 0.4)";
+                    ctx.shadowBlur = 25;
+                    ctx.shadowColor = obj.target === "ship" ? "#ff007f" : "#00f0ff";
+                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 127, 0.4)" : "rgba(0, 240, 255, 0.4)";
                     ctx.fillRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
                     ctx.strokeStyle = "#fff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
+                    ctx.shadowBlur = 0;
                 }
             });
 
+            // Draw Particles with Bloom
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+            ctx.shadowBlur = 0;
+
+            // Draw Player with High-end Neon Glow
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
+
+            ctx.shadowBlur = 25;
+            ctx.shadowColor = config.color;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 ctx.fillStyle = config.color;
@@ -708,25 +829,35 @@
                 ctx.fillRect(-4, -4, 8, 8);
             }
             ctx.restore();
+            ctx.shadowBlur = 0;
 
+            // Score Display
             ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 18px 'Segoe UI'";
-            ctx.fillText(`Progress: ${score} / ${config.winningScore}`, 20, 30);
+            ctx.font = "bold 20px 'Segoe UI'";
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#00f0ff";
+            ctx.fillText(`PROGRESS: ${score} / ${config.winningScore}`, 25, 35);
+            ctx.shadowBlur = 0;
 
             if (gameState === "GAMEOVER" || gameState === "WON") {
-                ctx.fillStyle = "rgba(5, 8, 20, 0.85)";
+                ctx.fillStyle = "rgba(2, 4, 10, 0.9)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.textAlign = "center";
                 
-                ctx.fillStyle = gameState === "GAMEOVER" ? "#ef4444" : "#48cae4";
-                ctx.font = "bold 42px 'Segoe UI'";
-                ctx.fillText(gameState === "GAMEOVER" ? "GAME OVER" : "LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = gameState === "GAMEOVER" ? "#ff007f" : "#00f0ff";
+                ctx.fillStyle = gameState === "GAMEOVER" ? "#ff007f" : "#00f0ff";
+                ctx.font = "bold 46px 'Segoe UI'";
+                ctx.fillText(gameState === "GAMEOVER" ? "GAME OVER" : "LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 25);
+                ctx.shadowBlur = 0;
                 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px 'Segoe UI'";
                 ctx.fillText("Click vào màn hình hoặc bấm Space để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
                 ctx.textAlign = "left";
             }
+
+            ctx.restore();
         }
 
         function loop() {
