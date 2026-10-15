@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Ultra Neon Edition</title>
+    <title>Geometry Dash - Ultra Neon Edition (Back on Track)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -172,19 +172,19 @@
 </head>
 <body>
 
-    <!-- THẺ AUDIO PHÁT NHẠC -->
+    <!-- THẺ AUDIO PHÁT NHẠC BACK ON TRACK (DJVI) -->
     <audio id="bgMusic" loop preload="auto">
-        <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <source src="https://ia903102.us.archive.org/20/items/GeometryDashOST-BackOnTrack/Back%20on%20Track.mp3" type="audio/mpeg">
+        <source src="https://ia801402.us.archive.org/15/items/geometry-dash-ost/Back%20on%20Track.mp3" type="audio/mpeg">
     </audio>
 
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">ULTRA NEON EDITION • ĐỒ HỌA ĐỈNH CAO</p>
+        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">BACK ON TRACK • ULTRA NEON EDITION</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
-            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
+            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC BACK ON TRACK</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
@@ -193,9 +193,9 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Hiệu ứng toàn màn hình & Thử thách cực độ</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Nhạc nền: Back on Track (DJVI) & Hiệu ứng đỉnh cao</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
-        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
+        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC BACK ON TRACK</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -233,7 +233,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Đồ họa Ultra:</b> Tận hưởng hiệu ứng phát sáng neon và chấn động màn hình khi va chạm.<br>
+            • <b>Nhạc nền chuẩn:</b> Thưởng thức bản hit Back on Track kinh điển.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -243,8 +243,8 @@
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas><br>
         <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-            <button class="ui-btn btn-music" id="musicToggleBtn3" style="width: 150px; font-size: 14px; padding: 8px;" onclick="toggleMusic()">🎵 Bật/Tắt Nhạc</button>
-            <button class="ui-btn btn-back" style="width: 150px; font-size: 14px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
+            <button class="ui-btn btn-music" id="musicToggleBtn3" style="width: 160px; font-size: 13px; padding: 8px;" onclick="toggleMusic()">🎵 Bật/Tắt Nhạc</button>
+            <button class="ui-btn btn-back" style="width: 150px; font-size: 13px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
         </div>
     </div>
 
@@ -265,7 +265,7 @@
             if (isMusicPlaying) {
                 bgMusic.pause();
                 isMusicPlaying = false;
-                updateMusicButtons("🎵 BẬT NHẠC NỀN");
+                updateMusicButtons("🎵 BẬT NHẠC BACK ON TRACK");
             } else {
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
@@ -319,7 +319,6 @@
         let objectInterval = 65;
         let gameState = "MENU";
         
-        // Screen Shake variables
         let shakeTimer = 0;
         let shakeMagnitude = 0;
 
@@ -328,7 +327,6 @@
             shakeMagnitude = magnitude;
         }
 
-        // Initialize background grid stars
         for(let i=0; i<60; i++) {
             backgroundStars.push({
                 x: Math.random() * canvas.width,
@@ -530,7 +528,6 @@
                 createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
             }
 
-            // Continuous trail particles
             if (Math.random() < 0.6) {
                 particles.push({
                     x: player.x,
@@ -641,7 +638,6 @@
         function draw() {
             ctx.save();
             
-            // Apply screen shake
             if (shakeTimer > 0) {
                 shakeTimer--;
                 let offsetX = (Math.random() - 0.5) * shakeMagnitude;
@@ -651,7 +647,6 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Parallax Background Grid Stars & Lines
             backgroundStars.forEach(star => {
                 star.x -= star.speed;
                 if(star.x < 0) star.x = canvas.width;
@@ -663,7 +658,6 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Draw glowing ground
             ctx.shadowBlur = 20;
             ctx.shadowColor = "#00f0ff";
             ctx.fillStyle = "#030b1e";
@@ -676,7 +670,6 @@
             ctx.stroke();
             ctx.shadowBlur = 0;
 
-            // Draw Objects with Neon Glow
             objects.forEach(obj => {
                 if (obj.type === "pit") {
                     ctx.fillStyle = "#02040a";
@@ -769,7 +762,6 @@
                 }
             });
 
-            // Draw Particles with Bloom
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -782,7 +774,6 @@
             ctx.globalAlpha = 1.0;
             ctx.shadowBlur = 0;
 
-            // Draw Player with High-end Neon Glow
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -831,7 +822,6 @@
             ctx.restore();
             ctx.shadowBlur = 0;
 
-            // Score Display
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px 'Segoe UI'";
             ctx.shadowBlur = 10;
@@ -873,3 +863,4 @@
     </script>
 </body>
 </html>
+
