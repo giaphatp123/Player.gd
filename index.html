@@ -128,7 +128,7 @@
             margin: 8px;
             box-shadow: 0 4px 15px rgba(72,202,228,0.4);
             transition: transform 0.1s ease, background 0.2s ease;
-            width: 220px;
+            width: 240px;
         }
         .ui-btn:hover {
             transform: translateY(-2px);
@@ -137,6 +137,14 @@
         }
         .ui-btn:active {
             transform: translateY(1px);
+        }
+        .btn-music {
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            color: #03045e;
+        }
+        .btn-music:hover {
+            background: linear-gradient(135deg, #fb8500, #d90429);
+            color: #ffffff;
         }
         .btn-back {
             background: linear-gradient(135deg, #6c757d, #495057);
@@ -159,18 +167,19 @@
 </head>
 <body>
 
-    <!-- THẺ AUDIO PHÁT NHẠC (Sử dụng nguồn nhạc điện tử nhịp điệu nhanh cực hợp game) -->
+    <!-- THẺ AUDIO PHÁT NHẠC TƯỚNG QUÂN -->
     <audio id="bgMusic" loop preload="auto">
-        <source src="https://cdnsongs.com/music/data/Viet_Remix/Tuong_Quan_Remix/1.mp3" type="audio/mpeg">
         <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #a8dadc; margin-bottom: 25px;">Bản hoàn chỉnh: Độc lập bẫy, Gai trần dày đặc cho Ball</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Bản hoàn chỉnh: Độc lập bẫy, Gai trần dày đặc cho Ball</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
+            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC TƯỚNG QUÂN</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
@@ -181,6 +190,7 @@
         <h2>CHỌN MÀN CHƠI</h2>
         <p style="color: #a8dadc; margin-bottom: 20px;">Thử thách độc lập & Mật độ gai trên không cực cao</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
+        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC TƯỚNG QUÂN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -218,7 +228,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Khi thua/thắng:</b> Chỉ cần click trực tiếp vào màn hình game hoặc bấm Space để chơi lại ngay lập tức.<br>
+            • <b>Nút Bật/Tắt Nhạc:</b> Bấm trực tiếp để thưởng thức âm nhạc xuyên suốt quá trình chơi.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -227,7 +237,10 @@
     <!-- 5. MÀN HÌNH CHƠI GAME CANVAS -->
     <div id="gameScreen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas><br>
-        <button class="ui-btn btn-back" style="margin-top: 10px; width: 150px; font-size: 14px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+            <button class="ui-btn btn-music" id="musicToggleBtn3" style="width: 150px; font-size: 14px; padding: 8px;" onclick="toggleMusic()">🎵 Bật/Tắt Nhạc</button>
+            <button class="ui-btn btn-back" style="width: 150px; font-size: 14px; padding: 8px;" onclick="returnToMenu()">THOÁT RA MENU</button>
+        </div>
     </div>
 
     <script>
@@ -240,7 +253,30 @@
         };
 
         const bgMusic = document.getElementById("bgMusic");
-        bgMusic.volume = 0.6; // Đặt âm lượng 60%
+        bgMusic.volume = 0.7;
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                isMusicPlaying = false;
+                updateMusicButtons("🎵 BẬT NHẠC TƯỚNG QUÂN");
+            } else {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicButtons("🔇 TẮT NHẠC");
+                }).catch(err => {
+                    alert("Vui lòng tương tác thêm một lần nữa để trình duyệt cho phép phát nhạc.");
+                });
+            }
+        }
+
+        function updateMusicButtons(text) {
+            ["musicToggleBtn", "musicToggleBtn2", "musicToggleBtn3"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            });
+        }
 
         function showScreen(screenId) {
             for (let key in screens) {
@@ -293,36 +329,26 @@
             });
         });
 
-        function playMusic() {
-            bgMusic.play().catch(err => {
-                console.log("Trình duyệt đang chặn tự động phát, sẽ kích hoạt lại khi có tương tác tiếp theo.");
-            });
-        }
-
         function startGame() {
             showScreen("gameScreen");
             resetGame();
             gameState = "PLAYING";
             
-            // Kích hoạt phát nhạc khi bắt đầu chơi
-            playMusic();
+            // Tự động kích hoạt nhạc nếu chưa bật
+            if (!isMusicPlaying) {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicButtons("🔇 TẮT NHẠC");
+                }).catch(e => {});
+            }
 
             requestAnimationFrame(loop);
         }
 
         function returnToMenu() {
             gameState = "MENU";
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
             showScreen("homeScreen");
         }
-
-        // Bắt sự kiện bất kỳ cú click chuột hoặc phím Space để gỡ khóa bảo mật âm thanh của trình duyệt
-        window.addEventListener("click", () => {
-            if (bgMusic.paused && gameState === "PLAYING") {
-                playMusic();
-            }
-        }, { once: true });
 
         window.addEventListener("keydown", e => {
             if (e.code === "Space") {
@@ -339,7 +365,6 @@
             if (gameState === "GAMEOVER" || gameState === "WON") {
                 resetGame();
                 gameState = "PLAYING";
-                playMusic();
                 return;
             }
 
@@ -457,7 +482,6 @@
 
             if (player.y < -100) {
                 gameState = "GAMEOVER";
-                bgMusic.pause();
             }
 
             if (Math.random() < 0.4) {
@@ -501,10 +525,7 @@
                 let pad = 6;
                 if (obj.type === "pit") {
                     if (player.x + player.size / 2 > obj.x && player.x + player.size / 2 < obj.x + obj.width) {
-                        if (gravityDir === 1 && player.y >= groundLevel) {
-                            gameState = "GAMEOVER";
-                            bgMusic.pause();
-                        }
+                        if (gravityDir === 1 && player.y >= groundLevel) gameState = "GAMEOVER";
                     }
                 } else if (obj.type === "pad") {
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
@@ -522,14 +543,12 @@
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
                         player.y + player.size - pad > obj.y && player.y + pad < obj.y + obj.height) {
                         gameState = "GAMEOVER";
-                        bgMusic.pause();
                     }
                 } else if (obj.type === "sawblade") {
                     obj.rotation += 0.12;
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < player.size/2 + obj.radius - 6) {
                         gameState = "GAMEOVER";
-                        bgMusic.pause();
                     }
                 } else if (obj.type === "topSpike") {
                     if (
@@ -538,7 +557,6 @@
                         player.y + pad < obj.y + obj.height
                     ) {
                         gameState = "GAMEOVER";
-                        bgMusic.pause();
                     }
                 } else if (obj.type === "portal") {
                     if (player.x + player.size > obj.x && player.x < obj.x + obj.width &&
@@ -552,10 +570,7 @@
                 if (obj.x + (obj.width || 40) < 0) {
                     objects.splice(i, 1);
                     score++;
-                    if (score >= config.winningScore) {
-                        gameState = "WON";
-                        bgMusic.pause();
-                    }
+                    if (score >= config.winningScore) gameState = "WON";
                     if (score % 5 === 0) config.speed += 0.25;
                 }
             }
