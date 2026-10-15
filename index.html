@@ -159,9 +159,9 @@
 </head>
 <body>
 
-    <!-- THẺ AUDIO PHÁT NHẠC TƯỚNG QUÂN -->
-    <audio id="bgMusic" loop>
-        <source src="https://ncsmusic.s3.eu-west-1.amazonaws.com/tracks/000/000/515/tuong-quan-remix.mp3" type="audio/mpeg">
+    <!-- THẺ AUDIO PHÁT NHẠC (Sử dụng nguồn nhạc điện tử nhịp điệu nhanh cực hợp game) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdnsongs.com/music/data/Viet_Remix/Tuong_Quan_Remix/1.mp3" type="audio/mpeg">
         <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
     </audio>
 
@@ -240,7 +240,7 @@
         };
 
         const bgMusic = document.getElementById("bgMusic");
-        bgMusic.volume = 0.5; // Đặt âm lượng vừa phải (50%)
+        bgMusic.volume = 0.6; // Đặt âm lượng 60%
 
         function showScreen(screenId) {
             for (let key in screens) {
@@ -293,23 +293,36 @@
             });
         });
 
+        function playMusic() {
+            bgMusic.play().catch(err => {
+                console.log("Trình duyệt đang chặn tự động phát, sẽ kích hoạt lại khi có tương tác tiếp theo.");
+            });
+        }
+
         function startGame() {
             showScreen("gameScreen");
             resetGame();
             gameState = "PLAYING";
             
-            // Phát nhạc nền khi bắt đầu chơi
-            bgMusic.play().catch(e => console.log("Trình duyệt chặn autoplay audio:", e));
+            // Kích hoạt phát nhạc khi bắt đầu chơi
+            playMusic();
 
             requestAnimationFrame(loop);
         }
 
         function returnToMenu() {
             gameState = "MENU";
-            bgMusic.pause(); // Dừng nhạc khi về menu
+            bgMusic.pause();
             bgMusic.currentTime = 0;
             showScreen("homeScreen");
         }
+
+        // Bắt sự kiện bất kỳ cú click chuột hoặc phím Space để gỡ khóa bảo mật âm thanh của trình duyệt
+        window.addEventListener("click", () => {
+            if (bgMusic.paused && gameState === "PLAYING") {
+                playMusic();
+            }
+        }, { once: true });
 
         window.addEventListener("keydown", e => {
             if (e.code === "Space") {
@@ -326,7 +339,7 @@
             if (gameState === "GAMEOVER" || gameState === "WON") {
                 resetGame();
                 gameState = "PLAYING";
-                bgMusic.play().catch(e => {});
+                playMusic();
                 return;
             }
 
