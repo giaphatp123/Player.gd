@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Ultra Neon Edition (Back on Track)</title>
+    <title>Geometry Dash - Ultra Neon Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -172,19 +172,18 @@
 </head>
 <body>
 
-    <!-- THẺ AUDIO PHÁT NHẠC BACK ON TRACK (DJVI) -->
+    <!-- THẺ AUDIO NHẠC NỀN SYNTHWAVE CHUẨN ĐIỆN TỬ -->
     <audio id="bgMusic" loop preload="auto">
-        <source src="https://ia903102.us.archive.org/20/items/GeometryDashOST-BackOnTrack/Back%20on%20Track.mp3" type="audio/mpeg">
-        <source src="https://ia801402.us.archive.org/15/items/geometry-dash-ost/Back%20on%20Track.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=cyberpunk-2099-107015.mp3" type="audio/mpeg">
     </audio>
 
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">BACK ON TRACK • ULTRA NEON EDITION</p>
+        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">ULTRA NEON EDITION • NHẠC NỀN SYNTHWAVE</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
-            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC BACK ON TRACK</button><br>
+            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
@@ -193,9 +192,9 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Nhạc nền: Back on Track (DJVI) & Hiệu ứng đỉnh cao</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa Ultra Neon & Âm nhạc điện tử đỉnh cao</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
-        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC BACK ON TRACK</button><br>
+        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -233,7 +232,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Nhạc nền chuẩn:</b> Thưởng thức bản hit Back on Track kinh điển.<br>
+            • <b>Âm nhạc:</b> Bấm nút bật nhạc nền để thưởng thức dòng nhạc điện tử sôi động.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -265,13 +264,13 @@
             if (isMusicPlaying) {
                 bgMusic.pause();
                 isMusicPlaying = false;
-                updateMusicButtons("🎵 BẬT NHẠC BACK ON TRACK");
+                updateMusicButtons("🎵 BẬT NHẠC NỀN");
             } else {
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
                     updateMusicButtons("🔇 TẮT NHẠC");
                 }).catch(err => {
-                    alert("Vui lòng tương tác thêm một lần nữa để trình duyệt cho phép phát nhạc.");
+                    alert("Vui lòng click thêm một lần nữa để trình duyệt cho phép phát nhạc.");
                 });
             }
         }
@@ -863,4 +862,3 @@
     </script>
 </body>
 </html>
-
