@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Ultra Neon Edition</title>
+    <title>Geometry Dash - Classic Sharp Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +11,7 @@
         }
         body {
             margin: 0;
-            background-color: #02040a;
+            background-color: #1a1a24;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,34 +31,30 @@
             display: none !important;
         }
         canvas {
-            border: 4px solid #00f0ff;
-            box-shadow: 0 0 50px rgba(0, 240, 255, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.3);
-            background: radial-gradient(circle at center, #0a1128 0%, #02040a 100%);
-            border-radius: 12px;
+            border: 4px solid #2e2e42;
+            background: linear-gradient(135deg, #0d0d15 0%, #1c1c2b 100%);
+            border-radius: 8px;
             cursor: pointer;
         }
         .menu-box {
-            background: linear-gradient(135deg, rgba(20, 30, 60, 0.9), rgba(5, 10, 25, 0.95));
+            background: #14141e;
             padding: 35px 45px;
-            border-radius: 20px;
-            border: 2px solid #00f0ff;
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.4), inset 0 0 15px rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            border: 3px solid #3b3b54;
             max-width: 600px;
             width: 100%;
-            backdrop-filter: blur(10px);
         }
         h1 {
             margin: 0 0 10px 0;
-            color: #00f0ff;
-            font-size: 36px;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.8), 0 0 40px rgba(0, 240, 255, 0.4);
-            letter-spacing: 3px;
+            color: #ffd700;
+            font-size: 38px;
+            letter-spacing: 2px;
+            -webkit-text-stroke: 1px #000;
         }
         h2 {
             margin: 0 0 20px 0;
-            color: #ff007f;
-            font-size: 24px;
-            text-shadow: 0 0 15px rgba(255, 0, 127, 0.8);
+            color: #00ffcc;
+            font-size: 26px;
         }
         h3 {
             margin: 15px 0 8px 0;
@@ -82,80 +78,72 @@
         }
         .btn-option {
             padding: 10px;
-            background-color: rgba(17, 24, 39, 0.8);
-            border: 2px solid #374151;
-            border-radius: 10px;
+            background-color: #1e1e2d;
+            border: 2px solid #3b3b54;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
             color: #e5e7eb;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease;
         }
         .btn-option:hover {
-            border-color: #00f0ff;
-            background-color: rgba(31, 41, 55, 0.9);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            border-color: #ffd700;
+            background-color: #28283d;
         }
         .btn-option.selected {
-            border-color: #ff007f;
-            background-color: rgba(30, 20, 45, 0.9);
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
-            color: #ff007f;
+            border-color: #ffd700;
+            background-color: #2b2b1e;
+            color: #ffd700;
         }
         .color-circle {
             width: 42px;
             height: 42px;
-            border: 3px solid #374151;
+            border: 3px solid #3b3b54;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.1s ease, border-color 0.1s ease;
         }
         .color-circle:hover {
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
         .color-circle.selected {
             border-color: #ffffff;
-            box-shadow: 0 0 20px currentColor;
-            transform: scale(1.25);
+            transform: scale(1.2);
         }
         .ui-btn {
-            background: linear-gradient(135deg, #00f0ff, #0077b6);
-            color: #02040a;
+            background: #00b4d8;
+            color: #ffffff;
             font-weight: 800;
             font-size: 18px;
             padding: 14px 30px;
-            border: none;
-            border-radius: 12px;
+            border: 3px solid #0077b6;
+            border-radius: 10px;
             cursor: pointer;
             margin: 8px;
-            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.4);
-            transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
             width: 260px;
+            transition: transform 0.1s ease, background 0.1s ease;
         }
         .ui-btn:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(135deg, #48cae4, #00b4d8);
-            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.7);
+            transform: translateY(-2px);
+            background: #0096c7;
         }
         .ui-btn:active {
-            transform: translateY(1px);
+            transform: translateY(2px);
         }
         .btn-music {
-            background: linear-gradient(135deg, #ff007f, #7209b7);
-            color: #ffffff;
-            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
+            background: #7209b7;
+            border-color: #560bad;
         }
         .btn-music:hover {
-            background: linear-gradient(135deg, #ff4d94, #9b5de5);
-            box-shadow: 0 8px 25px rgba(255, 0, 127, 0.7);
+            background: #8916d2;
         }
         .btn-back {
-            background: linear-gradient(135deg, #495057, #343a40);
-            color: #ffffff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background: #495057;
+            border-color: #343a40;
         }
         .btn-back:hover {
-            background: linear-gradient(135deg, #6c757d, #495057);
+            background: #6c757d;
         }
         .desc-text {
             color: #a8dadc;
@@ -163,16 +151,15 @@
             line-height: 1.6;
             margin-bottom: 20px;
             text-align: left;
-            background: rgba(0, 0, 0, 0.3);
+            background: #0d0d14;
             padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            border: 2px solid #2e2e42;
         }
     </style>
 </head>
 <body>
 
-    <!-- THẺ AUDIO NHẠC NỀN SYNTHWAVE CHUẨN ĐIỆN TỬ -->
     <audio id="bgMusic" loop preload="auto">
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=cyberpunk-2099-107015.mp3" type="audio/mpeg">
     </audio>
@@ -180,7 +167,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00f0ff; margin-bottom: 25px; font-weight: 600; text-shadow: 0 0 10px rgba(0,240,255,0.5);">ULTRA NEON EDITION • NHẠC NỀN SYNTHWAVE</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">CLASSIC SHARP EDITION</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -192,7 +179,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa Ultra Neon & Âm nhạc điện tử đỉnh cao</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa sắc nét, chuẩn phong cách RobTop</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -217,11 +204,11 @@
 
         <h3>Chọn Màu Sắc Chủ Đạo:</h3>
         <div class="options-container" id="colorOptions">
-            <div class="color-circle selected" style="background-color: #00ffcc; color: #00ffcc;" data-color="#00ffcc"></div>
-            <div class="color-circle" style="background-color: #ff007f; color: #ff007f;" data-color="#ff007f"></div>
-            <div class="color-circle" style="background-color: #ffb703; color: #ffb703;" data-color="#ffb703"></div>
-            <div class="color-circle" style="background-color: #9d4edd; color: #9d4edd;" data-color="#9d4edd"></div>
-            <div class="color-circle" style="background-color: #00f0ff; color: #00f0ff;" data-color="#00f0ff"></div>
+            <div class="color-circle selected" style="background-color: #00ffcc;" data-color="#00ffcc"></div>
+            <div class="color-circle" style="background-color: #ff0055;" data-color="#ff0055"></div>
+            <div class="color-circle" style="background-color: #ffaa00;" data-color="#ffaa00"></div>
+            <div class="color-circle" style="background-color: #9d4edd;" data-color="#9d4edd"></div>
+            <div class="color-circle" style="background-color: #00d2ff;" data-color="#00d2ff"></div>
         </div>
 
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">XÁC NHẬN & QUAY LẠI</button>
@@ -232,7 +219,7 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Âm nhạc:</b> Bấm nút bật nhạc nền để thưởng thức dòng nhạc điện tử sôi động.<br>
+            • <b>Âm nhạc:</b> Bấm nút bật nhạc nền để thưởng thức dòng nhạc điện tử.<br>
             • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
@@ -326,13 +313,13 @@
             shakeMagnitude = magnitude;
         }
 
-        for(let i=0; i<60; i++) {
+        for(let i=0; i<40; i++) {
             backgroundStars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 size: Math.random() * 2 + 1,
-                speed: Math.random() * 2 + 0.5,
-                alpha: Math.random() * 0.7 + 0.3
+                speed: Math.random() * 1.5 + 0.3,
+                alpha: Math.random() * 0.5 + 0.2
             });
         }
 
@@ -395,15 +382,15 @@
                 if (config.vehicle === "cube" && player.grounded) {
                     player.dy = -13.0 * gravityDir;
                     player.grounded = false;
-                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
                 } else if (config.vehicle === "ufo") {
                     player.dy = -9.0 * gravityDir;
-                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 4);
                 } else if (config.vehicle === "ball" && player.grounded) {
                     gravityDir *= -1;
                     player.dy = -5.0 * gravityDir;
                     player.grounded = false;
-                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 }
             }
         }
@@ -432,12 +419,12 @@
                 particles.push({
                     x: x,
                     y: y,
-                    size: Math.random() * 5 + 2,
+                    size: Math.random() * 4 + 2,
                     color: color,
                     alpha: 1.0,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
-                    decay: Math.random() * 0.04 + 0.02
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    decay: 0.08
                 });
             }
         }
@@ -521,22 +508,22 @@
                 onGround = true;
             }
 
-            if (player.y < -100) {
+            if (player.y < -100 || player.y > canvas.height + 100) {
                 gameState = "GAMEOVER";
-                triggerShake(15, 8);
-                createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                triggerShake(10, 5);
+                createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
             }
 
-            if (Math.random() < 0.6) {
+            if (Math.random() < 0.4) {
                 particles.push({
                     x: player.x,
                     y: player.y + player.size / 2,
-                    size: Math.random() * 5 + 2,
+                    size: 3,
                     color: config.color,
                     alpha: 0.8,
-                    vx: -config.speed * 1 - Math.random() * 2,
-                    vy: (Math.random() - 0.5) * 2,
-                    decay: 0.05
+                    vx: -config.speed * 0.8,
+                    vy: (Math.random() - 0.5) * 1,
+                    decay: 0.1
                 });
             }
 
@@ -572,8 +559,8 @@
                     if (player.x + player.size / 2 > obj.x && player.x + player.size / 2 < obj.x + obj.width) {
                         if (gravityDir === 1 && player.y >= groundLevel) {
                             gameState = "GAMEOVER";
-                            triggerShake(15, 8);
-                            createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                            triggerShake(10, 5);
+                            createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
                         }
                     }
                 } else if (obj.type === "pad") {
@@ -581,29 +568,29 @@
                         player.y + player.size >= obj.y && player.y <= obj.y + obj.height) {
                         player.dy = -16.0 * gravityDir;
                         player.grounded = false;
-                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 12);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ffaa00', 10);
                     }
                 } else if (obj.type === "orb") {
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < 30 && isHolding && !obj.collected) {
                         obj.collected = true;
                         player.dy = -14.0 * gravityDir;
-                        createExplosion(obj.x, obj.y, '#ffb703', 15);
+                        createExplosion(obj.x, obj.y, '#ffaa00', 10);
                     }
                 } else if (obj.type === "block") {
                     if (player.x + player.size - pad > obj.x && player.x + pad < obj.x + obj.width &&
                         player.y + player.size - pad > obj.y && player.y + pad < obj.y + obj.height) {
                         gameState = "GAMEOVER";
-                        triggerShake(15, 8);
-                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                        triggerShake(10, 5);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
                     }
                 } else if (obj.type === "sawblade") {
                     obj.rotation += 0.15;
                     let dist = Math.hypot((player.x + player.size/2) - obj.x, (player.y + player.size/2) - obj.y);
                     if (dist < player.size/2 + obj.radius - 6) {
                         gameState = "GAMEOVER";
-                        triggerShake(15, 8);
-                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                        triggerShake(10, 5);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
                     }
                 } else if (obj.type === "topSpike") {
                     if (
@@ -612,14 +599,14 @@
                         player.y + pad < obj.y + obj.height
                     ) {
                         gameState = "GAMEOVER";
-                        triggerShake(15, 8);
-                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff007f', 30);
+                        triggerShake(10, 5);
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
                     }
                 } else if (obj.type === "portal") {
                     if (player.x + player.size > obj.x && player.x < obj.x + obj.width &&
                         player.y + player.size > obj.y - obj.height/2 && player.y < obj.y + obj.height/2) {
                         config.vehicle = obj.target;
-                        createExplosion(obj.x, obj.y, '#00f0ff', 20);
+                        createExplosion(obj.x, obj.y, '#00ffcc', 15);
                         objects.splice(i, 1);
                         continue;
                     }
@@ -646,90 +633,72 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Nền sao sắc nét (không mờ)
             backgroundStars.forEach(star => {
                 star.x -= star.speed;
                 if(star.x < 0) star.x = canvas.width;
-                ctx.fillStyle = "#00f0ff";
+                ctx.fillStyle = "#ffffff";
                 ctx.globalAlpha = star.alpha;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(star.x, star.y, star.size, star.size);
             });
             ctx.globalAlpha = 1.0;
 
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "#00f0ff";
-            ctx.fillStyle = "#030b1e";
+            // Mặt đất sắc nét kiểu cổ điển
+            ctx.fillStyle = "#0c0c14";
             ctx.fillRect(0, 340, canvas.width, 60);
-            ctx.strokeStyle = "#00f0ff";
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(0, 340);
             ctx.lineTo(canvas.width, 340);
             ctx.stroke();
-            ctx.shadowBlur = 0;
 
+            // Vẽ các vật thể
             objects.forEach(obj => {
                 if (obj.type === "pit") {
-                    ctx.fillStyle = "#02040a";
-                    ctx.fillRect(obj.x, 338, obj.width, 65);
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = "#ff007f";
-                    ctx.strokeStyle = "#ff007f";
+                    ctx.fillStyle = "#07070b";
+                    ctx.fillRect(obj.x, 340, obj.width, 60);
+                    ctx.strokeStyle = "#ff0055";
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(obj.x, 338, obj.width, 65);
-                    ctx.shadowBlur = 0;
+                    ctx.strokeRect(obj.x, 340, obj.width, 60);
                 } else if (obj.type === "pad") {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = "#ff007f";
-                    ctx.fillStyle = "#ff007f";
+                    ctx.fillStyle = "#ffaa00";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.strokeStyle = "#fff";
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 2;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.shadowBlur = 0;
                 } else if (obj.type === "orb" && !obj.collected) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = "#ffb703";
-                    ctx.fillStyle = "#ffb703";
+                    ctx.fillStyle = "#ffaa00";
                     ctx.beginPath();
                     ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = "#fff";
+                    ctx.strokeStyle = "#ffffff";
                     ctx.lineWidth = 2;
                     ctx.stroke();
-                    ctx.shadowBlur = 0;
                 } else if (obj.type === "block") {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = "#00f0ff";
-                    ctx.fillStyle = "#101e3f";
+                    ctx.fillStyle = "#1e1e2d";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.strokeStyle = "#00f0ff";
+                    ctx.strokeStyle = "#00d2ff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.shadowBlur = 0;
                 } else if (obj.type === "sawblade") {
                     ctx.save();
                     ctx.translate(obj.x, obj.y);
                     ctx.rotate(obj.rotation);
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = "#ff007f";
-                    ctx.fillStyle = "#495057";
+                    ctx.fillStyle = "#333344";
                     ctx.beginPath();
                     ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = "#ff007f";
-                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = "#ff0055";
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                     for(let c = 0; c < 8; c++) {
                         ctx.rotate(Math.PI / 4);
-                        ctx.fillRect(-4, -obj.radius - 8, 8, 10);
+                        ctx.fillRect(-3, -obj.radius - 6, 6, 8);
                     }
                     ctx.restore();
-                    ctx.shadowBlur = 0;
                 } else if (obj.type === "topSpike") {
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = "#00f0ff";
-                    ctx.fillStyle = "#03045e";
+                    ctx.fillStyle = "#0c0c14";
                     ctx.beginPath();
                     ctx.moveTo(obj.x, 0);
                     ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height);
@@ -737,7 +706,7 @@
                     ctx.closePath();
                     ctx.fill();
 
-                    ctx.fillStyle = "#ff007f";
+                    ctx.fillStyle = "#ff0055";
                     ctx.beginPath();
                     ctx.moveTo(obj.x + 4, 0);
                     ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height - 6);
@@ -748,39 +717,29 @@
                     ctx.strokeStyle = "#ffffff";
                     ctx.lineWidth = 2;
                     ctx.stroke();
-                    ctx.shadowBlur = 0;
                 } else if (obj.type === "portal") {
-                    ctx.shadowBlur = 25;
-                    ctx.shadowColor = obj.target === "ship" ? "#ff007f" : "#00f0ff";
-                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 127, 0.4)" : "rgba(0, 240, 255, 0.4)";
+                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 85, 0.3)" : "rgba(0, 255, 204, 0.3)";
                     ctx.fillRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
-                    ctx.strokeStyle = "#fff";
+                    ctx.strokeStyle = "#ffffff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
-                    ctx.shadowBlur = 0;
                 }
             });
 
+            // Vẽ hạt (particles) sắc nét
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(p.x, p.y, p.size, p.size);
             });
             ctx.globalAlpha = 1.0;
-            ctx.shadowBlur = 0;
 
+            // Vẽ người chơi sắc nét, viền đen/trắng đặc trưng GD
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
-            ctx.shadowBlur = 25;
-            ctx.shadowColor = config.color;
-
-            if (config.vehicle === "ship" || config.vehicle === "jetpack") {
+            if (config.vehicle === "ship") {
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
                 ctx.moveTo(-16, -10);
@@ -788,61 +747,65 @@
                 ctx.lineTo(-16, 10);
                 ctx.closePath();
                 ctx.fill();
-                ctx.strokeStyle = "#fff";
+                ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                ctx.fillStyle = "#fff";
-                ctx.beginPath();
-                ctx.arc(0, 0, 5, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (config.vehicle === "ball") {
+            } else if (config.vehicle === "wave") {
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
-                ctx.arc(0, 0, player.size / 2, 0, Math.PI * 2);
+                ctx.moveTo(-16, -8);
+                ctx.lineTo(16, 0);
+                ctx.lineTo(-16, 8);
+                ctx.closePath();
                 ctx.fill();
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
                 ctx.stroke();
-                ctx.fillStyle = "#fff";
+            } else if (config.vehicle === "ufo") {
+                ctx.fillStyle = config.color;
                 ctx.beginPath();
-                ctx.arc(0, 0, 6, 0, Math.PI * 2);
+                ctx.arc(0, 4, 12, Math.PI, 0, false);
                 ctx.fill();
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(-14, 4, 28, 6);
             } else {
                 ctx.fillStyle = config.color;
-                ctx.fillRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                ctx.strokeStyle = "#fff";
+                ctx.fillRect(-player.size/2, -player.size/2, player.size, player.size);
+                ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 3;
-                ctx.strokeRect(-player.size / 2, -player.size / 2, player.size, player.size);
-                ctx.fillStyle = "#fff";
-                ctx.fillRect(-8, -8, 16, 16);
-                ctx.fillStyle = config.color;
-                ctx.fillRect(-4, -4, 8, 8);
+                ctx.strokeRect(-player.size/2, -player.size/2, player.size, player.size);
+                ctx.fillStyle = "#0c0c14";
+                ctx.fillRect(-player.size/4, -player.size/4, player.size/2, player.size/2);
             }
             ctx.restore();
-            ctx.shadowBlur = 0;
 
+            // Hiển thị điểm số sắc nét
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px 'Segoe UI'";
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = "#00f0ff";
-            ctx.fillText(`PROGRESS: ${score} / ${config.winningScore}`, 25, 35);
-            ctx.shadowBlur = 0;
+            ctx.fillText("SCORE: " + score + " / " + config.winningScore, 25, 40);
 
-            if (gameState === "GAMEOVER" || gameState === "WON") {
-                ctx.fillStyle = "rgba(2, 4, 10, 0.9)";
+            // Màn hình Thua / Thắng
+            if (gameState === "GAMEOVER") {
+                ctx.fillStyle = "rgba(10, 10, 15, 0.9)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ff0055";
+                ctx.font = "bold 40px 'Segoe UI'";
                 ctx.textAlign = "center";
-                
-                ctx.shadowBlur = 30;
-                ctx.shadowColor = gameState === "GAMEOVER" ? "#ff007f" : "#00f0ff";
-                ctx.fillStyle = gameState === "GAMEOVER" ? "#ff007f" : "#00f0ff";
-                ctx.font = "bold 46px 'Segoe UI'";
-                ctx.fillText(gameState === "GAMEOVER" ? "GAME OVER" : "LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 25);
-                ctx.shadowBlur = 0;
-                
+                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px 'Segoe UI'";
-                ctx.fillText("Click vào màn hình hoặc bấm Space để chơi lại", canvas.width / 2, canvas.height / 2 + 30);
+                ctx.fillText("Click chuột hoặc bấm Space để chơi lại", canvas.width / 2, canvas.height / 2 + 25);
+                ctx.textAlign = "left";
+            } else if (gameState === "WON") {
+                ctx.fillStyle = "rgba(10, 10, 15, 0.9)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00ffcc";
+                ctx.font = "bold 40px 'Segoe UI'";
+                ctx.textAlign = "center";
+                ctx.fillText("VICTORY!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "18px 'Segoe UI'";
+                ctx.fillText("Xuất sắc! Bạn đã vượt qua màn chơi.", canvas.width / 2, canvas.height / 2 + 25);
                 ctx.textAlign = "left";
             }
 
@@ -850,12 +813,9 @@
         }
 
         function loop() {
-            if (gameState === "PLAYING") {
-                update();
-                draw();
-                requestAnimationFrame(loop);
-            } else if (gameState === "GAMEOVER" || gameState === "WON") {
-                draw();
+            update();
+            draw();
+            if (gameState === "PLAYING" || gameState === "GAMEOVER" || gameState === "WON") {
                 requestAnimationFrame(loop);
             }
         }
