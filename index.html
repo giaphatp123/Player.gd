@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Perfect UFO Physics</title>
+    <title>Geometry Dash - Authentic Vehicles Physics</title>
     <style>
         * {
             box-sizing: border-box;
@@ -168,7 +168,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">PERFECT UFO PHYSICS</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">AUTHENTIC VEHICLES PHYSICS</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -180,7 +180,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Trải nghiệm cơ chế UFO chuẩn RobTop</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Trải nghiệm Spider, Robot, Swing chuẩn GD</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -305,7 +305,9 @@
             grounded: false,
             rotation: 0,
             animTimer: 0,
-            ufoCooldown: 0 // Biến quản lý thời gian cách quãng mỗi lần nhấp nháy của UFO chuẩn GD
+            ufoCooldown: 0,
+            robotJumpHold: 0, // Thời gian giữ nhảy của Robot
+            swingGravity: 1   // Hướng trọng lực riêng của Swing
         };
 
         let objects = [];
@@ -330,7 +332,7 @@
             backgroundGrid.push({
                 x: Math.random() * logicalWidth,
                 y: Math.random() * logicalHeight,
-                size: Math.random() * 40 + 20,
+                    size: Math.random() * 40 + 20,
                 speed: Math.random() * 0.8 + 0.2
             });
         }
@@ -396,11 +398,9 @@
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 } else if (config.vehicle === "ufo") {
-                    // --- CƠ CHẾ CLICK CHUẨN XÁC CỦA UFO TRONG GEOMETRY DASH ---
-                    // UFO chỉ nhảy khi hết thời gian cooldown (giống như nhịp click từng nhát trong game gốc)
                     if (player.ufoCooldown <= 0) {
-                        player.dy = -10.2 * gravityDir; // Lực bật vọt lên tức thời
-                        player.ufoCooldown = 12; // Khóa nhịp ngắn để bắt buộc người chơi phải nhấp nhả nhịp nhàng
+                        player.dy = -10.2 * gravityDir;
+                        player.ufoCooldown = 12;
                         createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
                     }
                 } else if (config.vehicle === "ball" && player.grounded) {
@@ -408,12 +408,31 @@
                     player.dy = -5.0 * gravityDir;
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
+                } else if (config.vehicle === "spider" && player.grounded) {
+                    // --- SPIDER: DỊCH CHUYỂN TỨC THỜI (TELEPORT) CHUẨN GD ---
+                    gravityDir *= -1;
+                    player.y = gravityDir === 1 ? (340 - player.size) : 0; // Dịch chuyển tức khắc lên trần hoặc xuống sàn
+                    player.dy = 0;
+                    player.grounded = false;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 18);
+                } else if (config.vehicle === "robot" && player.grounded) {
+                    // --- ROBOT: NHẢY CAO DỰA TRÊN THỜI GIAN GIỮ PHÍM (HOLD TO JUMP HIGHER) ---
+                    player.dy = -11.0;
+                    player.grounded = false;
+                    player.robotJumpHold = 18; // Cho phép giữ phím để robot bay cao hơn
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
+                } else if (config.vehicle === "swing") {
+                    // --- SWING: ĐỔI CHIỀU TRỌNG LỰC LẬP TỨC TRÊN KHÔNG (GRAVITY FLIP) ---
+                    player.swingGravity *= -1;
+                    player.dy = -4.0 * player.swingGravity;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 12);
                 }
             }
         }
 
         window.addEventListener("mouseup", () => {
             isHolding = false;
+            player.robotJumpHold = 0;
         });
 
         function resetGame() {
@@ -431,6 +450,8 @@
             shakeTimer = 0;
             player.animTimer = 0;
             player.ufoCooldown = 0;
+            player.robotJumpHold = 0;
+            player.swingGravity = 1;
         }
 
         function createExplosion(x, y, color, count) {
@@ -483,20 +504,34 @@
                 player.y += player.dy;
                 player.rotation = player.dy * 4;
             } else if (config.vehicle === "ufo") {
-                // --- TRỌNG LỰC RƠI TỰ DO ĐẶC TRƯNG CỦA UFO ---
-                player.dy += 0.78 * gravityDir; // Trọng lực kéo xuống liên tục
+                player.dy += 0.78 * gravityDir;
                 player.dy = Math.max(-11.0, Math.min(10.0, player.dy));
                 player.y += player.dy;
-                player.rotation = player.dy * 2.5; // Góc xoay theo quán tính lên xuống giống hệt game gốc
+                player.rotation = player.dy * 2.5;
             } else if (config.vehicle === "wave") {
                 player.dy = isHolding ? -6.5 * gravityDir : 6.5 * gravityDir;
                 player.y += player.dy;
                 player.rotation = isHolding ? -45 : 45;
-            } else if (config.vehicle === "spider" && isHolding && player.grounded) {
-                gravityDir *= -1;
-                player.dy = -15.0 * gravityDir;
-                player.grounded = false;
-                createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 12);
+            } else if (config.vehicle === "robot") {
+                // Robot giữ phím sẽ giảm tốc độ rơi, tạo cảm giác "nhảy cao hơn" chuẩn GD
+                if (isHolding && player.robotJumpHold > 0) {
+                    player.dy -= 0.45;
+                    player.robotJumpHold--;
+                }
+                player.dy += 0.85 * gravityDir;
+                player.y += player.dy;
+                player.rotation += 10 * gravityDir;
+            } else if (config.vehicle === "swing") {
+                // Swing lơ lửng và đổi chiều trọng lực linh hoạt
+                player.dy += 0.5 * player.swingGravity;
+                player.dy = Math.max(-7.0, Math.min(7.0, player.dy));
+                player.y += player.dy;
+                player.rotation = player.dy * 6;
+            } else if (config.vehicle === "spider") {
+                // Spider di chuyển thẳng trên mặt đất/trần cho đến khi click dịch chuyển
+                player.dy += 0.9 * gravityDir;
+                player.y += player.dy;
+                player.rotation = 0;
             } else {
                 player.dy += 0.85 * gravityDir;
                 player.y += player.dy;
@@ -514,6 +549,11 @@
                 player.y = 0;
                 player.dy = 0;
                 onGround = true;
+            }
+
+            if (config.vehicle === "swing") {
+                if (player.y >= groundLevel) { player.y = groundLevel; player.dy = 0; }
+                if (player.y <= 0) { player.y = 0; player.dy = 0; }
             }
 
             if (player.y < -100 || player.y > logicalHeight + 100) {
@@ -753,7 +793,7 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // --- VẼ TỪNG PHƯƠNG TIỆN ---
+            // --- VẼ TỪNG PHƯƠNG TIỆN SỐNG ĐỘNG ---
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -800,7 +840,6 @@
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(-4, -3, 8, 6);
             } else if (config.vehicle === "ufo") {
-                // --- ĐĨA BAY UFO CHUẨN XÁC GEOMETRY DASH ---
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-16, 2, 32, 10);
                 ctx.strokeStyle = "#000000";
@@ -838,41 +877,47 @@
                 ctx.strokeRect(-5, -12, 10, 24);
                 ctx.restore();
             } else if (config.vehicle === "robot") {
-                let legMove = Math.sin(player.animTimer * 3) * 6;
+                // --- ROBOT SỐNG ĐỘNG (HIỆU ỨNG TAY CHÂN CO GIÃN KHI NHẢY) ---
+                let legMove = Math.sin(player.animTimer * 4) * 7;
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-12, -18, 24, 26);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-12, -18, 24, 26);
 
+                // Đầu robot
                 ctx.fillRect(-8, -28, 16, 12);
                 ctx.strokeRect(-8, -28, 16, 12);
 
+                // Mắt sáng
                 ctx.fillStyle = "#ffaa00";
                 ctx.fillRect(-5, -24, 4, 4);
                 ctx.fillRect(1, -24, 4, 4);
 
+                // Chân robot co giãn khi di chuyển
                 ctx.fillStyle = "#2d2d3d";
                 ctx.fillRect(-10, 8 + legMove, 6, 10);
                 ctx.fillRect(4, 8 - legMove, 6, 10);
                 ctx.strokeRect(-10, 8 + legMove, 6, 10);
                 ctx.strokeRect(4, 8 - legMove, 6, 10);
             } else if (config.vehicle === "spider") {
+                // --- SPIDER SỐNG ĐỘNG (HIỆU ỨNG CHÂN NHỆN CHẠY BÁM TƯỜNG) ---
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-11, -11, 22, 22);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-11, -11, 22, 22);
 
-                let spiderLeg = Math.sin(player.animTimer * 4) * 5;
+                let spiderLeg = Math.sin(player.animTimer * 6) * 6;
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.moveTo(-11, 11); ctx.lineTo(-20, 18 + spiderLeg);
-                ctx.moveTo(11, 11); ctx.lineTo(20, 18 - spiderLeg);
+                ctx.moveTo(-11, 11); ctx.lineTo(-22, 18 + spiderLeg);
+                ctx.moveTo(11, 11); ctx.lineTo(22, 18 - spiderLeg);
                 ctx.stroke();
             } else if (config.vehicle === "swing") {
-                let swingScale = 1 + Math.sin(player.animTimer * 2) * 0.08;
+                // --- SWING SỐNG ĐỘNG (HÌNH THOI LẬP LÒE QUAY VÒNG) ---
+                let swingScale = 1 + Math.sin(player.animTimer * 3) * 0.1;
                 ctx.scale(swingScale, swingScale);
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
