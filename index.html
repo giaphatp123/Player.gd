@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - HD Sharp Edition</title>
+    <title>Geometry Dash - HD Realistic Vehicles Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -168,7 +168,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">HD SHARP EDITION (NO NEON)</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">HD REALISTIC VEHICLES</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -180,7 +180,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa sắc nét, viền đen chuẩn RobTop</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa sắc nét, mô phỏng chân thật các loại xe</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -280,7 +280,7 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        // --- TỐI ƯU ĐỘ NÉT RETINA (HD RENDERING) ---
+        // --- RETINA / HD RENDERING ---
         const dpr = window.devicePixelRatio || 1;
         const logicalWidth = 800;
         const logicalHeight = 400;
@@ -324,7 +324,6 @@
             shakeMagnitude = magnitude;
         }
 
-        // Tạo lưới nền dạng ô vuông đặc trưng Geometry Dash
         for(let i=0; i<25; i++) {
             backgroundGrid.push({
                 x: Math.random() * logicalWidth,
@@ -444,43 +443,19 @@
             const rand = Math.random();
             let x = logicalWidth;
 
-            if (config.vehicle === "ship" || config.vehicle === "jetpack") {
-                if (rand < 0.35) {
-                    objects.push({ type: "sawblade", x: x, y: Math.random() * 220 + 50, radius: 18, rotation: 0 });
-                } else if (rand < 0.65) {
-                    objects.push({ type: "topSpike", x: x, width: 35, height: Math.random() * 50 + 30, y: 0 });
-                } else if (rand < 0.85) {
-                    objects.push({ type: "orb", x: x, y: Math.random() * 200 + 70, radius: 14, collected: false });
-                } else {
-                    let targetVeh = Math.random() > 0.5 ? "cube" : "ship";
-                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
-                }
-            } else if (config.vehicle === "ball") {
-                if (rand < 0.50) {
-                    objects.push({ type: "topSpike", x: x, width: 32, height: Math.random() * 60 + 35, y: 0 });
-                } else if (rand < 0.75) {
-                    objects.push({ type: "pit", x: x, width: 65, height: 60, y: 340 });
-                } else if (rand < 0.90) {
-                    objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 80, radius: 18, rotation: 0 });
-                } else {
-                    let targetVeh = Math.random() > 0.5 ? "cube" : "ball";
-                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 200, target: targetVeh });
-                }
+            // Đảm bảo tạo ngẫu nhiên các chướng ngại vật tương ứng với các xe khác nhau
+            if (rand < 0.25) {
+                objects.push({ type: "pit", x: x, width: 70, height: 60, y: 340 });
+            } else if (rand < 0.45) {
+                objects.push({ type: "topSpike", x: x, width: 35, height: 45, y: 0 });
+            } else if (rand < 0.65) {
+                objects.push({ type: "sawblade", x: x, y: Math.random() * 200 + 80, radius: 18, rotation: 0 });
+            } else if (rand < 0.85) {
+                objects.push({ type: "orb", x: x, y: 220, radius: 14, collected: false });
             } else {
-                if (rand < 0.20) {
-                    objects.push({ type: "pit", x: x, width: 70, height: 60, y: 340 });
-                } else if (rand < 0.38) {
-                    objects.push({ type: "pad", x: x, width: 35, height: 15, y: 325 });
-                } else if (rand < 0.55) {
-                    objects.push({ type: "orb", x: x, y: 220, radius: 14, collected: false });
-                } else if (rand < 0.72) {
-                    objects.push({ type: "block", x: x, width: 45, height: 60, y: 280 });
-                } else if (rand < 0.88) {
-                    objects.push({ type: "sawblade", x: x, y: Math.random() * 180 + 100, radius: 18, rotation: 0 });
-                } else {
-                    let targetVeh = Math.random() > 0.5 ? "ship" : "cube";
-                    objects.push({ type: "portal", x: x, width: 30, height: 90, y: 250, target: targetVeh });
-                }
+                let targetVehOptions = ["cube", "ship", "ball", "ufo", "wave", "robot", "spider", "swing", "jetpack"];
+                let targetVeh = targetVehOptions[Math.floor(Math.random() * targetVehOptions.length)];
+                objects.push({ type: "portal", x: x, width: 30, height: 90, y: 250, target: targetVeh });
             }
         }
 
@@ -500,6 +475,11 @@
                 player.dy = isHolding ? -6.5 * gravityDir : 6.5 * gravityDir;
                 player.y += player.dy;
                 player.rotation = isHolding ? -45 : 45;
+            } else if (config.vehicle === "spider" && isHolding && player.grounded) {
+                gravityDir *= -1;
+                player.dy = -15.0 * gravityDir;
+                player.grounded = false;
+                createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 12);
             } else {
                 player.dy += 0.85 * gravityDir;
                 player.y += player.dy;
@@ -525,16 +505,17 @@
                 createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
             }
 
-            if (Math.random() < 0.4) {
+            // Hiệu ứng đuôi phương tiện chân thật
+            if (Math.random() < 0.6) {
                 particles.push({
                     x: player.x,
                     y: player.y + player.size / 2,
                     size: 3,
                     color: config.color,
-                    alpha: 0.8,
-                    vx: -config.speed * 0.8,
-                    vy: (Math.random() - 0.5) * 1,
-                    decay: 0.1
+                    alpha: 0.9,
+                    vx: -config.speed * 1.2,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    decay: 0.08
                 });
             }
 
@@ -547,7 +528,7 @@
 
             if (onGround) {
                 player.grounded = true;
-                if (config.vehicle === "cube" || config.vehicle === "ball") {
+                if (config.vehicle === "cube" || config.vehicle === "ball" || config.vehicle === "robot" || config.vehicle === "spider") {
                     player.rotation = Math.round(player.rotation / 90) * 90;
                 }
             } else {
@@ -644,7 +625,7 @@
 
             ctx.clearRect(0, 0, logicalWidth, logicalHeight);
 
-            // Nền lưới hình học sắc nét chuẩn GD
+            // Nền lưới
             backgroundGrid.forEach(item => {
                 item.x -= item.speed;
                 if(item.x + item.size < 0) item.x = logicalWidth + item.size;
@@ -653,7 +634,7 @@
                 ctx.strokeRect(item.x, item.y, item.size, item.size);
             });
 
-            // Mặt đất sắc nét kiểu cổ điển với viền đen + viền trắng
+            // Mặt đất
             ctx.fillStyle = "#08080f";
             ctx.fillRect(0, 340, logicalWidth, 60);
             ctx.strokeStyle = "#000000";
@@ -670,7 +651,7 @@
             ctx.lineTo(logicalWidth, 343);
             ctx.stroke();
 
-            // Vẽ vật thể với viền đen sắc cạnh chuẩn RobTop
+            // Vẽ vật thể
             objects.forEach(obj => {
                 if (obj.type === "pit") {
                     ctx.fillStyle = "#050508";
@@ -699,6 +680,7 @@
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
                 } else if (obj.type === "sawblade") {
+                    obj.rotation += 0.15;
                     ctx.save();
                     ctx.translate(obj.x, obj.y);
                     ctx.rotate(obj.rotation);
@@ -739,7 +721,7 @@
                     ctx.lineWidth = 3;
                     ctx.stroke();
                 } else if (obj.type === "portal") {
-                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 85, 0.35)" : "rgba(0, 255, 204, 0.35)";
+                    ctx.fillStyle = "rgba(0, 255, 204, 0.35)";
                     ctx.fillRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
                     ctx.strokeStyle = "#000000";
                     ctx.lineWidth = 4;
@@ -747,7 +729,7 @@
                 }
             });
 
-            // Vẽ hạt (particles) sắc nét dạng khối vuông
+            // Vẽ hạt
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -755,54 +737,128 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Vẽ nhân vật sắc nét với đường viền đen đậm dày dặn
+            // --- VẼ CHI TIẾT TỪNG PHƯƠNG TIỆN CỰC KỲ CHÂN THẬT VÀ SẮC NÉT ---
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
             if (config.vehicle === "ship") {
+                // Tên lửa / Tàu bay chân thật
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
-                ctx.moveTo(-16, -10);
-                ctx.lineTo(16, 0);
-                ctx.lineTo(-16, 10);
+                ctx.moveTo(-20, -10);
+                ctx.lineTo(18, 0);
+                ctx.lineTo(-20, 10);
                 ctx.closePath();
                 ctx.fill();
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.stroke();
+                // Buồng lái trong suốt
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(2, 0, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.stroke();
             } else if (config.vehicle === "wave") {
+                // Mũi tên Wave sắc bén
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
-                ctx.moveTo(-16, -8);
-                ctx.lineTo(16, 0);
-                ctx.lineTo(-16, 8);
+                ctx.moveTo(-18, -10);
+                ctx.lineTo(18, 0);
+                ctx.lineTo(-18, 10);
                 ctx.closePath();
                 ctx.fill();
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.stroke();
             } else if (config.vehicle === "ufo") {
+                // Đĩa bay UFO
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
-                ctx.arc(0, 4, 12, Math.PI, 0, false);
+                ctx.arc(0, 4, 14, Math.PI, 0, false);
                 ctx.fill();
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 ctx.fillStyle = "#ffffff";
-                ctx.fillRect(-14, 4, 28, 6);
+                ctx.fillRect(-16, 4, 32, 6);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 2;
-                ctx.strokeRect(-14, 4, 28, 6);
+                ctx.strokeRect(-16, 4, 32, 6);
+            } else if (config.vehicle === "ball") {
+                // Quả cầu xoay tròn có gai/vạch
+                ctx.fillStyle = config.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.fillStyle = "#0c0c14";
+                ctx.fillRect(-6, -12, 12, 24);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-6, -12, 12, 24);
+            } else if (config.vehicle === "robot") {
+                // Robot cơ khí có đầu và thân rõ ràng
+                ctx.fillStyle = config.color;
+                ctx.fillRect(-12, -16, 24, 28);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-12, -16, 24, 28);
+                // Mắt robot
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(-8, -10, 6, 6);
+                ctx.fillRect(2, -10, 6, 6);
+            } else if (config.vehicle === "spider") {
+                // Nhện cơ khí
+                ctx.fillStyle = config.color;
+                ctx.fillRect(-10, -10, 20, 20);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-10, -10, 20, 20);
+                // Chân nhện
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-10, 10); ctx.lineTo(-18, 18);
+                ctx.moveTo(10, 10); ctx.lineTo(18, 18);
+                ctx.stroke();
+            } else if (config.vehicle === "swing") {
+                // Cơ chế Swing (hình thoi lơ lửng)
+                ctx.fillStyle = config.color;
+                ctx.beginPath();
+                ctx.moveTo(0, -16);
+                ctx.lineTo(16, 0);
+                ctx.lineTo(0, 16);
+                ctx.lineTo(-16, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            } else if (config.vehicle === "jetpack") {
+                // Ba lô phản lực Jetpack sau lưng
+                ctx.fillStyle = config.color;
+                ctx.fillRect(-12, -14, 24, 28);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-12, -14, 24, 28);
+                // Bình khí
+                ctx.fillStyle = "#ffaa00";
+                ctx.fillRect(-16, -8, 6, 16);
+                ctx.strokeRect(-16, -8, 6, 16);
             } else {
+                // Cube chuẩn
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-player.size/2, -player.size/2, player.size, player.size);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 4;
                 ctx.strokeRect(-player.size/2, -player.size/2, player.size, player.size);
                 
-                // Chi tiết lõi Cube sắc nét
                 ctx.fillStyle = "#0c0c14";
                 ctx.fillRect(-player.size/4, -player.size/4, player.size/2, player.size/2);
                 ctx.strokeStyle = "#000000";
@@ -811,12 +867,12 @@
             }
             ctx.restore();
 
-            // Hiển thị điểm số sắc nét
+            // Điểm số
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 20px 'Segoe UI'";
             ctx.fillText("SCORE: " + score + " / " + config.winningScore, 25, 40);
 
-            // Màn hình Thua / Thắng
+            // Kết quả Thua / Thắng
             if (gameState === "GAMEOVER") {
                 ctx.fillStyle = "rgba(10, 10, 15, 0.9)";
                 ctx.fillRect(0, 0, logicalWidth, logicalHeight);
