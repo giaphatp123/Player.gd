@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Classic Sharp Edition</title>
+    <title>Geometry Dash - HD Sharp Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +11,7 @@
         }
         body {
             margin: 0;
-            background-color: #1a1a24;
+            background-color: #0d0d12;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,16 +31,17 @@
             display: none !important;
         }
         canvas {
-            border: 4px solid #2e2e42;
-            background: linear-gradient(135deg, #0d0d15 0%, #1c1c2b 100%);
-            border-radius: 8px;
+            border: 4px solid #1e1e2d;
+            background: #12121c;
+            border-radius: 6px;
             cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .menu-box {
-            background: #14141e;
+            background: #14141f;
             padding: 35px 45px;
             border-radius: 16px;
-            border: 3px solid #3b3b54;
+            border: 3px solid #2a2a3d;
             max-width: 600px;
             width: 100%;
         }
@@ -78,8 +79,8 @@
         }
         .btn-option {
             padding: 10px;
-            background-color: #1e1e2d;
-            border: 2px solid #3b3b54;
+            background-color: #1a1a28;
+            border: 2px solid #32324a;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
@@ -89,7 +90,7 @@
         }
         .btn-option:hover {
             border-color: #ffd700;
-            background-color: #28283d;
+            background-color: #262638;
         }
         .btn-option.selected {
             border-color: #ffd700;
@@ -99,7 +100,7 @@
         .color-circle {
             width: 42px;
             height: 42px;
-            border: 3px solid #3b3b54;
+            border: 3px solid #32324a;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.1s ease, border-color 0.1s ease;
@@ -151,10 +152,10 @@
             line-height: 1.6;
             margin-bottom: 20px;
             text-align: left;
-            background: #0d0d14;
+            background: #0a0a12;
             padding: 15px;
             border-radius: 8px;
-            border: 2px solid #2e2e42;
+            border: 2px solid #222233;
         }
     </style>
 </head>
@@ -167,7 +168,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">CLASSIC SHARP EDITION</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">HD SHARP EDITION (NO NEON)</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -179,7 +180,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa sắc nét, chuẩn phong cách RobTop</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Đồ họa sắc nét, viền đen chuẩn RobTop</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -279,6 +280,16 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
+        // --- TỐI ƯU ĐỘ NÉT RETINA (HD RENDERING) ---
+        const dpr = window.devicePixelRatio || 1;
+        const logicalWidth = 800;
+        const logicalHeight = 400;
+        canvas.width = logicalWidth * dpr;
+        canvas.height = logicalHeight * dpr;
+        canvas.style.width = logicalWidth + 'px';
+        canvas.style.height = logicalHeight + 'px';
+        ctx.scale(dpr, dpr);
+
         let config = {
             vehicle: "cube",
             color: "#00ffcc",
@@ -297,7 +308,7 @@
 
         let objects = [];
         let particles = [];
-        let backgroundStars = [];
+        let backgroundGrid = [];
         let isHolding = false;
         let gravityDir = 1;
         let score = 0;
@@ -313,13 +324,13 @@
             shakeMagnitude = magnitude;
         }
 
-        for(let i=0; i<40; i++) {
-            backgroundStars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speed: Math.random() * 1.5 + 0.3,
-                alpha: Math.random() * 0.5 + 0.2
+        // Tạo lưới nền dạng ô vuông đặc trưng Geometry Dash
+        for(let i=0; i<25; i++) {
+            backgroundGrid.push({
+                x: Math.random() * logicalWidth,
+                y: Math.random() * logicalHeight,
+                size: Math.random() * 40 + 20,
+                speed: Math.random() * 0.8 + 0.2
             });
         }
 
@@ -431,7 +442,7 @@
 
         function spawnSingleObject() {
             const rand = Math.random();
-            let x = canvas.width;
+            let x = logicalWidth;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 if (rand < 0.35) {
@@ -508,7 +519,7 @@
                 onGround = true;
             }
 
-            if (player.y < -100 || player.y > canvas.height + 100) {
+            if (player.y < -100 || player.y > logicalHeight + 100) {
                 gameState = "GAMEOVER";
                 triggerShake(10, 5);
                 createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
@@ -631,74 +642,84 @@
                 ctx.translate(offsetX, offsetY);
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, logicalWidth, logicalHeight);
 
-            // Nền sao sắc nét (không mờ)
-            backgroundStars.forEach(star => {
-                star.x -= star.speed;
-                if(star.x < 0) star.x = canvas.width;
-                ctx.fillStyle = "#ffffff";
-                ctx.globalAlpha = star.alpha;
-                ctx.fillRect(star.x, star.y, star.size, star.size);
+            // Nền lưới hình học sắc nét chuẩn GD
+            backgroundGrid.forEach(item => {
+                item.x -= item.speed;
+                if(item.x + item.size < 0) item.x = logicalWidth + item.size;
+                ctx.strokeStyle = "#181824";
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(item.x, item.y, item.size, item.size);
             });
-            ctx.globalAlpha = 1.0;
 
-            // Mặt đất sắc nét kiểu cổ điển
-            ctx.fillStyle = "#0c0c14";
-            ctx.fillRect(0, 340, canvas.width, 60);
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 3;
+            // Mặt đất sắc nét kiểu cổ điển với viền đen + viền trắng
+            ctx.fillStyle = "#08080f";
+            ctx.fillRect(0, 340, logicalWidth, 60);
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(0, 340);
-            ctx.lineTo(canvas.width, 340);
+            ctx.lineTo(logicalWidth, 340);
             ctx.stroke();
 
-            // Vẽ các vật thể
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 343);
+            ctx.lineTo(logicalWidth, 343);
+            ctx.stroke();
+
+            // Vẽ vật thể với viền đen sắc cạnh chuẩn RobTop
             objects.forEach(obj => {
                 if (obj.type === "pit") {
-                    ctx.fillStyle = "#07070b";
+                    ctx.fillStyle = "#050508";
                     ctx.fillRect(obj.x, 340, obj.width, 60);
-                    ctx.strokeStyle = "#ff0055";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, 340, obj.width, 60);
                 } else if (obj.type === "pad") {
                     ctx.fillStyle = "#ffaa00";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
                 } else if (obj.type === "orb" && !obj.collected) {
                     ctx.fillStyle = "#ffaa00";
                     ctx.beginPath();
                     ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 3;
                     ctx.stroke();
                 } else if (obj.type === "block") {
-                    ctx.fillStyle = "#1e1e2d";
+                    ctx.fillStyle = "#1a1a2e";
                     ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                    ctx.strokeStyle = "#00d2ff";
+                    ctx.strokeStyle = "#000000";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
                 } else if (obj.type === "sawblade") {
                     ctx.save();
                     ctx.translate(obj.x, obj.y);
                     ctx.rotate(obj.rotation);
-                    ctx.fillStyle = "#333344";
+                    ctx.fillStyle = "#2d2d3d";
                     ctx.beginPath();
                     ctx.arc(0, 0, obj.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.strokeStyle = "#ff0055";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 3;
                     ctx.stroke();
                     for(let c = 0; c < 8; c++) {
                         ctx.rotate(Math.PI / 4);
+                        ctx.fillStyle = "#ff0055";
                         ctx.fillRect(-3, -obj.radius - 6, 6, 8);
+                        ctx.strokeStyle = "#000000";
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(-3, -obj.radius - 6, 6, 8);
                     }
                     ctx.restore();
                 } else if (obj.type === "topSpike") {
-                    ctx.fillStyle = "#0c0c14";
+                    ctx.fillStyle = "#08080f";
                     ctx.beginPath();
                     ctx.moveTo(obj.x, 0);
                     ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height);
@@ -708,25 +729,25 @@
 
                     ctx.fillStyle = "#ff0055";
                     ctx.beginPath();
-                    ctx.moveTo(obj.x + 4, 0);
-                    ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height - 6);
-                    ctx.lineTo(obj.x + obj.width - 4, 0);
+                    ctx.moveTo(obj.x + 3, 0);
+                    ctx.lineTo(obj.x + obj.width / 2, obj.y + obj.height - 5);
+                    ctx.lineTo(obj.x + obj.width - 3, 0);
                     ctx.closePath();
                     ctx.fill();
 
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 3;
                     ctx.stroke();
                 } else if (obj.type === "portal") {
-                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 85, 0.3)" : "rgba(0, 255, 204, 0.3)";
+                    ctx.fillStyle = obj.target === "ship" ? "rgba(255, 0, 85, 0.35)" : "rgba(0, 255, 204, 0.35)";
                     ctx.fillRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
-                    ctx.strokeStyle = "#ffffff";
-                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = "#000000";
+                    ctx.lineWidth = 4;
                     ctx.strokeRect(obj.x, obj.y - obj.height/2, obj.width, obj.height);
                 }
             });
 
-            // Vẽ hạt (particles) sắc nét
+            // Vẽ hạt (particles) sắc nét dạng khối vuông
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -734,7 +755,7 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Vẽ người chơi sắc nét, viền đen/trắng đặc trưng GD
+            // Vẽ nhân vật sắc nét với đường viền đen đậm dày dặn
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -747,8 +768,8 @@
                 ctx.lineTo(-16, 10);
                 ctx.closePath();
                 ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
                 ctx.stroke();
             } else if (config.vehicle === "wave") {
                 ctx.fillStyle = config.color;
@@ -758,24 +779,35 @@
                 ctx.lineTo(-16, 8);
                 ctx.closePath();
                 ctx.fill();
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
                 ctx.stroke();
             } else if (config.vehicle === "ufo") {
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
                 ctx.arc(0, 4, 12, Math.PI, 0, false);
                 ctx.fill();
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.stroke();
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(-14, 4, 28, 6);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-14, 4, 28, 6);
             } else {
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-player.size/2, -player.size/2, player.size, player.size);
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 4;
                 ctx.strokeRect(-player.size/2, -player.size/2, player.size, player.size);
+                
+                // Chi tiết lõi Cube sắc nét
                 ctx.fillStyle = "#0c0c14";
                 ctx.fillRect(-player.size/4, -player.size/4, player.size/2, player.size/2);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-player.size/4, -player.size/4, player.size/2, player.size/2);
             }
             ctx.restore();
 
@@ -787,25 +819,25 @@
             // Màn hình Thua / Thắng
             if (gameState === "GAMEOVER") {
                 ctx.fillStyle = "rgba(10, 10, 15, 0.9)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(0, 0, logicalWidth, logicalHeight);
                 ctx.fillStyle = "#ff0055";
                 ctx.font = "bold 40px 'Segoe UI'";
                 ctx.textAlign = "center";
-                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText("GAME OVER", logicalWidth / 2, logicalHeight / 2 - 20);
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px 'Segoe UI'";
-                ctx.fillText("Click chuột hoặc bấm Space để chơi lại", canvas.width / 2, canvas.height / 2 + 25);
+                ctx.fillText("Click chuột hoặc bấm Space để chơi lại", logicalWidth / 2, logicalHeight / 2 + 25);
                 ctx.textAlign = "left";
             } else if (gameState === "WON") {
                 ctx.fillStyle = "rgba(10, 10, 15, 0.9)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(0, 0, logicalWidth, logicalHeight);
                 ctx.fillStyle = "#00ffcc";
                 ctx.font = "bold 40px 'Segoe UI'";
                 ctx.textAlign = "center";
-                ctx.fillText("VICTORY!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText("VICTORY!", logicalWidth / 2, logicalHeight / 2 - 20);
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "18px 'Segoe UI'";
-                ctx.fillText("Xuất sắc! Bạn đã vượt qua màn chơi.", canvas.width / 2, canvas.height / 2 + 25);
+                ctx.fillText("Xuất sắc! Bạn đã vượt qua màn chơi.", logicalWidth / 2, logicalHeight / 2 + 25);
                 ctx.textAlign = "left";
             }
 
