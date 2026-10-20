@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Dynamic HD Vehicles</title>
+    <title>Geometry Dash - Authentic UFO Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -168,7 +168,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">DYNAMIC HD VEHICLES EDITION</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">AUTHENTIC UFO EDITION</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -180,7 +180,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Hiệu ứng chuyển động sống động & sắc nét</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Cơ chế UFO chuẩn xác như Geometry Dash</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -304,7 +304,7 @@
             dy: 0,
             grounded: false,
             rotation: 0,
-            animTimer: 0 // Dùng cho hiệu ứng nhịp chuyển động sống động
+            animTimer: 0
         };
 
         let objects = [];
@@ -395,8 +395,10 @@
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 } else if (config.vehicle === "ufo") {
-                    player.dy = -9.0 * gravityDir;
-                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
+                    // --- CƠ CHẾ UFO CHUẨN GEOMETRY DASH ---
+                    // Mỗi lần click/space, UFO sẽ bật vọt lên một lực tức thời mạnh mẽ, không bị phụ thuộc vào việc giữ phím
+                    player.dy = -10.5 * gravityDir;
+                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 } else if (config.vehicle === "ball" && player.grounded) {
                     gravityDir *= -1;
                     player.dy = -5.0 * gravityDir;
@@ -474,6 +476,13 @@
                 player.dy = Math.max(-7.5, Math.min(7.5, player.dy));
                 player.y += player.dy;
                 player.rotation = player.dy * 4;
+            } else if (config.vehicle === "ufo") {
+                // --- TRỌNG LỰC RIÊNG CỦA UFO CHUẨN GD ---
+                // UFO rơi xuống đều đặn, khi click sẽ bật lên và tạo cảm giác nhịp nhàng đặc trưng
+                player.dy += 0.72 * gravityDir;
+                player.dy = Math.max(-9.0, Math.min(9.0, player.dy));
+                player.y += player.dy;
+                player.rotation = player.dy * 3;
             } else if (config.vehicle === "wave") {
                 player.dy = isHolding ? -6.5 * gravityDir : 6.5 * gravityDir;
                 player.y += player.dy;
@@ -508,7 +517,6 @@
                 createExplosion(player.x + player.size/2, player.y + player.size/2, '#ff0055', 20);
             }
 
-            // --- HIỆU ỨNG ĐUÔI PHƯƠNG TIỆN SỐNG ĐỘNG (TRAIL PARTICLES) ---
             if (Math.random() < 0.75) {
                 particles.push({
                     x: player.x,
@@ -740,13 +748,12 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // --- VẼ TỪNG PHƯƠNG TIỆN VỚI HIỆU ỨNG SỐNG ĐỘNG & SẮC NÉT ---
+            // --- VẼ TỪNG PHƯƠNG TIỆN ---
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
 
             if (config.vehicle === "ship") {
-                // Tàu bay lắc lư/nhún động cơ theo thời gian thực
                 let engineGlow = Math.sin(player.animTimer * 2) * 3;
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
@@ -759,7 +766,6 @@
                 ctx.lineWidth = 3;
                 ctx.stroke();
                 
-                // Buồng lái
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(3, 0, 6, 0, Math.PI * 2);
@@ -768,7 +774,6 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Lửa phản lực đuôi nhấp nháy sống động
                 ctx.fillStyle = "#ffaa00";
                 ctx.beginPath();
                 ctx.moveTo(-22, -5);
@@ -777,7 +782,6 @@
                 ctx.closePath();
                 ctx.fill();
             } else if (config.vehicle === "wave") {
-                // Wave dao động góc nhọn sắc nét
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
                 ctx.moveTo(-20, -10);
@@ -788,35 +792,33 @@
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.stroke();
-                // Lõi sáng
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(-4, -3, 8, 6);
             } else if (config.vehicle === "ufo") {
-                // UFO nhún nhảy theo nhịp bay
-                let ufoFloat = Math.sin(player.animTimer * 1.5) * 3;
-                ctx.translate(0, ufoFloat);
+                // --- ĐĨA BAY UFO CHUẨN GEOMETRY DASH ---
+                // Thân đĩa bay bên dưới
                 ctx.fillStyle = config.color;
+                ctx.fillRect(-16, 2, 32, 10);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-16, 2, 32, 10);
+
+                // Vòm kính trong suốt phía trên chứa phi công
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
                 ctx.beginPath();
-                ctx.arc(0, 4, 15, Math.PI, 0, false);
+                ctx.arc(0, 2, 10, Math.PI, 0, false);
                 ctx.fill();
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.stroke();
 
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(-17, 4, 34, 6);
+                // Đèn nháy dưới bụng UFO
+                ctx.fillStyle = "#ff0055";
+                ctx.fillRect(-4, 12, 8, 4);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 2;
-                ctx.strokeRect(-17, 4, 34, 6);
-
-                // Đèn nháy UFO
-                ctx.fillStyle = "#ff0055";
-                ctx.beginPath();
-                ctx.arc(0, -6, 4, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
+                ctx.strokeRect(-4, 12, 8, 4);
             } else if (config.vehicle === "ball") {
-                // Ball quay vòng mượt mà theo góc xoay
                 ctx.fillStyle = config.color;
                 ctx.beginPath();
                 ctx.arc(0, 0, 16, 0, Math.PI * 2);
@@ -834,7 +836,6 @@
                 ctx.strokeRect(-5, -12, 10, 24);
                 ctx.restore();
             } else if (config.vehicle === "robot") {
-                // Robot chuyển động nhún chân tay linh hoạt
                 let legMove = Math.sin(player.animTimer * 3) * 6;
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-12, -18, 24, 26);
@@ -842,30 +843,25 @@
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-12, -18, 24, 26);
 
-                // Đầu robot
                 ctx.fillRect(-8, -28, 16, 12);
                 ctx.strokeRect(-8, -28, 16, 12);
 
-                // Mắt sáng
                 ctx.fillStyle = "#ffaa00";
                 ctx.fillRect(-5, -24, 4, 4);
                 ctx.fillRect(1, -24, 4, 4);
 
-                // Chân di chuyển
                 ctx.fillStyle = "#2d2d3d";
                 ctx.fillRect(-10, 8 + legMove, 6, 10);
                 ctx.fillRect(4, 8 - legMove, 6, 10);
                 ctx.strokeRect(-10, 8 + legMove, 6, 10);
                 ctx.strokeRect(4, 8 - legMove, 6, 10);
             } else if (config.vehicle === "spider") {
-                // Nhện cơ khí bám tường linh hoạt
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-11, -11, 22, 22);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-11, -11, 22, 22);
 
-                // Chân nhện co giãn sống động
                 let spiderLeg = Math.sin(player.animTimer * 4) * 5;
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
@@ -874,7 +870,6 @@
                 ctx.moveTo(11, 11); ctx.lineTo(20, 18 - spiderLeg);
                 ctx.stroke();
             } else if (config.vehicle === "swing") {
-                // Swing lơ lửng bồng bềnh
                 let swingScale = 1 + Math.sin(player.animTimer * 2) * 0.08;
                 ctx.scale(swingScale, swingScale);
                 ctx.fillStyle = config.color;
@@ -895,7 +890,6 @@
                 ctx.fill();
                 ctx.stroke();
             } else if (config.vehicle === "jetpack") {
-                // Jetpack có lửa phun phản lực mạnh mẽ
                 let jetFlame = Math.sin(player.animTimer * 3) * 5;
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-12, -14, 24, 28);
@@ -907,7 +901,6 @@
                 ctx.fillRect(-16, -8, 6, 16);
                 ctx.strokeRect(-16, -8, 6, 16);
 
-                // Lửa phản lực dưới chân
                 ctx.fillStyle = "#ff0055";
                 ctx.beginPath();
                 ctx.moveTo(-8, 14);
@@ -916,7 +909,6 @@
                 ctx.closePath();
                 ctx.fill();
             } else {
-                // Cube chuẩn có hiệu ứng nhún nhảy khi di chuyển trên mặt đất
                 let cubeSquash = player.grounded ? Math.sin(player.animTimer * 2) * 3 : 0;
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-player.size/2, -player.size/2 + cubeSquash, player.size, player.size - cubeSquash);
