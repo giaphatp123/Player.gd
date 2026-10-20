@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Multi-Level Edition</title>
+    <title>Geometry Dash - Multi-Level & Custom Music Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -209,28 +209,25 @@
 </head>
 <body>
 
-    <audio id="bgMusic" loop preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=cyberpunk-2099-107015.mp3" type="audio/mpeg">
-    </audio>
+    <!-- THẺ AUDIO DÙNG CHUNG CHO CÁC MÀN CHƠI -->
+    <audio id="bgMusic" loop preload="auto"></audio>
 
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">MULTI-LEVEL EDITION</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">MULTI-LEVEL & MUSIC EDITION</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHỌN MÀN CHƠI</button><br>
-            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
+            <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT/TẮT NHẠC</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
     </div>
 
-    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI (CÓ DANH SÁCH TỪ DỄ ĐẾN KHÓ) -->
+    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
-        <h2>CHỌN MÀN CHƠI</h2>
-        <div class="levels-container" id="levelsList">
-            <!-- Được render bằng JavaScript từ dễ đến khó -->
-        </div>
+        <h2>CHỌN MÀN CHƠI & ÂM NHẠC</h2>
+        <div class="levels-container" id="levelsList"></div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -268,8 +265,8 @@
         <h2>HƯỚNG DẪN CÁCH CHƠI</h2>
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
-            • <b>Âm nhạc:</b> Bấm nút bật nhạc nền để thưởng thức dòng nhạc điện tử.<br>
-            • <b>Mục tiêu:</b> Vượt qua các chướng ngại vật để hoàn thành màn chơi!
+            • <b>Âm nhạc:</b> Mỗi màn chơi sở hữu một giai điệu điện tử riêng biệt.<br>
+            • <b>Mục tiêu:</b> Vượt qua các chướng ngại vật để chiến thắng màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
     </div>
@@ -296,12 +293,113 @@
         bgMusic.volume = 0.7;
         let isMusicPlaying = false;
 
+        // --- CÁC MÀN CHƠI KÈM NHẠC NỀN RIÊNG BIỆT (SYNTHWAVE / CYBERPUNK / ELECTRONIC) ---
+        const levelsData = [
+            { 
+                id: 0, 
+                name: "1. Stereo Madness", 
+                difficulty: "Easy", 
+                diffClass: "diff-easy", 
+                speed: 5.0, 
+                scoreGoal: 30, 
+                interval: 70,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=cyberpunk-2099-107015.mp3"
+            },
+            { 
+                id: 1, 
+                name: "2. Back On Track", 
+                difficulty: "Normal", 
+                diffClass: "diff-normal", 
+                speed: 5.5, 
+                scoreGoal: 40, 
+                interval: 62,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=synthwave-80s-10029.mp3"
+            },
+            { 
+                id: 2, 
+                name: "3. Polargeist", 
+                difficulty: "Hard", 
+                diffClass: "diff-hard", 
+                speed: 6.0, 
+                scoreGoal: 50, 
+                interval: 55,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=cyberpunk-detective-10444.mp3"
+            },
+            { 
+                id: 3, 
+                name: "4. Dry Out", 
+                difficulty: "Harder", 
+                diffClass: "diff-harder", 
+                speed: 6.5, 
+                scoreGoal: 60, 
+                interval: 50,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2021/11/25/audio_9154eeed9a.mp3?filename=action-cyberpunk-11449.mp3"
+            },
+            { 
+                id: 4, 
+                name: "5. Fingerdash", 
+                difficulty: "Insane", 
+                diffClass: "diff-insane", 
+                speed: 7.2, 
+                scoreGoal: 75, 
+                interval: 44,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2278f28fa.mp3?filename=future-world-10901.mp3"
+            },
+            { 
+                id: 5, 
+                name: "6. Bloodbath", 
+                difficulty: "Demon", 
+                diffClass: "diff-demon", 
+                speed: 8.0, 
+                scoreGoal: 90, 
+                interval: 38,
+                musicUrl: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=aggressive-cyberpunk-125633.mp3"
+            }
+        ];
+
+        let currentLevel = levelsData[0];
+
+        // Render danh sách màn chơi
+        const levelsListEl = document.getElementById("levelsList");
+        levelsData.forEach(lvl => {
+            const card = document.createElement("div");
+            card.className = "level-card";
+            card.innerHTML = `
+                <div class="level-info">
+                    <div class="level-title">${lvl.name}</div>
+                    <span class="level-diff ${lvl.diffClass}">${lvl.difficulty}</span>
+                </div>
+                <button class="ui-btn" style="width: 100px; font-size: 14px; padding: 8px; margin: 0;">CHƠI</button>
+            `;
+            card.addEventListener("click", () => {
+                currentLevel = lvl;
+                loadAndPlayMusic(lvl.musicUrl);
+                startGame();
+            });
+            levelsListEl.appendChild(card);
+        });
+
+        function loadAndPlayMusic(url) {
+            bgMusic.src = url;
+            bgMusic.load();
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                updateMusicButtons("🔇 TẮT NHẠC");
+            }).catch(e => {
+                isMusicPlaying = false;
+                updateMusicButtons("🎵 BẬT/TẮT NHẠC");
+            });
+        }
+
         function toggleMusic() {
             if (isMusicPlaying) {
                 bgMusic.pause();
                 isMusicPlaying = false;
-                updateMusicButtons("🎵 BẬT NHẠC NỀN");
+                updateMusicButtons("🎵 BẬT/TẮT NHẠC");
             } else {
+                if (!bgMusic.src) {
+                    bgMusic.src = currentLevel.musicUrl;
+                }
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
                     updateMusicButtons("🔇 TẮT NHẠC");
@@ -324,37 +422,6 @@
             }
             screens[screenId].classList.remove("hidden");
         }
-
-        // --- HỆ THỐNG CÁC MÀN CHƠI TỪ DỄ ĐẾN KHÓ ---
-        const levelsData = [
-            { id: 0, name: "1. Stereo Madness", difficulty: "Easy", diffClass: "diff-easy", speed: 5.0, scoreGoal: 30, interval: 70 },
-            { id: 1, name: "2. Back On Track", difficulty: "Normal", diffClass: "diff-normal", speed: 5.5, scoreGoal: 40, interval: 62 },
-            { id: 2, name: "3. Polargeist", difficulty: "Hard", diffClass: "diff-hard", speed: 6.0, scoreGoal: 50, interval: 55 },
-            { id: 3, name: "4. Dry Out", difficulty: "Harder", diffClass: "diff-harder", speed: 6.5, scoreGoal: 60, interval: 50 },
-            { id: 4, name: "5. Fingerdash", difficulty: "Insane", diffClass: "diff-insane", speed: 7.2, scoreGoal: 75, interval: 44 },
-            { id: 5, name: "6. Bloodbath", difficulty: "Demon", diffClass: "diff-demon", speed: 8.0, scoreGoal: 90, interval: 38 }
-        ];
-
-        let currentLevel = levelsData[0];
-
-        // Render danh sách màn chơi ra HTML
-        const levelsListEl = document.getElementById("levelsList");
-        levelsData.forEach(lvl => {
-            const card = document.createElement("div");
-            card.className = "level-card";
-            card.innerHTML = `
-                <div class="level-info">
-                    <div class="level-title">${lvl.name}</div>
-                    <span class="level-diff ${lvl.diffClass}">${lvl.difficulty}</span>
-                </div>
-                <button class="ui-btn" style="width: 100px; font-size: 14px; padding: 8px; margin: 0;">CHƠI</button>
-            `;
-            card.addEventListener("click", () => {
-                currentLevel = lvl;
-                startGame();
-            });
-            levelsListEl.appendChild(card);
-        });
 
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -434,19 +501,14 @@
             showScreen("gameScreen");
             resetGame();
             gameState = "PLAYING";
-            
-            if (!isMusicPlaying) {
-                bgMusic.play().then(() => {
-                    isMusicPlaying = true;
-                    updateMusicButtons("🔇 TẮT NHẠC");
-                }).catch(e => {});
-            }
-
             requestAnimationFrame(loop);
         }
 
         function returnToMenu() {
             gameState = "MENU";
+            bgMusic.pause();
+            isMusicPlaying = false;
+            updateMusicButtons("🎵 BẬT/TẮT NHẠC");
             showScreen("homeScreen");
         }
 
