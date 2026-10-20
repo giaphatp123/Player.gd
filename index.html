@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Authentic Vehicles Physics</title>
+    <title>Geometry Dash - Multi-Level Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -39,10 +39,10 @@
         }
         .menu-box {
             background: #141421;
-            padding: 35px 45px;
+            padding: 30px 40px;
             border-radius: 16px;
             border: 3px solid #28283d;
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
         }
         h1 {
@@ -53,9 +53,9 @@
             -webkit-text-stroke: 1px #000;
         }
         h2 {
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             color: #00ffcc;
-            font-size: 26px;
+            font-size: 24px;
         }
         h3 {
             margin: 15px 0 8px 0;
@@ -64,6 +64,54 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        .levels-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 5px;
+        }
+        .level-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a29;
+            border: 2px solid #32324f;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .level-card:hover {
+            border-color: #ffd700;
+            background: #25253b;
+            transform: translateY(-2px);
+        }
+        .level-info {
+            text-align: left;
+        }
+        .level-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .level-diff {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .diff-easy { background: #00b4d8; color: #fff; }
+        .diff-normal { background: #2ec4b6; color: #fff; }
+        .diff-hard { background: #ff9f1c; color: #fff; }
+        .diff-harder { background: #e71d36; color: #fff; }
+        .diff-insane { background: #7209b7; color: #fff; }
+        .diff-demon { background: #000000; color: #ff0055; border: 1px solid #ff0055; }
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -116,13 +164,13 @@
             background: #00b4d8;
             color: #ffffff;
             font-weight: 800;
-            font-size: 18px;
-            padding: 14px 30px;
+            font-size: 16px;
+            padding: 12px 25px;
             border: 3px solid #0077b6;
             border-radius: 10px;
             cursor: pointer;
-            margin: 8px;
-            width: 260px;
+            margin: 6px;
+            width: 240px;
             transition: transform 0.1s ease, background 0.1s ease;
         }
         .ui-btn:hover {
@@ -168,21 +216,21 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">AUTHENTIC VEHICLES PHYSICS</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">MULTI-LEVEL EDITION</p>
         <div>
-            <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
+            <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHỌN MÀN CHƠI</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
             <button class="ui-btn" onclick="showScreen('garageScreen')">🛠️ CỬA HÀNG / XE</button><br>
             <button class="ui-btn" onclick="showScreen('helpScreen')">📖 HƯỚNG DẪN</button>
         </div>
     </div>
 
-    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
+    <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI (CÓ DANH SÁCH TỪ DỄ ĐẾN KHÓ) -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Trải nghiệm Spider, Robot, Swing chuẩn GD</p>
-        <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
-        <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
+        <div class="levels-container" id="levelsList">
+            <!-- Được render bằng JavaScript từ dễ đến khó -->
+        </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
     </div>
 
@@ -221,7 +269,7 @@
         <div class="desc-text">
             • <b>Phím Space / Click chuột:</b> Nhảy hoặc tương tác với cơ chế xe.<br>
             • <b>Âm nhạc:</b> Bấm nút bật nhạc nền để thưởng thức dòng nhạc điện tử.<br>
-            • <b>Mục tiêu:</b> Đạt đủ 40 điểm để chiến thắng màn chơi!
+            • <b>Mục tiêu:</b> Vượt qua các chướng ngại vật để hoàn thành màn chơi!
         </div>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">ĐÃ HIỂU</button>
     </div>
@@ -277,6 +325,37 @@
             screens[screenId].classList.remove("hidden");
         }
 
+        // --- HỆ THỐNG CÁC MÀN CHƠI TỪ DỄ ĐẾN KHÓ ---
+        const levelsData = [
+            { id: 0, name: "1. Stereo Madness", difficulty: "Easy", diffClass: "diff-easy", speed: 5.0, scoreGoal: 30, interval: 70 },
+            { id: 1, name: "2. Back On Track", difficulty: "Normal", diffClass: "diff-normal", speed: 5.5, scoreGoal: 40, interval: 62 },
+            { id: 2, name: "3. Polargeist", difficulty: "Hard", diffClass: "diff-hard", speed: 6.0, scoreGoal: 50, interval: 55 },
+            { id: 3, name: "4. Dry Out", difficulty: "Harder", diffClass: "diff-harder", speed: 6.5, scoreGoal: 60, interval: 50 },
+            { id: 4, name: "5. Fingerdash", difficulty: "Insane", diffClass: "diff-insane", speed: 7.2, scoreGoal: 75, interval: 44 },
+            { id: 5, name: "6. Bloodbath", difficulty: "Demon", diffClass: "diff-demon", speed: 8.0, scoreGoal: 90, interval: 38 }
+        ];
+
+        let currentLevel = levelsData[0];
+
+        // Render danh sách màn chơi ra HTML
+        const levelsListEl = document.getElementById("levelsList");
+        levelsData.forEach(lvl => {
+            const card = document.createElement("div");
+            card.className = "level-card";
+            card.innerHTML = `
+                <div class="level-info">
+                    <div class="level-title">${lvl.name}</div>
+                    <span class="level-diff ${lvl.diffClass}">${lvl.difficulty}</span>
+                </div>
+                <button class="ui-btn" style="width: 100px; font-size: 14px; padding: 8px; margin: 0;">CHƠI</button>
+            `;
+            card.addEventListener("click", () => {
+                currentLevel = lvl;
+                startGame();
+            });
+            levelsListEl.appendChild(card);
+        });
+
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -292,9 +371,7 @@
 
         let config = {
             vehicle: "cube",
-            color: "#00ffcc",
-            speed: 5.5,
-            winningScore: 40
+            color: "#00ffcc"
         };
 
         let player = {
@@ -306,8 +383,8 @@
             rotation: 0,
             animTimer: 0,
             ufoCooldown: 0,
-            robotJumpHold: 0, // Thời gian giữ nhảy của Robot
-            swingGravity: 1   // Hướng trọng lực riêng của Swing
+            robotJumpHold: 0,
+            swingGravity: 1
         };
 
         let objects = [];
@@ -332,7 +409,7 @@
             backgroundGrid.push({
                 x: Math.random() * logicalWidth,
                 y: Math.random() * logicalHeight,
-                    size: Math.random() * 40 + 20,
+                size: Math.random() * 40 + 20,
                 speed: Math.random() * 0.8 + 0.2
             });
         }
@@ -409,20 +486,17 @@
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
                 } else if (config.vehicle === "spider" && player.grounded) {
-                    // --- SPIDER: DỊCH CHUYỂN TỨC THỜI (TELEPORT) CHUẨN GD ---
                     gravityDir *= -1;
-                    player.y = gravityDir === 1 ? (340 - player.size) : 0; // Dịch chuyển tức khắc lên trần hoặc xuống sàn
+                    player.y = gravityDir === 1 ? (340 - player.size) : 0;
                     player.dy = 0;
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 18);
                 } else if (config.vehicle === "robot" && player.grounded) {
-                    // --- ROBOT: NHẢY CAO DỰA TRÊN THỜI GIAN GIỮ PHÍM (HOLD TO JUMP HIGHER) ---
                     player.dy = -11.0;
                     player.grounded = false;
-                    player.robotJumpHold = 18; // Cho phép giữ phím để robot bay cao hơn
+                    player.robotJumpHold = 18;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 10);
                 } else if (config.vehicle === "swing") {
-                    // --- SWING: ĐỔI CHIỀU TRỌNG LỰC LẬP TỨC TRÊN KHÔNG (GRAVITY FLIP) ---
                     player.swingGravity *= -1;
                     player.dy = -4.0 * player.swingGravity;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 12);
@@ -439,8 +513,7 @@
             objects = [];
             particles = [];
             score = 0;
-            config.speed = 5.5;
-            objectInterval = 65;
+            objectInterval = currentLevel.interval;
             gravityDir = 1;
             player.y = 250;
             player.dy = 0;
@@ -513,7 +586,6 @@
                 player.y += player.dy;
                 player.rotation = isHolding ? -45 : 45;
             } else if (config.vehicle === "robot") {
-                // Robot giữ phím sẽ giảm tốc độ rơi, tạo cảm giác "nhảy cao hơn" chuẩn GD
                 if (isHolding && player.robotJumpHold > 0) {
                     player.dy -= 0.45;
                     player.robotJumpHold--;
@@ -522,13 +594,11 @@
                 player.y += player.dy;
                 player.rotation += 10 * gravityDir;
             } else if (config.vehicle === "swing") {
-                // Swing lơ lửng và đổi chiều trọng lực linh hoạt
                 player.dy += 0.5 * player.swingGravity;
                 player.dy = Math.max(-7.0, Math.min(7.0, player.dy));
                 player.y += player.dy;
                 player.rotation = player.dy * 6;
             } else if (config.vehicle === "spider") {
-                // Spider di chuyển thẳng trên mặt đất/trần cho đến khi click dịch chuyển
                 player.dy += 0.9 * gravityDir;
                 player.y += player.dy;
                 player.rotation = 0;
@@ -569,7 +639,7 @@
                     size: Math.random() * 3 + 2,
                     color: config.color,
                     alpha: 0.9,
-                    vx: -config.speed * 1.5 - Math.random() * 2,
+                    vx: -currentLevel.speed * 1.5 - Math.random() * 2,
                     vy: (Math.random() - 0.5) * 2,
                     decay: 0.07
                 });
@@ -595,12 +665,11 @@
             if (objectTimer >= objectInterval) {
                 spawnSingleObject();
                 objectTimer = 0;
-                if (objectInterval > 45) objectInterval -= 2;
             }
 
             for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
-                obj.x -= config.speed;
+                obj.x -= currentLevel.speed;
 
                 let pad = 6;
                 if (obj.type === "pit") {
@@ -663,8 +732,7 @@
                 if (obj.x + (obj.width || 40) < 0) {
                     objects.splice(i, 1);
                     score++;
-                    if (score >= config.winningScore) gameState = "WON";
-                    if (score % 5 === 0) config.speed += 0.25;
+                    if (score >= currentLevel.scoreGoal) gameState = "WON";
                 }
             }
         }
@@ -785,7 +853,7 @@
                 }
             });
 
-            // Vẽ hạt đuôi xe
+            // Vẽ hạt
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
@@ -793,7 +861,7 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // --- VẼ TỪNG PHƯƠNG TIỆN SỐNG ĐỘNG ---
+            // --- VẼ PHƯƠNG TIỆN ---
             ctx.save();
             ctx.translate(player.x + player.size / 2, player.y + player.size / 2);
             ctx.rotate((player.rotation * Math.PI) / 180);
@@ -877,7 +945,6 @@
                 ctx.strokeRect(-5, -12, 10, 24);
                 ctx.restore();
             } else if (config.vehicle === "robot") {
-                // --- ROBOT SỐNG ĐỘNG (HIỆU ỨNG TAY CHÂN CO GIÃN KHI NHẢY) ---
                 let legMove = Math.sin(player.animTimer * 4) * 7;
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-12, -18, 24, 26);
@@ -885,23 +952,19 @@
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-12, -18, 24, 26);
 
-                // Đầu robot
                 ctx.fillRect(-8, -28, 16, 12);
                 ctx.strokeRect(-8, -28, 16, 12);
 
-                // Mắt sáng
                 ctx.fillStyle = "#ffaa00";
                 ctx.fillRect(-5, -24, 4, 4);
                 ctx.fillRect(1, -24, 4, 4);
 
-                // Chân robot co giãn khi di chuyển
                 ctx.fillStyle = "#2d2d3d";
                 ctx.fillRect(-10, 8 + legMove, 6, 10);
                 ctx.fillRect(4, 8 - legMove, 6, 10);
                 ctx.strokeRect(-10, 8 + legMove, 6, 10);
                 ctx.strokeRect(4, 8 - legMove, 6, 10);
             } else if (config.vehicle === "spider") {
-                // --- SPIDER SỐNG ĐỘNG (HIỆU ỨNG CHÂN NHỆN CHẠY BÁM TƯỜNG) ---
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-11, -11, 22, 22);
                 ctx.strokeStyle = "#000000";
@@ -916,7 +979,6 @@
                 ctx.moveTo(11, 11); ctx.lineTo(22, 18 - spiderLeg);
                 ctx.stroke();
             } else if (config.vehicle === "swing") {
-                // --- SWING SỐNG ĐỘNG (HÌNH THOI LẬP LÒE QUAY VÒNG) ---
                 let swingScale = 1 + Math.sin(player.animTimer * 3) * 0.1;
                 ctx.scale(swingScale, swingScale);
                 ctx.fillStyle = config.color;
@@ -971,10 +1033,10 @@
             }
             ctx.restore();
 
-            // Điểm số
+            // Hiển thị tên màn chơi và tiến độ điểm số
             ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 20px 'Segoe UI'";
-            ctx.fillText("SCORE: " + score + " / " + config.winningScore, 25, 40);
+            ctx.font = "bold 18px 'Segoe UI'";
+            ctx.fillText(currentLevel.name + " (" + score + " / " + currentLevel.scoreGoal + ")", 25, 35);
 
             // Màn hình Thua / Thắng
             if (gameState === "GAMEOVER") {
