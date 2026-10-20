@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Dash - Authentic UFO Edition</title>
+    <title>Geometry Dash - Perfect UFO Physics</title>
     <style>
         * {
             box-sizing: border-box;
@@ -168,7 +168,7 @@
     <!-- 1. GIAO DIỆN TRANG CHỦ -->
     <div id="homeScreen" class="screen menu-box">
         <h1>GEOMETRY DASH</h1>
-        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">AUTHENTIC UFO EDITION</p>
+        <p style="color: #00ffcc; margin-bottom: 25px; font-weight: 600;">PERFECT UFO PHYSICS</p>
         <div>
             <button class="ui-btn" onclick="showScreen('levelScreen')">▶ CHƠI NGAY</button><br>
             <button class="ui-btn btn-music" id="musicToggleBtn" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
@@ -180,7 +180,7 @@
     <!-- 2. GIAO DIỆN CHỌN MÀN CHƠI -->
     <div id="levelScreen" class="screen menu-box hidden">
         <h2>CHỌN MÀN CHƠI</h2>
-        <p style="color: #a8dadc; margin-bottom: 20px;">Cơ chế UFO chuẩn xác như Geometry Dash</p>
+        <p style="color: #a8dadc; margin-bottom: 20px;">Trải nghiệm cơ chế UFO chuẩn RobTop</p>
         <button class="ui-btn" onclick="startGame()">BẮT ĐẦU NGAY</button><br>
         <button class="ui-btn btn-music" id="musicToggleBtn2" onclick="toggleMusic()">🎵 BẬT NHẠC NỀN</button><br>
         <button class="ui-btn btn-back" onclick="showScreen('homeScreen')">QUAY LẠI</button>
@@ -304,7 +304,8 @@
             dy: 0,
             grounded: false,
             rotation: 0,
-            animTimer: 0
+            animTimer: 0,
+            ufoCooldown: 0 // Biến quản lý thời gian cách quãng mỗi lần nhấp nháy của UFO chuẩn GD
         };
 
         let objects = [];
@@ -395,10 +396,13 @@
                     player.grounded = false;
                     createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
                 } else if (config.vehicle === "ufo") {
-                    // --- CƠ CHẾ UFO CHUẨN GEOMETRY DASH ---
-                    // Mỗi lần click/space, UFO sẽ bật vọt lên một lực tức thời mạnh mẽ, không bị phụ thuộc vào việc giữ phím
-                    player.dy = -10.5 * gravityDir;
-                    createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 8);
+                    // --- CƠ CHẾ CLICK CHUẨN XÁC CỦA UFO TRONG GEOMETRY DASH ---
+                    // UFO chỉ nhảy khi hết thời gian cooldown (giống như nhịp click từng nhát trong game gốc)
+                    if (player.ufoCooldown <= 0) {
+                        player.dy = -10.2 * gravityDir; // Lực bật vọt lên tức thời
+                        player.ufoCooldown = 12; // Khóa nhịp ngắn để bắt buộc người chơi phải nhấp nhả nhịp nhàng
+                        createExplosion(player.x + player.size/2, player.y + player.size/2, config.color, 6);
+                    }
                 } else if (config.vehicle === "ball" && player.grounded) {
                     gravityDir *= -1;
                     player.dy = -5.0 * gravityDir;
@@ -426,6 +430,7 @@
             isHolding = false;
             shakeTimer = 0;
             player.animTimer = 0;
+            player.ufoCooldown = 0;
         }
 
         function createExplosion(x, y, color, count) {
@@ -466,6 +471,7 @@
             if (gameState !== "PLAYING") return;
 
             player.animTimer += 0.2;
+            if (player.ufoCooldown > 0) player.ufoCooldown--;
 
             if (config.vehicle === "ship" || config.vehicle === "jetpack") {
                 if (isHolding) {
@@ -477,12 +483,11 @@
                 player.y += player.dy;
                 player.rotation = player.dy * 4;
             } else if (config.vehicle === "ufo") {
-                // --- TRỌNG LỰC RIÊNG CỦA UFO CHUẨN GD ---
-                // UFO rơi xuống đều đặn, khi click sẽ bật lên và tạo cảm giác nhịp nhàng đặc trưng
-                player.dy += 0.72 * gravityDir;
-                player.dy = Math.max(-9.0, Math.min(9.0, player.dy));
+                // --- TRỌNG LỰC RƠI TỰ DO ĐẶC TRƯNG CỦA UFO ---
+                player.dy += 0.78 * gravityDir; // Trọng lực kéo xuống liên tục
+                player.dy = Math.max(-11.0, Math.min(10.0, player.dy));
                 player.y += player.dy;
-                player.rotation = player.dy * 3;
+                player.rotation = player.dy * 2.5; // Góc xoay theo quán tính lên xuống giống hệt game gốc
             } else if (config.vehicle === "wave") {
                 player.dy = isHolding ? -6.5 * gravityDir : 6.5 * gravityDir;
                 player.y += player.dy;
@@ -795,16 +800,14 @@
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(-4, -3, 8, 6);
             } else if (config.vehicle === "ufo") {
-                // --- ĐĨA BAY UFO CHUẨN GEOMETRY DASH ---
-                // Thân đĩa bay bên dưới
+                // --- ĐĨA BAY UFO CHUẨN XÁC GEOMETRY DASH ---
                 ctx.fillStyle = config.color;
                 ctx.fillRect(-16, 2, 32, 10);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 3;
                 ctx.strokeRect(-16, 2, 32, 10);
 
-                // Vòm kính trong suốt phía trên chứa phi công
-                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
                 ctx.beginPath();
                 ctx.arc(0, 2, 10, Math.PI, 0, false);
                 ctx.fill();
@@ -812,7 +815,6 @@
                 ctx.lineWidth = 3;
                 ctx.stroke();
 
-                // Đèn nháy dưới bụng UFO
                 ctx.fillStyle = "#ff0055";
                 ctx.fillRect(-4, 12, 8, 4);
                 ctx.strokeStyle = "#000000";
